@@ -5,8 +5,8 @@ namespace Pine {
 
 	Material::Material()
 	{
-		m_Texture = new Texture("res/epic5.jpg");
-		m_Shader = Shader::LoadShader("res/basicShader");
+		m_Texture = new Texture("res/textures/bricks.jpg");
+		m_Shader = Shader::LoadShader("res/shaders/basicShader");
 	}
 
 	Material::Material(Shader* shader)
