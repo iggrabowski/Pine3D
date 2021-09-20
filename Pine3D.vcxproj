@@ -165,11 +165,13 @@
     <ClCompile Include="src\Runtime\Components\Material.cpp" />
     <ClCompile Include="src\Runtime\Components\Mesh.cpp" />
     <ClCompile Include="src\Runtime\Components\MeshRenderer.cpp" />
+    <ClCompile Include="src\Runtime\Components\Plane.cpp" />
     <ClCompile Include="src\Runtime\Components\Polygon.cpp" />
     <ClCompile Include="src\Runtime\Components\Texture.cpp" />
     <ClCompile Include="src\Runtime\Components\Transform.cpp" />
     <ClCompile Include="src\Runtime\RenderCore\Shader.cpp" />
     <ClCompile Include="src\Runtime\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Runtime\Scene\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Application.h" />
@@ -183,11 +185,13 @@
     <ClInclude Include="src\Runtime\Components\Material.h" />
     <ClInclude Include="src\Runtime\Components\Mesh.h" />
     <ClInclude Include="src\Runtime\Components\MeshRenderer.h" />
+    <ClInclude Include="src\Runtime\Components\Plane.h" />
     <ClInclude Include="src\Runtime\Components\Polygon.h" />
     <ClInclude Include="src\Runtime\Components\Texture.h" />
     <ClInclude Include="src\Runtime\Components\Transform.h" />
     <ClInclude Include="src\Runtime\RenderCore\Shader.h" />
     <ClInclude Include="src\Runtime\Renderer\Renderer.h" />
+    <ClInclude Include="src\Runtime\Scene\Scene.h" />
     <ClInclude Include="src\Runtime\Scene\SceneObject.h" />
     <ClInclude Include="src\Utils\Utils.h" />
   </ItemGroup>

@@ -102,6 +102,12 @@
     <ClCompile Include="src\Runtime\Components\Cube.cpp">
       <Filter>src\Runtime\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\Runtime\Components\Plane.cpp">
+      <Filter>src\Runtime\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Runtime\Scene\Scene.cpp">
+      <Filter>src\Runtime\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Platform\SFML\SFMLWindow.h">
@@ -157,6 +163,12 @@
     </ClInclude>
     <ClInclude Include="src\Runtime\Components\Cube.h">
       <Filter>src\Runtime\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Runtime\Components\Plane.h">
+      <Filter>src\Runtime\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Runtime\Scene\Scene.h">
+      <Filter>src\Runtime\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

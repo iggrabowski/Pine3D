@@ -16,7 +16,6 @@ namespace Pine {
 		glBindVertexArray(mesh.m_VA);
 
 		glGenBuffers(1, &mesh.m_VB);
-		glGenBuffers(1, &mesh.m_EB);
 
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.m_VB);
 		size_t offset = 0;
@@ -65,6 +64,7 @@ namespace Pine {
 		// only fill the index buffer if the index array is non-empty.
 		if (mesh.Indices.size() > 0)
 		{
+			glGenBuffers(1, &mesh.m_EB);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_EB);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.Indices.size() * sizeof(unsigned int), &mesh.Indices[0], GL_STATIC_DRAW);
 		}
@@ -109,7 +109,8 @@ namespace Pine {
 		mat.m_Shader->Bind();
 
 		//here enable texturing unit
-		mat.m_Texture->Bind();
+		if (mat.m_Texture != nullptr)
+			mat.m_Texture->Bind();
 
 		glBindVertexArray(mesh.m_VA);
 

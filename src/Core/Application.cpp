@@ -8,8 +8,7 @@ namespace Pine {
 	UniquePtr<Window> window;
 	UniquePtr<Renderer> renderer;
 	UniquePtr<Controls> controls;
-
-	Vector<SceneObject*> sceneObjects;
+	UniquePtr<Scene> scene;
 
 	/*Application* Application::s_Instance = nullptr;
 
@@ -39,11 +38,7 @@ namespace Pine {
 		renderer->Clear();
 
 		//controls.Update(transform, event);
-
-		// Run update function on every scene object.
-		for (unsigned int i = 0; i < sceneObjects.size(); i++) {
-			sceneObjects[i]->OnUpdate();
-		}
+		scene->OnUpdate();
 
 		window->Display();
 		window->Sleep(0.02f);
@@ -63,6 +58,7 @@ namespace Pine {
 		window = Window::Init(windowSettings);
 		renderer = Renderer::Init();
 		controls = Controls::Init();
+		scene = Scene::Init();
 	}
 
 }

@@ -5,12 +5,13 @@ namespace Pine {
 
 	Material::Material()
 	{
-		m_Texture = new Texture("res/textures/bricks.jpg");
-		m_Shader = Shader::LoadShader("res/shaders/basicShader");
+		m_Texture = nullptr;
+		m_Shader = Shader::LoadShader("res/shaders/default");
 	}
 
 	Material::Material(Shader* shader)
 	{
+		m_Texture = nullptr;
 		m_Shader = shader;
 	}
 

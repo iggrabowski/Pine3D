@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/Window.h"
 #include "Runtime/Renderer/Renderer.h"
-#include "Runtime/Scene/SceneObject.h"
+#include "Runtime/Scene/Scene.h"
 #include "Core/Input/Controls.h"
 #include "Runtime/Components/MeshRenderer.h"
 #include "Utils/Utils.h"
@@ -13,8 +13,7 @@ namespace Pine {
 	extern UniquePtr<Window> window;
 	extern UniquePtr<Renderer> renderer;
 	extern UniquePtr<Controls> controls;
-
-	extern Vector<SceneObject*> sceneObjects;
+	extern UniquePtr<Scene> scene;
 
 	void UpdateFrame();
 

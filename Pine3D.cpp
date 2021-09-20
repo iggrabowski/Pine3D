@@ -9,21 +9,9 @@ int main(int argc, char** argv)
 	/* INITIATE THE APPLICATION */
 	Pine::Init();
 
-	/* ADD DEFAULT MESH RENDERER TO THE SCENE */
-	Pine::MeshRenderer mr;
-	//add default Mesh renderer to the scene
-	Pine::sceneObjects.push_back(&mr);
-
-
-	/* ADD POLYGON TO THE SCENE */
-	std::vector<Pine::Vec2> vs;
-	vs.push_back(Pine::Vec2(-0.5, -0.5));
-	vs.push_back(Pine::Vec2(-0.5, 0.5));
-	vs.push_back(Pine::Vec2(0.5, 0.5));
-	vs.push_back(Pine::Vec2(0.5, -0.5));
-
-	Pine::Polygon pl(vs);
-	Pine::sceneObjects.push_back(&pl);
+	/* ADD OBJECTS TO THE SCENE */
+	Pine::scene->CreatePlane(20.0, 20.0, Pine::Vec3(0.0, -5.0, 0.0));
+	Pine::scene->CreateCube(2.0, 2.0, 2.0, Pine::Vec3(0.0, 0.0, 0.0));
 
 	//MAIN LOOP
 	while (Pine::window->GetIsActive()) {

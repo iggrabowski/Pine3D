@@ -75,6 +75,7 @@ namespace Pine {
 
     void Shader::SetUniform(std::string name, Mat4& val)
     {
+        Bind();
         int loc = GetUniformLocation(name);
         if (loc >= 0) {
             glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
@@ -83,6 +84,7 @@ namespace Pine {
 
     void Shader::SetUniform(std::string name, Vec3& val)
     {
+        Bind();
         int loc = GetUniformLocation(name);
         if (loc >= 0) {
             glUniform3fv(loc, 1, &val[0]);
