@@ -108,6 +108,9 @@
     <ClCompile Include="src\Runtime\Scene\Scene.cpp">
       <Filter>src\Runtime\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Runtime\Components\DirectionalLight.cpp">
+      <Filter>src\Runtime\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Platform\SFML\SFMLWindow.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="src\Runtime\Scene\Scene.h">
       <Filter>src\Runtime\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Runtime\Components\DirectionalLight.h">
+      <Filter>src\Runtime\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

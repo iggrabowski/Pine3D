@@ -96,7 +96,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OPENCV_DIR)\lib;.\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -132,7 +132,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OPENCV_DIR)\lib;.\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,6 +162,7 @@
     <ClCompile Include="src\Platform\SFML\SFMLWindow.cpp" />
     <ClCompile Include="src\Runtime\Camera\Camera.cpp" />
     <ClCompile Include="src\Runtime\Components\Cube.cpp" />
+    <ClCompile Include="src\Runtime\Components\DirectionalLight.cpp" />
     <ClCompile Include="src\Runtime\Components\Material.cpp" />
     <ClCompile Include="src\Runtime\Components\Mesh.cpp" />
     <ClCompile Include="src\Runtime\Components\MeshRenderer.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="src\Platform\SFML\SFMLWindow.h" />
     <ClInclude Include="src\Runtime\Camera\Camera.h" />
     <ClInclude Include="src\Runtime\Components\Cube.h" />
+    <ClInclude Include="src\Runtime\Components\DirectionalLight.h" />
     <ClInclude Include="src\Runtime\Components\Material.h" />
     <ClInclude Include="src\Runtime\Components\Mesh.h" />
     <ClInclude Include="src\Runtime\Components\MeshRenderer.h" />
