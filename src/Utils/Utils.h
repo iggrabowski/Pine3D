@@ -1,14 +1,16 @@
 #pragma once
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/ext.hpp>
+#include <glm/gtx/transform.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
+//#include <glm/ext.hpp>
 
 #include <memory>
 #include <vector>
 #include <string>
-#include <iostream>;
+#include <iostream>
 
 namespace Pine {
 
@@ -30,24 +32,28 @@ namespace Pine {
 	{
 		return glm::lookAt(std::forward<Args>(args)...);
 	}
+
 //#define Perspective glm::perspective
 	template<typename ... Args>
 	static constexpr Mat4 Perspective(Args&& ... args)
 	{
 		return glm::perspective(std::forward<Args>(args)...);
 	}
+
 //#define Rotate glm::rotate
 	template<typename T, typename ... Args>
 	static constexpr T Rotate(Args&& ... args)
 	{
 		return glm::rotate(std::forward<Args>(args)...);
 	}
+
 //#define Cross glm::cross
 	template<typename ... Args>
 	static constexpr Vec3 Cross(Args&& ... args)
 	{
 		return glm::cross(std::forward<Args>(args)...);
 	}
+
 //#define Normalize glm::normalize
 	template<typename ... Args>
 	static constexpr Vec3 Normalize(Args&& ... args)

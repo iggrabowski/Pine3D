@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/Window.h"
-#include "Platform/SFML/SFMLWindow.h"
+#include "Platform/OpenGL/GLFWWindow.h"
 
 
 namespace Pine {
@@ -9,13 +9,9 @@ namespace Pine {
 
 	UniquePtr<Window> Window::Init(const WindowSettings& windowSettings)
 	{
-		//#ifdef WINDOW_SFML
-		return MakeUnique<SFMLWindow>(windowSettings);
+		//#ifdef WINDOW_GLFW
+		return MakeUnique<GLFWWindow>(windowSettings);
 		//#endif
-	}
-
-	bool Window::GetIsActive() {
-		return m_IsActive;
 	}
 
 }

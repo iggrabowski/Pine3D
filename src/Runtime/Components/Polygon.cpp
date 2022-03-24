@@ -10,7 +10,14 @@ namespace Pine {
 
 	void Polygon::OnUpdate()
 	{
+		// TODO: move OpenGL code to OpenGL renderer
+		glBegin(GL_TRIANGLES);
 
+		for each(auto& point in m_Points) {
+			glVertex2f(point.x, point.y);
+		}
+
+		glEnd();
 	}
 
 }

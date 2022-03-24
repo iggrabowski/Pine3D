@@ -2,9 +2,6 @@
 #include "Runtime/Camera/Camera.h"
 #include "Utils/Utils.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-
 namespace Pine {
 
 	class Transform {

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <string>
-#include <GL/glew.h>
-#include <SFML/Graphics.hpp>
+
+// Has to be sufficient for now
+#include <Utils/Utils.h>
 
 namespace Pine {
 
@@ -11,15 +12,16 @@ namespace Pine {
 	public:
 		Texture(const std::string& fileName);
 		void Bind();
-		void Update(int offsetX, int offsetY, sf::Image img_data);
+
+		// TODO: fix for GLFW
+		//void Update(int offsetX, int offsetY, sf::Image img_data);
 
 		virtual ~Texture();
-		sf::Image tex;
+		//sf::Image tex;
 	protected:
 	private:
 		void operator=(const Texture& texture) {}
 
 		GLuint m_texture;
 	};
-
 }

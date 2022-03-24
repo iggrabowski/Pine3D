@@ -28,13 +28,13 @@ namespace Pine {
 	//}
 
 	struct WindowSettings {
-		std::string Title;
+		const char* Title;
 		unsigned int Width;
 		unsigned int Height;
 		bool VSync;
 
 		WindowSettings(
-			const std::string& title = "Pine",
+			const char title[] = "Pine3D",
 			unsigned int width = 1200,
 			unsigned int height = 900,
 			bool vsync = true
@@ -50,10 +50,9 @@ namespace Pine {
 		virtual Vec2i GetMousePosition() = 0;
 		virtual Vec2i GetSize() = 0;
 		virtual void OnUpdate() = 0;
-		virtual void Display() = 0;
-		virtual void Sleep(float seconds) = 0;
-
-		bool GetIsActive();
+		//virtual void Display() = 0;
+		//virtual void Sleep(float seconds) = 0;
+		virtual bool IsOpen() = 0;
 	protected:
 		WindowSettings m_Settings;
 		bool m_IsActive;

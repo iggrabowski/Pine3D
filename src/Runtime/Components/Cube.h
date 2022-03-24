@@ -8,7 +8,6 @@ namespace Pine
     {
     public:
         Cube();
-        Cube(float width, float height, float depth);
     };
 
 }

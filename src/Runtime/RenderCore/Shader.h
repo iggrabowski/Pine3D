@@ -4,7 +4,6 @@
 #include "Utils/Utils.h"
 
 #include <string>
-#include <GL/glew.h>
 
 namespace Pine {
 

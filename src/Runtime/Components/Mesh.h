@@ -9,6 +9,26 @@
 
 namespace Pine {
 
+	/*struct Vertex
+	{
+	public:
+		Vertex(const Vec3& pos, const Vec2& texCoord, const Vec3& normal)
+		{
+			m_Pos = pos;
+			m_TexCoord = texCoord;
+			m_Normal = normal;
+		}
+
+		Vec3* GetPos() { return &m_Pos; }
+		Vec2* GetTexCoord() { return &m_TexCoord; }
+		Vec3* GetNormal() { return &m_Normal; }
+
+	private:
+		Vec3 m_Pos;
+		Vec2 m_TexCoord;
+		Vec3 m_Normal;
+	};*/
+
 	enum MeshBufferPositions
 	{
 		POSITION_VB,
