@@ -39,7 +39,7 @@ namespace Pine {
 	GLFWWindow::~GLFWWindow()
 	{
 		glfwTerminate();
-		delete m_Window;
+		//delete m_Window;
 	}
 
 	void GLFWWindow::OnUpdate()

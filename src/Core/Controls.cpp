@@ -7,10 +7,10 @@ namespace Pine {
     Controls::Controls()
     {
         //this->alreadyScrolled = false;
-        m_ZoomPerScroll = 0.2;
-        m_MoveSpeed = 0.2;
-        m_directionSpeedX = 0.1;
-        m_directionSpeedY = 0.1;
+        m_ZoomPerScroll = 0.2f;
+        m_MoveSpeed = 0.2f;
+        m_directionSpeedX = 0.1f;
+        m_directionSpeedY = 0.1f;
     }
 
 	UniquePtr<Controls> Controls::Init()

@@ -37,7 +37,7 @@ namespace Pine {
 		INDEX_VB
 	};
 
-	extern class OpenGLRenderer;
+	class OpenGLRenderer;
 
 	class Mesh {
 		friend OpenGLRenderer;

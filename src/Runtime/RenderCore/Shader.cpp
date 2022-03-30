@@ -43,7 +43,7 @@ namespace Pine {
 
         // iterate over all active attributes
         char buffer[128];
-        for (unsigned int i = 0; i < nrAttributes; ++i)
+        for (int i = 0; i < nrAttributes; ++i)
         {
             glGetActiveAttrib(m_Program, i, sizeof(buffer), 0, &Attributes[i].Size, &Attributes[i].Type, buffer);
             Attributes[i].Name = std::string(buffer);
@@ -52,9 +52,9 @@ namespace Pine {
         }
 
         // iterate over all active uniforms
-        for (unsigned int i = 0; i < nrUniforms; ++i)
+        for (int i = 0; i < nrUniforms; ++i)
         {
-            GLenum glType;
+            //GLenum glType;
             glGetActiveUniform(m_Program, i, sizeof(buffer), 0, &Uniforms[i].Size, &Uniforms[i].Type, buffer);
             Uniforms[i].Name = std::string(buffer);
 

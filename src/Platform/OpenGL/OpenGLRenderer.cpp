@@ -26,7 +26,7 @@ namespace Pine {
 			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 			offset += mesh.Positions.size() * sizeof(float) * 3;
 
-			for (int i = 0; i < mesh.Positions.size(); i++)
+			for (unsigned int i = 0; i < mesh.Positions.size(); i++)
 			{
 				data.push_back(mesh.Positions[i].x);
 				data.push_back(mesh.Positions[i].y);
@@ -39,7 +39,7 @@ namespace Pine {
 			glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 			offset += mesh.TexCoords.size() * sizeof(float) * 2;
 
-			for (int i = 0; i < mesh.TexCoords.size(); i++)
+			for (unsigned int i = 0; i < mesh.TexCoords.size(); i++)
 			{
 				data.push_back(mesh.TexCoords[i].x);
 				data.push_back(mesh.TexCoords[i].y);
@@ -51,7 +51,7 @@ namespace Pine {
 			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 			offset += mesh.Normals.size() * sizeof(float) * 3;
 
-			for (int i = 0; i < mesh.Normals.size(); i++)
+			for (unsigned int i = 0; i < mesh.Normals.size(); i++)
 			{
 				data.push_back(mesh.Normals[i].x);
 				data.push_back(mesh.Normals[i].y);
