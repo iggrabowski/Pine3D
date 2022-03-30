@@ -18,83 +18,83 @@ endif()
 ## ------------------------ ##
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(SRCROOT ${PROJECT_SOURCE_DIR}/src)
+set(SRC_ROOT ${PROJECT_SOURCE_DIR}/src)
 
 set(PINE3D-MAIN
-	${SRCROOT}/Pine3D.cpp
+	${SRC_ROOT}/Pine3D.cpp
 	)
 
 source_group("Source Files" FILES ${PINE3D-MAIN})
 
 set(PINE3D-CORE
-	${SRCROOT}/Core/Application.cpp
-	${SRCROOT}/Core/Application.h
-	${SRCROOT}/Core/Sfsf.h
-	${SRCROOT}/Core/Window.cpp
-	${SRCROOT}/Core/Window.h
-	${SRCROOT}/Core/Controls.cpp
-	${SRCROOT}/Core/Controls.h
+	${SRC_ROOT}/Core/Application.cpp
+	${SRC_ROOT}/Core/Application.h
+	${SRC_ROOT}/Core/Sfsf.h
+	${SRC_ROOT}/Core/Window.cpp
+	${SRC_ROOT}/Core/Window.h
+	${SRC_ROOT}/Core/Controls.cpp
+	${SRC_ROOT}/Core/Controls.h
 	)
 	
 source_group("Source Files/Core" FILES ${PINE3D-CORE})
 
 set(PINE3D-PLATFORM-OPENGL
-	${SRCROOT}/Platform/OpenGL/OpenGLRenderer.cpp
-	${SRCROOT}/Platform/OpenGL/OpenGLRenderer.h
-	${SRCROOT}/Platform/OpenGL/GLFWWindow.cpp
-	${SRCROOT}/Platform/OpenGL/GLFWWindow.h
+	${SRC_ROOT}/Platform/OpenGL/OpenGLRenderer.cpp
+	${SRC_ROOT}/Platform/OpenGL/OpenGLRenderer.h
+	${SRC_ROOT}/Platform/OpenGL/GLFWWindow.cpp
+	${SRC_ROOT}/Platform/OpenGL/GLFWWindow.h
 	)
 	
 source_group("Source Files/Platform/OpenGL" FILES ${PINE3D-PLATFORM-OPENGL})
 
 set(PINE3D-RUNTIME-CAMERA
-	${SRCROOT}/Runtime/Camera/Camera.cpp
-	${SRCROOT}/Runtime/Camera/Camera.h
+	${SRC_ROOT}/Runtime/Camera/Camera.cpp
+	${SRC_ROOT}/Runtime/Camera/Camera.h
 	)
 	
 source_group("Source Files/Runtime/Camera" FILES ${PINE3D-RUNTIME-CAMERA})
 
 set(PINE3D-RUNTIME-COMPONENTS
-	${SRCROOT}/Runtime/Components/Cube.cpp
-	${SRCROOT}/Runtime/Components/Cube.h
-	${SRCROOT}/Runtime/Components/Material.cpp
-	${SRCROOT}/Runtime/Components/Material.h
-	${SRCROOT}/Runtime/Components/Mesh.cpp
-	${SRCROOT}/Runtime/Components/Mesh.h
-	${SRCROOT}/Runtime/Components/MeshRenderer.cpp
-	${SRCROOT}/Runtime/Components/MeshRenderer.h
-	${SRCROOT}/Runtime/Components/Polygon.cpp
-	${SRCROOT}/Runtime/Components/Polygon.h
-	${SRCROOT}/Runtime/Components/Texture.cpp
-	${SRCROOT}/Runtime/Components/Texture.h
-	${SRCROOT}/Runtime/Components/Transform.cpp
-	${SRCROOT}/Runtime/Components/Transform.h
+	${SRC_ROOT}/Runtime/Components/Cube.cpp
+	${SRC_ROOT}/Runtime/Components/Cube.h
+	${SRC_ROOT}/Runtime/Components/Material.cpp
+	${SRC_ROOT}/Runtime/Components/Material.h
+	${SRC_ROOT}/Runtime/Components/Mesh.cpp
+	${SRC_ROOT}/Runtime/Components/Mesh.h
+	${SRC_ROOT}/Runtime/Components/MeshRenderer.cpp
+	${SRC_ROOT}/Runtime/Components/MeshRenderer.h
+	${SRC_ROOT}/Runtime/Components/Polygon.cpp
+	${SRC_ROOT}/Runtime/Components/Polygon.h
+	${SRC_ROOT}/Runtime/Components/Texture.cpp
+	${SRC_ROOT}/Runtime/Components/Texture.h
+	${SRC_ROOT}/Runtime/Components/Transform.cpp
+	${SRC_ROOT}/Runtime/Components/Transform.h
 	)
 	
 source_group("Source Files/Runtime/Components" FILES ${PINE3D-RUNTIME-COMPONENTS})
 
 set(PINE3D-RUNTIME-RENDERCORE
-	${SRCROOT}/Runtime/RenderCore/Shader.cpp
-	${SRCROOT}/Runtime/RenderCore/Shader.h
+	${SRC_ROOT}/Runtime/RenderCore/Shader.cpp
+	${SRC_ROOT}/Runtime/RenderCore/Shader.h
 	)
 	
 source_group("Source Files/Runtime/RenderCore" FILES ${PINE3D-RUNTIME-RENDERCORE})
 
 set(PINE3D-RUNTIME-RENDERER
-	${SRCROOT}/Runtime/Renderer/Renderer.cpp
-	${SRCROOT}/Runtime/Renderer/Renderer.h
+	${SRC_ROOT}/Runtime/Renderer/Renderer.cpp
+	${SRC_ROOT}/Runtime/Renderer/Renderer.h
 	)
 		
 source_group("Source Files/Runtime/Renderer" FILES ${PINE3D-RUNTIME-RENDERER})
 
 set(PINE3D-RUNTIME-SCENE
-	${SRCROOT}/Runtime/Scene/SceneObject.h
+	${SRC_ROOT}/Runtime/Scene/SceneObject.h
 	)
 
 source_group("Source Files/Runtime/Scene" FILES ${PINE3D-RUNTIME-SCENE})
 
 set(PINE3D-UTILS
-	${SRCROOT}/Utils/Utils.h
+	${SRC_ROOT}/Utils/Utils.h
 	)
 	
 source_group("Source Files/Utils" FILES ${PINE3D-UTILS})
@@ -111,7 +111,11 @@ add_executable(${PROJECT_NAME} WIN32
 	${PINE3D-UTILS}
 	)
 
-target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRCROOT})
+set(STD_INCLUDE 
+	${PROJECT_SOURCE_DIR}/include/STB
+	)
+
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRC_ROOT} ${STD_INCLUDE})
 ## ------------------------ ##
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
