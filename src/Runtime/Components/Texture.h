@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Runtime/Components/Image.h>
 #include <string>
 
 // Has to be sufficient for now
@@ -10,7 +10,11 @@ namespace Pine {
 	class Texture
 	{
 	public:
-		Texture(const std::string& fileName);
+		Texture();
+		//Texture(const std::string& fileName);
+
+		void LoadFromImage(Image& image);
+
 		void Bind();
 
 		// TODO: fix for GLFW

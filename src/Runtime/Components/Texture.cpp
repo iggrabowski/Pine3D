@@ -1,12 +1,17 @@
 #pragma once
 #include "Runtime/Components/Texture.h"
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 
 namespace Pine {
 
-    Texture::Texture(const std::string& fileName)
-    {
+	Texture::Texture() {
+
+	}
+
+  //  Texture::Texture(const std::string& fileName)
+  //  {
   //      //int width, height, numComponents;
   //      //unsigned char* data = stbi_load((fileName).c    _str(), &width, &height, &numComponents, 4);
 
@@ -14,7 +19,7 @@ namespace Pine {
   //      //sf::Image img_data;
   //      //tex.loadFromImage(img_data);    
 
-  //      glGenTextures(1, &m_texture);
+  //      /*glGenTextures(1, &m_texture);
   //      glActiveTexture(GL_TEXTURE0);
   //      glBindTexture(GL_TEXTURE_2D, m_texture);
 
@@ -28,8 +33,25 @@ namespace Pine {
 
   //      sf::Vector2u texSize = tex.getSize();
   //      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texSize.x, texSize.y,
-  //          0, GL_RGBA, GL_UNSIGNED_BYTE, tex.getPixelsPtr());
-    }
+  //          0, GL_RGBA, GL_UNSIGNED_BYTE, tex.getPixelsPtr());*/
+  //  }
+
+	void Texture::LoadFromImage(Image & image)
+	{
+		glGenTextures(1, &m_texture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_texture);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		GLsizei texWidth, texHeight;
+		texWidth = image.getWidth();
+		texHeight = image.getHeight();
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight,
+			0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
+	}
 
     Texture::~Texture()
     {
