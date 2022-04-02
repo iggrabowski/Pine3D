@@ -41,16 +41,16 @@ namespace Pine {
 		glGenTextures(1, &m_texture);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_texture);
-
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		GLsizei texWidth, texHeight;
 		texWidth = image.getWidth();
 		texHeight = image.getHeight();
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight,
-			0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
+			0, GL_RGB, GL_UNSIGNED_BYTE, image.getPixelsPtr());
 	}
 
     Texture::~Texture()

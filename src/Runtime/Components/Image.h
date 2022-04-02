@@ -6,6 +6,7 @@ namespace Pine {
 	class Image {
 	public:
 		Image();
+		Image(const char* path);
 		const void* getPixelsPtr();
 		inline int getWidth() const { return m_width; };
 		inline int getHeight() const { return m_height; };

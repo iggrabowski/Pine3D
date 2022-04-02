@@ -34,7 +34,7 @@ namespace Pine {
 		void SetUniform(std::string name, Mat4& val);
 		bool GetAttributeLocation(std::string name, unsigned int& outLoc);
 
-		static Shader* LoadShader(const std::string& fileName);
+		static Shader* LoadShaders(const std::string& fileName);
 	protected:
 	private:
 		std::vector<ShaderVariable>	Uniforms;

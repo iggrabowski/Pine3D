@@ -5,8 +5,13 @@ namespace Pine {
 
 	Material::Material()
 	{
-		m_Texture = new Texture("../res/textures/default.jpg");
-		m_Shader = Shader::LoadShader("../res/shaders/basicShader");
+		// Load default texture files from file
+		Image img("../res/textures/default.jpg");
+		// Load default shaders
+		m_Shader = Shader::LoadShaders("../res/shaders/basicShader");
+
+		m_Texture = new Texture();
+		m_Texture->LoadFromImage(img);
 	}
 
 	Material::Material(Shader* shader)

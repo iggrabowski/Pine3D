@@ -5,7 +5,7 @@ namespace Pine {
 
 	class Camera/* : public SceneObject*/ {
 	public:
-		Camera(const Vec3& pos = Vec3(0.0f, 0.0f, -2.0f),
+		Camera(const Vec3& pos = Vec3(2.0f, 2.0f, -5.0f),
 			float fov = 70.0f,
 			float aspect = 1200.0f / 900.0f,
 			float zNear = 0.1f,
@@ -13,7 +13,7 @@ namespace Pine {
 			m_Pos(pos),
 			forward(Vec3(0.0f, 0.0f, 1.0f)),
 			up(Vec3(0.0f, 1.0f, 0.0f)),
-			m_Direction(Vec3(0.0f, 0.0f, 1.0f)),
+			m_Direction(Vec3(-0.5f, -0.5f, 1.0f)),
 			m_Projection(Perspective(fov, aspect, zNear, zFar)) {}
 
 		Mat4 GetViewProjection() const;

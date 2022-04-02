@@ -11,6 +11,11 @@ Pine::Image::Image()
 
 }
 
+Pine::Image::Image(const char * path)
+{
+	this->Create(path);
+}
+
 const void * Pine::Image::getPixelsPtr()
 {
 	return m_bytes;

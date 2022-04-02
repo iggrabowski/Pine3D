@@ -21,15 +21,15 @@ namespace Pine {
 
 	void MeshRenderer::OnUpdate()
 	{
-		/*m_Transform->UpdateModel();
+		m_Transform->UpdateModel();
 
 		m_Material->OnUpdate();
 
-		m_Mesh->Draw();*/
+		m_Mesh->Draw();
 
 		m_Transform->UpdateModel();
 
-		//m_Material->m_Shader->Bind();
+		m_Material->m_Shader->Bind();
 		Mat4 model = m_Transform->GetModel();
 		m_Material->m_Shader->SetUniform("Model", model);
 

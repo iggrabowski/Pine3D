@@ -107,7 +107,7 @@ namespace Pine {
         glUseProgram(m_Program);
     }
 
-    Shader* Shader::LoadShader(const std::string& fileName)
+    Shader* Shader::LoadShaders(const std::string& fileName)
     {
         std::string vsCode;
         std::string fsCode;
