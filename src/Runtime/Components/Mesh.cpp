@@ -100,17 +100,17 @@ namespace Pine {
 		glDeleteVertexArrays(1, &m_vertexArrayObject);
 	}
 
-	void Mesh::Draw()
-	{
-		if (!m_Buffered) InitMesh();
+	//void Mesh::Draw()
+	//{
+	//	if (!m_Buffered) InitMesh();
 
-		glBindVertexArray(m_vertexArrayObject);
+	//	glBindVertexArray(m_vertexArrayObject);
 
-		//glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
-		glDrawElementsBaseVertex(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0, 0);
+	//	//glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
+	//	glDrawElementsBaseVertex(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0, 0);
 
-		glBindVertexArray(0);
-	}
+	//	glBindVertexArray(0);
+	//}
 
 
 	//bool Mesh::RayIntersectsTriangle(glm::vec3 rayOrigin,
