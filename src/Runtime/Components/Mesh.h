@@ -54,7 +54,7 @@ namespace Pine {
 		Mesh(std::vector<Vec3>& positions, std::vector<Vec2>& uv, std::vector<Vec3>& normals, std::vector<unsigned int>& indices);
 
 		void InitMesh();
-		void Draw();
+		//void Draw();
 		/*bool RayIntersectsTriangle(glm::vec3 rayOrigin,
 			glm::vec3 rayVector,
 			std::vector<unsigned int> indeces,

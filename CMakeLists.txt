@@ -11,7 +11,7 @@ add_subdirectory(lib/glew EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glm EXCLUDE_FROM_ALL)
 
 if(MSVC)
-    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
 endif()
 
 # Source files
@@ -57,6 +57,8 @@ source_group("Source Files/Runtime/Camera" FILES ${PINE3D-RUNTIME-CAMERA})
 set(PINE3D-RUNTIME-COMPONENTS
 	${SRC_ROOT}/Runtime/Components/Cube.cpp
 	${SRC_ROOT}/Runtime/Components/Cube.h
+	${SRC_ROOT}/Runtime/Components/Image.cpp
+	${SRC_ROOT}/Runtime/Components/Image.h
 	${SRC_ROOT}/Runtime/Components/Material.cpp
 	${SRC_ROOT}/Runtime/Components/Material.h
 	${SRC_ROOT}/Runtime/Components/Mesh.cpp

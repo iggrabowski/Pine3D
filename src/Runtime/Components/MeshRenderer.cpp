@@ -25,7 +25,7 @@ namespace Pine {
 
 		m_Material->OnUpdate();
 
-		m_Mesh->Draw();
+		//m_Mesh->Draw();
 
 		m_Transform->UpdateModel();
 
