@@ -9,7 +9,6 @@ add_definitions(-DGLEW_STATIC)
 add_subdirectory(lib/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glew EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glm EXCLUDE_FROM_ALL)
-add_subdirectory(lib/imgui EXCLUDE_FROM_ALL)
 
 if(MSVC)
     SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
@@ -118,7 +117,11 @@ set(STD_INCLUDE
 	${PROJECT_SOURCE_DIR}/include/STB
 	)
 
-target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRC_ROOT} ${STD_INCLUDE})
+set(IMGUI_INCLUDE
+	${PROJECT_SOURCE_DIR}/include/imgui
+	)
+
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRC_ROOT} ${STD_INCLUDE} ${IMGUI_INCLUDE})
 ## ------------------------------------------------ ##
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
