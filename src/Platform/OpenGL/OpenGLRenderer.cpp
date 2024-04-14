@@ -75,6 +75,7 @@ namespace Pine {
 	OpenGLRenderer::OpenGLRenderer()
 	{
 		//s_Instance = this;
+		m_rendererAPI = GRAPHICS_API::OPENGL_API;
 
 		m_Camera = new Camera();
 

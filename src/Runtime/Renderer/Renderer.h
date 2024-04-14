@@ -7,18 +7,23 @@
 
 namespace Pine {
 
+	enum class GRAPHICS_API {
+		UNDEFINED_API,
+		OPENGL_API
+	};
+
 	//main rendering object
 	class Renderer {
 		friend class Application;
 	public:
-		static UniquePtr<Renderer> Init();
-
+		static UniquePtr<Renderer> Init(GRAPHICS_API API);
+			
 		virtual void DrawIndexed(/*const IndexedModel& model*/) = 0;
 		virtual void Draw(Mesh& mesh, Material& mat) = 0;
 
 		//static Renderer* s_Instance;
-
-		Camera& GetRenderCamera();
+		GRAPHICS_API m_rendererAPI = GRAPHICS_API::UNDEFINED_API;
+		Camera& GetRenderCamera() const;
 
 		virtual void Clear() = 0;
 	protected:

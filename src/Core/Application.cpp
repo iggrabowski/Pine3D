@@ -61,7 +61,9 @@ namespace Pine {
 	void Init(WindowSettings windowSettings)
 	{
 		window = Window::Init(windowSettings);
-		renderer = Renderer::Init();
+
+		// Default API is OpenGL due to the lack of other implementations obviously lol
+		renderer = Renderer::Init(GRAPHICS_API::OPENGL_API);
 		controls = Controls::Init();
 	}
 

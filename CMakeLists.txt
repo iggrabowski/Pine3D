@@ -47,6 +47,20 @@ set(PINE3D-PLATFORM-OPENGL
 	
 source_group("Source Files/Platform/OpenGL" FILES ${PINE3D-PLATFORM-OPENGL})
 
+set(PINE3D-PLATFORM-IMGUI
+	${SRC_ROOT}/Platform/ImGui/EditorImGui.cpp
+	${SRC_ROOT}/Platform/ImGui/EditorImGui.h
+	)
+	
+source_group("Source Files/Platform/ImGui" FILES ${PINE3D-PLATFORM-IMGUI})
+
+set(PINE3D-EDITOR
+	${SRC_ROOT}/Editor/EditorGUI.cpp
+	${SRC_ROOT}/Editor/EditorGUI.h
+	)
+	
+source_group("Source Files/Editor" FILES ${PINE3D-EDITOR})
+
 set(PINE3D-RUNTIME-CAMERA
 	${SRC_ROOT}/Runtime/Camera/Camera.cpp
 	${SRC_ROOT}/Runtime/Camera/Camera.h
@@ -104,6 +118,8 @@ source_group("Source Files/Utils" FILES ${PINE3D-UTILS})
 add_executable(${PROJECT_NAME} WIN32 
 	${PINE3D-MAIN}
 	${PINE3D-CORE}
+	${PINE3D-EDITOR}
+	${PINE3D-PLATFORM-IMGUI}
 	${PINE3D-PLATFORM-OPENGL}
 	${PINE3D-RUNTIME-CAMERA}
 	${PINE3D-RUNTIME-COMPONENTS}

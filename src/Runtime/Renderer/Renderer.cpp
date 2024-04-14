@@ -6,14 +6,16 @@ namespace Pine {
 
 	//Renderer* Renderer::s_Instance = nullptr;
 	
-	Camera& Renderer::GetRenderCamera()
+	Camera& Renderer::GetRenderCamera() const
 	{
 		return *m_Camera;
 	}
 
-	UniquePtr<Renderer> Renderer::Init()
+	UniquePtr<Renderer> Renderer::Init(GRAPHICS_API API)
 	{
-		return MakeUnique<OpenGLRenderer>();
+		if (API == GRAPHICS_API::OPENGL_API) {
+			return MakeUnique<OpenGLRenderer>();
+		}
 	}
 
 }
