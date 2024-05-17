@@ -28,17 +28,17 @@ namespace Pine {
 	//}
 
 	struct WindowSettings {
-		const char* Title;
-		unsigned int Width;
-		unsigned int Height;
-		bool VSync;
+		const char* title;
+		unsigned int width;
+		unsigned int height;
+		bool vSync;
 
 		WindowSettings(
 			const char title[] = "Pine3D",
 			unsigned int width = 1200,
 			unsigned int height = 900,
 			bool vsync = true
-		) : Title(title), Width(width), Height(height), VSync(vsync) {}
+		) : title(title), width(width), height(height), vSync(vsync) {}
 	};
 
 	class Window {
@@ -47,15 +47,15 @@ namespace Pine {
 		static UniquePtr<Window> Init(const WindowSettings& windowSettings);
 		//static Window* s_Instance;
 
-		virtual Vec2i GetMousePosition() = 0;
-		virtual Vec2i GetSize() = 0;
+		virtual glm::ivec2 GetMousePosition() = 0;
+		virtual glm::ivec2 GetSize() = 0;
 		virtual void OnUpdate() = 0;
 		//virtual void Display() = 0;
 		//virtual void Sleep(float seconds) = 0;
 		virtual bool IsOpen() = 0;
 	protected:
-		WindowSettings m_Settings;
-		bool m_IsActive;
+		WindowSettings _settings;
+		bool _isActive;
 	private:
 		//static UniquePtr<Window> Create(const WindowSettings& windowSettings);
 	};

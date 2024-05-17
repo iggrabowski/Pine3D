@@ -10,13 +10,13 @@ namespace Pine {
 
 	void OpenGLRenderer::BufferMesh(Mesh& mesh, Shader& shader)
 	{
-		glGenVertexArrays(1, &mesh.m_VA);
-		glBindVertexArray(mesh.m_VA);
+		glGenVertexArrays(1, &mesh._VA);
+		glBindVertexArray(mesh._VA);
 
-		glGenBuffers(1, &mesh.m_VB);
-		glGenBuffers(1, &mesh.m_EB);
+		glGenBuffers(1, &mesh._VB);
+		glGenBuffers(1, &mesh._EB);
 
-		glBindBuffer(GL_ARRAY_BUFFER, mesh.m_VB);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh._VB);
 		size_t offset = 0;
 		std::vector<float> data;
 		unsigned int loc;
@@ -24,52 +24,52 @@ namespace Pine {
 		if (shader.GetAttributeLocation("position", loc)) {
 			glEnableVertexAttribArray(loc);
 			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh.Positions.size() * sizeof(float) * 3;
+			offset += mesh.m_positions.size() * sizeof(float) * 3;
 
-			for (unsigned int i = 0; i < mesh.Positions.size(); i++)
+			for (unsigned int i = 0; i < mesh.m_positions.size(); i++)
 			{
-				data.push_back(mesh.Positions[i].x);
-				data.push_back(mesh.Positions[i].y);
-				data.push_back(mesh.Positions[i].z);
+				data.push_back(mesh.m_positions[i].x);
+				data.push_back(mesh.m_positions[i].y);
+				data.push_back(mesh.m_positions[i].z);
 			}
 		}
-		if (mesh.TexCoords.size() > 0 && shader.GetAttributeLocation("texCoord", loc))
+		if (mesh.m_texCoords.size() > 0 && shader.GetAttributeLocation("texCoord", loc))
 		{
 			glEnableVertexAttribArray(loc);
 			glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh.TexCoords.size() * sizeof(float) * 2;
+			offset += mesh.m_texCoords.size() * sizeof(float) * 2;
 
-			for (unsigned int i = 0; i < mesh.TexCoords.size(); i++)
+			for (unsigned int i = 0; i < mesh.m_texCoords.size(); i++)
 			{
-				data.push_back(mesh.TexCoords[i].x);
-				data.push_back(mesh.TexCoords[i].y);
+				data.push_back(mesh.m_texCoords[i].x);
+				data.push_back(mesh.m_texCoords[i].y);
 			}
 		}
-		if (mesh.Normals.size() > 0 && shader.GetAttributeLocation("normal", loc))
+		if (mesh.m_normals.size() > 0 && shader.GetAttributeLocation("normal", loc))
 		{
 			glEnableVertexAttribArray(loc);
 			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh.Normals.size() * sizeof(float) * 3;
+			offset += mesh.m_normals.size() * sizeof(float) * 3;
 
-			for (unsigned int i = 0; i < mesh.Normals.size(); i++)
+			for (unsigned int i = 0; i < mesh.m_normals.size(); i++)
 			{
-				data.push_back(mesh.Normals[i].x);
-				data.push_back(mesh.Normals[i].y);
-				data.push_back(mesh.Normals[i].z);
+				data.push_back(mesh.m_normals[i].x);
+				data.push_back(mesh.m_normals[i].y);
+				data.push_back(mesh.m_normals[i].z);
 			}
 		}
 		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
 
 		// only fill the index buffer if the index array is non-empty.
-		if (mesh.Indices.size() > 0)
+		if (mesh.m_indices.size() > 0)
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_EB);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.Indices.size() * sizeof(unsigned int), &mesh.Indices[0], GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh._EB);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.m_indices.size() * sizeof(unsigned int), &mesh.m_indices[0], GL_STATIC_DRAW);
 		}
 
 		glBindVertexArray(0);
 
-		mesh.m_Buffered = true;
+		mesh._buffered = true;
 	}
 
 	OpenGLRenderer::OpenGLRenderer()
@@ -77,7 +77,7 @@ namespace Pine {
 		//s_Instance = this;
 		m_rendererAPI = GRAPHICS_API::OPENGL_API;
 
-		m_Camera = new Camera();
+		_camera = new Camera();
 
 		glewInit();
 
@@ -101,7 +101,7 @@ namespace Pine {
 
 	void OpenGLRenderer::Draw(Mesh& mesh, Material& mat)
 	{
-		if (!mesh.m_Buffered) {
+		if (!mesh._buffered) {
 			BufferMesh(mesh, *mat.m_Shader);
 		}
 
@@ -110,12 +110,12 @@ namespace Pine {
 		// here enable texturing unit
 		mat.m_Texture->Bind();
 
-		glBindVertexArray(mesh.m_VA);
+		glBindVertexArray(mesh._VA);
 
-		if (mesh.Indices.size() > 0)
-			glDrawElementsBaseVertex(GL_TRIANGLES, mesh.Indices.size(), GL_UNSIGNED_INT, 0, 0);
+		if (mesh.m_indices.size() > 0)
+			glDrawElementsBaseVertex(GL_TRIANGLES, mesh.m_indices.size(), GL_UNSIGNED_INT, 0, 0);
 		else
-			glDrawArrays(GL_TRIANGLES, 0, mesh.Positions.size());
+			glDrawArrays(GL_TRIANGLES, 0, mesh.m_positions.size());
 
 		glBindVertexArray(0);
 	}

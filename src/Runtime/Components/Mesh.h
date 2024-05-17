@@ -7,26 +7,28 @@
 #include <string>
 #include <vector>
 
+#define NUM_BUFFERS 4
+
 namespace Pine {
 
 	/*struct Vertex
 	{
 	public:
-		Vertex(const Vec3& pos, const Vec2& texCoord, const Vec3& normal)
+		Vertex(const glm::vec3& pos, const glm::vec2& texCoord, const glm::vec3& normal)
 		{
 			m_Pos = pos;
 			m_TexCoord = texCoord;
 			m_Normal = normal;
 		}
 
-		Vec3* GetPos() { return &m_Pos; }
-		Vec2* GetTexCoord() { return &m_TexCoord; }
-		Vec3* GetNormal() { return &m_Normal; }
+		glm::vec3* GetPos() { return &m_Pos; }
+		glm::vec2* GetTexCoord() { return &m_TexCoord; }
+		glm::vec3* GetNormal() { return &m_Normal; }
 
 	private:
-		Vec3 m_Pos;
-		Vec2 m_TexCoord;
-		Vec3 m_Normal;
+		glm::vec3 m_Pos;
+		glm::vec2 m_TexCoord;
+		glm::vec3 m_Normal;
 	};*/
 
 	enum MeshBufferPositions
@@ -42,16 +44,16 @@ namespace Pine {
 	class Mesh {
 		friend OpenGLRenderer;
 	public:
-		std::vector<Vec3>			Positions;
-		std::vector<Vec2>			TexCoords;
-		std::vector<Vec3>			Normals;
-		std::vector<unsigned int>	Indices;
+		std::vector<glm::vec3>			m_positions;
+		std::vector<glm::vec2>			m_texCoords;
+		std::vector<glm::vec3>			m_normals;
+		std::vector<unsigned int>		m_indices;
 
 		Mesh();
 		//Mesh(const std::string& fileName);
-		Mesh(std::vector<Vec3>& positions, std::vector<unsigned int>& indices);
-		Mesh(std::vector<Vec3>& positions, std::vector<Vec2>& uv, std::vector<unsigned int>& indices);	
-		Mesh(std::vector<Vec3>& positions, std::vector<Vec2>& uv, std::vector<Vec3>& normals, std::vector<unsigned int>& indices);
+		Mesh(std::vector<glm::vec3>& positions, std::vector<unsigned int>& indices);
+		Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<unsigned int>& indices);	
+		Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<glm::vec3>& normals, std::vector<unsigned int>& indices);
 
 		void InitMesh();
 		//void Draw();
@@ -69,12 +71,12 @@ namespace Pine {
 	protected:
 
 	private:
-		bool m_Buffered = false;
-		unsigned int	m_VA;	//unused for now
-		unsigned int	m_VB;	//unused for now
-		unsigned int	m_EB;	//unused for now
+		bool _buffered = false;
+		unsigned int	_VA;	//unused for now
+		unsigned int	_VB;	//unused for now
+		unsigned int	_EB;	//unused for now
 
-		static const unsigned int NUM_BUFFERS = 4;
+		//static const unsigned int NUM_BUFFERS = 4;
 		//void operator=(const Mesh& mesh) {}
 		//Mesh(const Mesh& mesh) {}
 

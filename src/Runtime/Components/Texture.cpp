@@ -38,9 +38,9 @@ namespace Pine {
 
 	void Texture::LoadFromImage(Image & image)
 	{
-		glGenTextures(1, &m_texture);
+		glGenTextures(1, &_texture);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glBindTexture(GL_TEXTURE_2D, _texture);
 			
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -55,12 +55,12 @@ namespace Pine {
 
     Texture::~Texture()
     {
-        glDeleteTextures(1, &m_texture);
+        glDeleteTextures(1, &_texture);
     }
 
     void Texture::Bind()
     {
-        glBindTexture(GL_TEXTURE_2D, m_texture);
+        glBindTexture(GL_TEXTURE_2D, _texture);
     }
 
     //void Texture::Update(int offsetX, int offsetY, sf::Image img_data)

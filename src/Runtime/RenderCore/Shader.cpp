@@ -12,68 +12,68 @@ namespace Pine {
     //Credit: https://github.com/JoeyDeVries/Cell/blob/master/cell/shading/shader.cpp
     Shader::Shader(std::string name, std::string vsCode, std::string fsCode)
     {
-        m_Shaders[VERTEX_SHADER] = glCreateShader(GL_VERTEX_SHADER);
-        m_Shaders[FRAGMENT_SHADER] = glCreateShader(GL_FRAGMENT_SHADER);
-        m_Program = glCreateProgram();
+        _shaders[VERTEX_SHADER] = glCreateShader(GL_VERTEX_SHADER);
+        _shaders[FRAGMENT_SHADER] = glCreateShader(GL_FRAGMENT_SHADER);
+        _program = glCreateProgram();
 
         const char* vsSourceC = vsCode.c_str();
         const char* fsSourceC = fsCode.c_str();
 
-        glShaderSource(m_Shaders[VERTEX_SHADER], 1, &vsSourceC, NULL);
-        glShaderSource(m_Shaders[FRAGMENT_SHADER], 1, &fsSourceC, NULL);
+        glShaderSource(_shaders[VERTEX_SHADER], 1, &vsSourceC, NULL);
+        glShaderSource(_shaders[FRAGMENT_SHADER], 1, &fsSourceC, NULL);
 
-        glCompileShader(m_Shaders[VERTEX_SHADER]);
-        glCompileShader(m_Shaders[FRAGMENT_SHADER]);
+        glCompileShader(_shaders[VERTEX_SHADER]);
+        glCompileShader(_shaders[FRAGMENT_SHADER]);
 
-        CheckShaderError(m_Shaders[VERTEX_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
-        CheckShaderError(m_Shaders[FRAGMENT_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
+        CheckShaderError(_shaders[VERTEX_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
+        CheckShaderError(_shaders[FRAGMENT_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
 
-        glAttachShader(m_Program, m_Shaders[VERTEX_SHADER]);
-        glAttachShader(m_Program, m_Shaders[FRAGMENT_SHADER]);
-        glLinkProgram(m_Program);
+        glAttachShader(_program, _shaders[VERTEX_SHADER]);
+        glAttachShader(_program, _shaders[FRAGMENT_SHADER]);
+        glLinkProgram(_program);
 
-        CheckShaderError(m_Program, GL_LINK_STATUS, true, "Error linking shader program");
+        CheckShaderError(_program, GL_LINK_STATUS, true, "Error linking shader program");
 
         // query the number of active uniforms and attributes
         GLint nrAttributes, nrUniforms;
-        glGetProgramiv(m_Program, GL_ACTIVE_ATTRIBUTES, &nrAttributes);
-        glGetProgramiv(m_Program, GL_ACTIVE_UNIFORMS, &nrUniforms);
-        Attributes.resize(nrAttributes);
-        Uniforms.resize(nrUniforms);
+        glGetProgramiv(_program, GL_ACTIVE_ATTRIBUTES, &nrAttributes);
+        glGetProgramiv(_program, GL_ACTIVE_UNIFORMS, &nrUniforms);
+        _attributes.resize(nrAttributes);
+        _uniforms.resize(nrUniforms);
 
         // iterate over all active attributes
         char buffer[128];
         for (int i = 0; i < nrAttributes; ++i)
         {
-            glGetActiveAttrib(m_Program, i, sizeof(buffer), 0, &Attributes[i].Size, &Attributes[i].Type, buffer);
-            Attributes[i].Name = std::string(buffer);
+            glGetActiveAttrib(_program, i, sizeof(buffer), 0, &_attributes[i].size, &_attributes[i].type, buffer);
+            _attributes[i].name = std::string(buffer);
 
-            Attributes[i].Location = glGetAttribLocation(m_Program, buffer);
+            _attributes[i].loc = glGetAttribLocation(_program, buffer);
         }
 
         // iterate over all active uniforms
         for (int i = 0; i < nrUniforms; ++i)
         {
             //GLenum glType;
-            glGetActiveUniform(m_Program, i, sizeof(buffer), 0, &Uniforms[i].Size, &Uniforms[i].Type, buffer);
-            Uniforms[i].Name = std::string(buffer);
+            glGetActiveUniform(_program, i, sizeof(buffer), 0, &_uniforms[i].size, &_uniforms[i].type, buffer);
+            _uniforms[i].name = std::string(buffer);
 
-            Uniforms[i].Location = glGetUniformLocation(m_Program, buffer);
+            _uniforms[i].loc = glGetUniformLocation(_program, buffer);
         }
     }
 
     Shader::~Shader()
     {
-        for (unsigned int i = 0; i < NUMBER_OF_SHADERS; i++)
+        for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
         {
-            glDetachShader(m_Program, m_Shaders[i]);
-            glDeleteShader(m_Shaders[i]);
+            glDetachShader(_program, _shaders[i]);
+            glDeleteShader(_shaders[i]);
         }
 
-        glDeleteProgram(m_Program);
+        glDeleteProgram(_program);
     }
 
-    void Shader::SetUniform(std::string name, Mat4& val)
+    void Shader::SetUniform(std::string name, glm::mat4& val)
     {
         int loc = GetUniformLocation(name);
         if (loc >= 0) {
@@ -81,7 +81,7 @@ namespace Pine {
         }
     }
 
-    void Shader::SetUniform(std::string name, Vec3& val)
+    void Shader::SetUniform(std::string name, glm::vec3& val)
     {
         int loc = GetUniformLocation(name);
         if (loc >= 0) {
@@ -91,20 +91,20 @@ namespace Pine {
 
     bool Shader::GetAttributeLocation(std::string name, unsigned int& outLoc)
     {
-        for (unsigned int i = 0; i < Attributes.size(); ++i)
+        for (unsigned int i = 0; i < _attributes.size(); ++i)
         {
-            if (Attributes[i].Name == name) {
-                outLoc =  Attributes[i].Location;
+            if (_attributes[i].name == name) {
+                outLoc =  _attributes[i].loc;
                 return true;
             }
         }
-        std::cout << "ERROR: Attribute: \"" << name << "\" not found in the program " << m_Program << std::endl;
+        std::cout << "ERROR: Attribute: \"" << name << "\" not found in the program " << _program << std::endl;
         return false;
     }
 
     void Shader::Bind()
     {
-        glUseProgram(m_Program);
+        glUseProgram(_program);
     }
 
     Shader* Shader::LoadShaders(const std::string& fileName)
@@ -167,12 +167,12 @@ namespace Pine {
     int Shader::GetUniformLocation(std::string name)
     {
         // read from uniform/attribute array as originally obtained from OpenGL
-        for (unsigned int i = 0; i < Uniforms.size(); ++i)
+        for (unsigned int i = 0; i < _uniforms.size(); ++i)
         {
-            if (Uniforms[i].Name == name)
-                return Uniforms[i].Location;
+            if (_uniforms[i].name == name)
+                return _uniforms[i].loc;
         }
-        std::cout << "ERROR: Uniform: \"" << name << "\" not found in the program " << m_Program << std::endl;
+        std::cout << "ERROR: Uniform: \"" << name << "\" not found in the program " << _program << std::endl;
         return -1;
     }
 }

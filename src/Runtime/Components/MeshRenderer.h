@@ -13,8 +13,8 @@ namespace Pine {
 
 		void OnUpdate() override;
 	private:
-		Mesh* m_Mesh;
-		Material* m_Material;
+		Mesh* _mesh;
+		Material* _material;
 	};
 
 }

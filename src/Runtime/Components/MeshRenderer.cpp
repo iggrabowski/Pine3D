@@ -9,37 +9,37 @@ namespace Pine {
 	MeshRenderer::MeshRenderer()
 	{
 		m_Transform = new Transform();
-		m_Mesh = new Cube();
-		m_Material = new Material();
+		_mesh = new Cube();
+		_material = new Material();
 	}
 
 	MeshRenderer::~MeshRenderer() {
-		delete m_Material;
+		delete _material;
 		delete m_Transform;
-		delete m_Mesh;
+		delete _mesh;
 	}
 
 	void MeshRenderer::OnUpdate()
 	{
 		m_Transform->UpdateModel();
 
-		m_Material->OnUpdate();
+		_material->OnUpdate();
 
 		//m_Mesh->Draw();
 
 		m_Transform->UpdateModel();
 
-		m_Material->m_Shader->Bind();
-		Mat4 model = m_Transform->GetModel();
-		m_Material->m_Shader->SetUniform("Model", model);
+		_material->m_Shader->Bind();
+		glm::mat4 model = m_Transform->GetModel();
+		_material->m_Shader->SetUniform("Model", model);
 
-		Mat4 MVP = renderer->GetRenderCamera().GetViewProjection() * model;
-		m_Material->m_Shader->SetUniform("MVP", MVP);
+		glm::mat4 MVP = renderer->GetRenderCamera().GetViewProjection() * model;
+		_material->m_Shader->SetUniform("MVP", MVP);
 
-		Vec3 lightDir(0.5, 0.5, 1.0);
-		m_Material->m_Shader->SetUniform("lightDirection", lightDir);
+		glm::vec3 lightDir(0.5, 0.5, 1.0);
+		_material->m_Shader->SetUniform("lightDirection", lightDir);
 
-		renderer->Draw(*m_Mesh, *m_Material);
+		renderer->Draw(*_mesh, *_material);
 	}
 
 }

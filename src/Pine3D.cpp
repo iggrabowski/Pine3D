@@ -15,19 +15,16 @@ int main(void)
 
 
 	///* ADD POLYGON TO THE SCENE */
-	//std::vector<Pine::Vec2> vs;
-	//vs.push_back(Pine::Vec2( 0.5f, -0.5f));
-	//vs.push_back(Pine::Vec2( 0.5f,  0.5f));
-	//vs.push_back(Pine::Vec2(-0.5f,  0.5f));
-	//vs.push_back(Pine::Vec2(-0.5f, -0.5f));
+	//std::vector<Pine::glm::vec2> vs;
+	//vs.push_back(Pine::glm::vec2( 0.5f, -0.5f));
+	//vs.push_back(Pine::glm::vec2( 0.5f,  0.5f));
+	//vs.push_back(Pine::glm::vec2(-0.5f,  0.5f));
+	//vs.push_back(Pine::glm::vec2(-0.5f, -0.5f));
 
 	//Pine::Polygon pl(vs);
 	//Pine::sceneObjects.push_back(&pl);
 
-	//MAIN LOOP
-	while (Pine::window->IsOpen()) {
-		Pine::UpdateFrame();
-	}
+	Pine::Run();
 
     return 0;
 }

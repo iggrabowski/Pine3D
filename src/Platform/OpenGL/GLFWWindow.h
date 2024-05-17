@@ -18,8 +18,8 @@ namespace Pine {
 		GLFWWindow(const WindowSettings& windowSettings);
 		~GLFWWindow();
 
-		Vec2i GetMousePosition() override;
-		Vec2i GetSize() override;
+		glm::ivec2 GetMousePosition() override;
+		glm::ivec2 GetSize() override;
 		void OnUpdate() override;
 
 		//void Init() override;
@@ -28,9 +28,10 @@ namespace Pine {
 
 		bool IsOpen() override;
 	private:
-		GLFWwindow* m_Window;
+		GLFWwindow* _window;
+
 		//sf::RenderWindow* m_Window;
-		Vec2 m_LastMousePosition;
+		glm::vec2 _LastMousePosition;
 
 		void HandleEvents();
 	};

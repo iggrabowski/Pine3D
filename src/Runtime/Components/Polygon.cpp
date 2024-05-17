@@ -3,9 +3,9 @@
 
 namespace Pine {
 
-	Polygon::Polygon(std::vector<Vec2> points)
+	Polygon::Polygon(std::vector<glm::vec2> points)
 	{
-		m_Points = points;
+		_points = points;
 	}
 
 	void Polygon::OnUpdate()
@@ -13,7 +13,7 @@ namespace Pine {
 		// TODO: move OpenGL code to OpenGL renderer
 		glBegin(GL_TRIANGLE_FAN);
 
-		for each(auto& point in m_Points) {
+		for each(auto& point in _points) {
 			glVertex2f(point.x, point.y);
 		}
 

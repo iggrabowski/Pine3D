@@ -11,15 +11,15 @@ namespace Pine {
 	{
 		VERTEX_SHADER,
 		FRAGMENT_SHADER,
-		NUMBER_OF_SHADERS
+		NUM_OF_SHADERS
 	};
 
 	struct ShaderVariable
 	{
-		unsigned int	Type;
-		std::string		Name;
-		int				Size;
-		unsigned int	Location;
+		unsigned int	type;
+		std::string		name;
+		int				size;
+		unsigned int	loc;
 	};
 
 	class Shader
@@ -30,15 +30,15 @@ namespace Pine {
 
 		void Bind();
 
-		void SetUniform(std::string name, Vec3& val);
-		void SetUniform(std::string name, Mat4& val);
+		void SetUniform(std::string name, glm::vec3& val);
+		void SetUniform(std::string name, glm::mat4& val);
 		bool GetAttributeLocation(std::string name, unsigned int& outLoc);
 
 		static Shader* LoadShaders(const std::string& fileName);
 	protected:
 	private:
-		std::vector<ShaderVariable>	Uniforms;
-		std::vector<ShaderVariable>	Attributes;
+		std::vector<ShaderVariable>	_uniforms;
+		std::vector<ShaderVariable>	_attributes;
 
 		static void ReadShader(const std::string fileName, std::string& outCode);
 
@@ -46,8 +46,8 @@ namespace Pine {
 
 		int GetUniformLocation(std::string name);
 
-		GLuint m_Program;
-		GLuint m_Shaders[NUMBER_OF_SHADERS];
+		GLuint _program;
+		GLuint _shaders[NUM_OF_SHADERS];
 	};
 
 }

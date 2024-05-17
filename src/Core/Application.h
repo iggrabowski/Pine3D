@@ -2,7 +2,7 @@
 #include "Core/Window.h"
 #include "Runtime/Renderer/Renderer.h"
 #include "Runtime/Scene/SceneObject.h"
-#include "Core/Controls.h"
+#include "Core/InputHandler.h"
 #include "Runtime/Components/MeshRenderer.h"
 #include "Utils/Utils.h"
 #include "Runtime/Components/Polygon.h"
@@ -12,10 +12,11 @@ namespace Pine {
 
 	extern UniquePtr<Window> window;
 	extern UniquePtr<Renderer> renderer;
-	extern UniquePtr<Controls> controls;
+	extern UniquePtr<InputHandler> inputHandler;
 
 	extern Vector<SceneObject*> sceneObjects;
 
+	int Run();
 	void UpdateFrame();
 
 	void Init(WindowSettings windowSettings = WindowSettings());

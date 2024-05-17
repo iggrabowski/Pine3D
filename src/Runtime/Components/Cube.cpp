@@ -5,104 +5,104 @@ namespace Pine {
 
 	Cube::Cube()
 	{
-		Positions = std::vector<Vec3> {
-			Vec3(-1, -1, -1),
-			Vec3(-1, 1, -1),
-			Vec3(1, 1, -1),
-			Vec3(1, -1, -1),
+		m_positions = std::vector<glm::vec3> {
+			glm::vec3(-1, -1, -1),
+			glm::vec3(-1, 1, -1),
+			glm::vec3(1, 1, -1),
+			glm::vec3(1, -1, -1),
 
-			Vec3(-1, -1, 1),
-			Vec3(-1, 1, 1),
-			Vec3(1, 1, 1),
-			Vec3(1, -1, 1),
+			glm::vec3(-1, -1, 1),
+			glm::vec3(-1, 1, 1),
+			glm::vec3(1, 1, 1),
+			glm::vec3(1, -1, 1),
 
-			Vec3(-1, -1, -1),
-			Vec3(-1, -1, 1),
-			Vec3(1, -1, 1),
-			Vec3(1, -1, -1),
+			glm::vec3(-1, -1, -1),
+			glm::vec3(-1, -1, 1),
+			glm::vec3(1, -1, 1),
+			glm::vec3(1, -1, -1),
 
-			Vec3(-1, 1, -1),
-			Vec3(-1, 1, 1),
-			Vec3(1, 1, 1),
-			Vec3(1, 1, -1),
+			glm::vec3(-1, 1, -1),
+			glm::vec3(-1, 1, 1),
+			glm::vec3(1, 1, 1),
+			glm::vec3(1, 1, -1),
 
-			Vec3(-1, -1, -1),
-			Vec3(-1, -1, 1),
-			Vec3(-1, 1, 1),
-			Vec3(-1, 1, -1),
+			glm::vec3(-1, -1, -1),
+			glm::vec3(-1, -1, 1),
+			glm::vec3(-1, 1, 1),
+			glm::vec3(-1, 1, -1),
 
-			Vec3(1, -1, -1),
-			Vec3(1, -1, 1),
-			Vec3(1, 1, 1),
-			Vec3(1, 1, -1)
+			glm::vec3(1, -1, -1),
+			glm::vec3(1, -1, 1),
+			glm::vec3(1, 1, 1),
+			glm::vec3(1, 1, -1)
 		};
 
-		TexCoords = std::vector<Vec2>{
-			Vec2(1, 0),
-			Vec2(0, 0),
-			Vec2(0, 1),
-			Vec2(1, 1),
+		m_texCoords = std::vector<glm::vec2>{
+			glm::vec2(1, 0),
+			glm::vec2(0, 0),
+			glm::vec2(0, 1),
+			glm::vec2(1, 1),
 
-			Vec2(1, 0),
-			Vec2(0, 0),
-			Vec2(0, 1),
-			Vec2(1, 1),
+			glm::vec2(1, 0),
+			glm::vec2(0, 0),
+			glm::vec2(0, 1),
+			glm::vec2(1, 1),
 
-			Vec2(0, 1),
-			Vec2(1, 1),
-			Vec2(1, 0),
-			Vec2(0, 0),
+			glm::vec2(0, 1),
+			glm::vec2(1, 1),
+			glm::vec2(1, 0),
+			glm::vec2(0, 0),
 
-			Vec2(0, 1),
-			Vec2(1, 1),
-			Vec2(1, 0),
-			Vec2(0, 0),
+			glm::vec2(0, 1),
+			glm::vec2(1, 1),
+			glm::vec2(1, 0),
+			glm::vec2(0, 0),
 
-			Vec2(1, 1),
-			Vec2(1, 0),
-			Vec2(0, 0),
-			Vec2(0, 1),
+			glm::vec2(1, 1),
+			glm::vec2(1, 0),
+			glm::vec2(0, 0),
+			glm::vec2(0, 1),
 
-			Vec2(1, 1),
-			Vec2(1, 0),
-			Vec2(0, 0),
-			Vec2(0, 1)
+			glm::vec2(1, 1),
+			glm::vec2(1, 0),
+			glm::vec2(0, 0),
+			glm::vec2(0, 1)
 		};
 
-		Normals = std::vector<Vec3>{
-			Vec3(0, 0, -1),
-			Vec3(0, 0, -1),
-			Vec3(0, 0, -1),
-			Vec3(0, 0, -1),
+		m_normals = std::vector<glm::vec3>{
+			glm::vec3(0, 0, -1),
+			glm::vec3(0, 0, -1),
+			glm::vec3(0, 0, -1),
+			glm::vec3(0, 0, -1),
 
-			Vec3(0, 0, 1),
-			Vec3(0, 0, 1),
-			Vec3(0, 0, 1),
-			Vec3(0, 0, 1),
+			glm::vec3(0, 0, 1),
+			glm::vec3(0, 0, 1),
+			glm::vec3(0, 0, 1),
+			glm::vec3(0, 0, 1),
 
-			Vec3(0, -1, 0),
-			Vec3(0, -1, 0),
-			Vec3(0, -1, 0),
-			Vec3(0, -1, 0),
+			glm::vec3(0, -1, 0),
+			glm::vec3(0, -1, 0),
+			glm::vec3(0, -1, 0),
+			glm::vec3(0, -1, 0),
 
-			Vec3(0, 1, 0),
-			Vec3(0, 1, 0),
-			Vec3(0, 1, 0),
-			Vec3(0, 1, 0),
+			glm::vec3(0, 1, 0),
+			glm::vec3(0, 1, 0),
+			glm::vec3(0, 1, 0),
+			glm::vec3(0, 1, 0),
 
-			Vec3(-1, 0, 0),
-			Vec3(-1, 0, 0),
-			Vec3(-1, 0, 0),
-			Vec3(-1, 0, 0),
+			glm::vec3(-1, 0, 0),
+			glm::vec3(-1, 0, 0),
+			glm::vec3(-1, 0, 0),
+			glm::vec3(-1, 0, 0),
 
-			Vec3(1, 0, 0),
-			Vec3(1, 0, 0),
-			Vec3(1, 0, 0),
-			Vec3(1, 0, 0)
+			glm::vec3(1, 0, 0),
+			glm::vec3(1, 0, 0),
+			glm::vec3(1, 0, 0),
+			glm::vec3(1, 0, 0)
 		};
 	
 
-		Indices = std::vector<unsigned int> { 
+		m_indices = std::vector<unsigned int> { 
 			0, 1, 2,
 			0, 2, 3,
 

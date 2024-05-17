@@ -7,7 +7,7 @@ namespace Pine {
 
 	UniquePtr<Window> window;
 	UniquePtr<Renderer> renderer;
-	UniquePtr<Controls> controls;
+	UniquePtr<InputHandler> inputHandler;
 
 	Vector<SceneObject*> sceneObjects;
 
@@ -20,6 +20,15 @@ namespace Pine {
 		}
 		return s_Instance;
 	}*/
+
+	int Run()
+	{
+		//MAIN LOOP
+		while (window->IsOpen()) {
+			UpdateFrame();
+		}
+		return 0;
+	}
 
 	void UpdateFrame()
 	{
@@ -64,7 +73,7 @@ namespace Pine {
 
 		// Default API is OpenGL due to the lack of other implementations obviously lol
 		renderer = Renderer::Init(GRAPHICS_API::OPENGL_API);
-		controls = Controls::Init();
+		inputHandler = InputHandler::Init();
 	}
 
 }

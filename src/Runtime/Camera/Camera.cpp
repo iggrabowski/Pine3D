@@ -18,22 +18,22 @@ namespace Pine {
 		return LookAt(m_Pos, m_Pos + m_Direction, up);
 	}
 
-	Vec3 Camera::GetPos() const
+	glm::vec3 Camera::GetPos() const
 	{
 		return m_Pos;
 	}
 
-	Vec3 Camera::GetDirection() const
+	glm::vec3 Camera::GetDirection() const
 	{
 		return m_Direction;
 	}
 
-	void Camera::SetPos(Vec3 pos)
+	void Camera::SetPos(glm::vec3 pos)
 	{
 		m_Pos = pos;
 	}
 
-	void Camera::SetDirection(Vec3 direction)
+	void Camera::SetDirection(glm::vec3 direction)
 	{
 		m_Direction = direction;
 	}

@@ -8,7 +8,7 @@ namespace Pine {
 	
 	Camera& Renderer::GetRenderCamera() const
 	{
-		return *m_Camera;
+		return *_camera;
 	}
 
 	UniquePtr<Renderer> Renderer::Init(GRAPHICS_API API)

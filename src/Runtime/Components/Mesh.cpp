@@ -22,25 +22,25 @@ namespace Pine {
 		Mesh::InitMesh(*this->model);
 	}*/
 
-	Mesh::Mesh(std::vector<Vec3>& positions, std::vector<unsigned int>& indices)
+	Mesh::Mesh(std::vector<glm::vec3>& positions, std::vector<unsigned int>& indices)
 	{
-		Positions = positions;
-		Indices = indices;
+		m_positions = positions;
+		m_indices = indices;
 	}
 
-	Mesh::Mesh(std::vector<Vec3>& positions, std::vector<Vec2>& uv, std::vector<unsigned int>& indices)
+	Mesh::Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<unsigned int>& indices)
 	{
-		Positions = positions;
-		TexCoords = uv;
-		Indices = indices;
+		m_positions = positions;
+		m_texCoords = uv;
+		m_indices = indices;
 	}
 
-	Mesh::Mesh(std::vector<Vec3>& positions, std::vector<Vec2>& uv, std::vector<Vec3>& normals, std::vector<unsigned int>& indices)
+	Mesh::Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<glm::vec3>& normals, std::vector<unsigned int>& indices)
 	{
-		Positions = positions;
-		TexCoords = uv;
-		Normals = normals;
-		Indices = indices;
+		m_positions = positions;
+		m_texCoords = uv;
+		m_normals = normals;
+		m_indices = indices;
 	}
 
 	void Mesh::InitMesh()
@@ -55,26 +55,26 @@ namespace Pine {
 		glGenBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[POSITION_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Positions[0]) * Positions.size(), &Positions[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_positions[0]) * m_positions.size(), &m_positions[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[TEXCOORD_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(TexCoords[0]) * TexCoords.size(), &TexCoords[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_texCoords[0]) * m_texCoords.size(), &m_texCoords[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[NORMAL_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Normals[0]) * Normals.size(), &Normals[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_normals[0]) * m_normals.size(), &m_normals[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDEX_VB]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices[0]) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices[0]) * m_indices.size(), &m_indices[0], GL_STATIC_DRAW);
 
 		glBindVertexArray(0);
 
-		m_Buffered = true;
+		_buffered = true;
 	}
 
 	/*Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices)

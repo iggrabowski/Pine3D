@@ -32,8 +32,8 @@ set(PINE3D-CORE
 	${SRC_ROOT}/Core/Sfsf.h
 	${SRC_ROOT}/Core/Window.cpp
 	${SRC_ROOT}/Core/Window.h
-	${SRC_ROOT}/Core/Controls.cpp
-	${SRC_ROOT}/Core/Controls.h
+	${SRC_ROOT}/Core/InputHandler.cpp
+	${SRC_ROOT}/Core/InputHandler.h
 	)
 	
 source_group("Source Files/Core" FILES ${PINE3D-CORE})

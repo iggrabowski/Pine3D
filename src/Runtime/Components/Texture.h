@@ -26,6 +26,7 @@ namespace Pine {
 	private:
 		void operator=(const Texture& texture) {}
 
-		GLuint m_texture;
+		//TODO: make the texture more abstract, this relies on openGL standard
+		unsigned int _texture;
 	};
 }

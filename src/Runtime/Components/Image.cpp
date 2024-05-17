@@ -24,6 +24,6 @@ const void * Pine::Image::getPixelsPtr()
 bool Pine::Image::Create(const char * path)
 {
 	// TODO: figure out how to return false if file not loaded
-	m_bytes = stbi_load(path, &m_width, &m_height, &m_numColorCh, 0);
+	m_bytes = stbi_load(path, &_width, &_height, &_numColorCh, 0);
 	return true;
 }
