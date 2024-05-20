@@ -3,14 +3,13 @@
 #include "Runtime/Camera/Camera.h"
 #include "Utils/Utils.h"
 #include "Core/Window.h"
-
-#include <Windows.h>
+#include "Core/KeyCodes.h"
+#include "Runtime/Components/InputListener.h"
 #include <map>
 
 namespace Pine {
-
 	//extern class Application;
-
+	
 	class InputHandler {
 		//friend class Application;
 	public:
@@ -25,12 +24,15 @@ namespace Pine {
 		void MoveRight();
 		void MoveUp();
 		void MoveDown();
+
+		std::vector<InputListener*> m_Listeners;
+		void AddListener(InputListener* listener);
+		void RemoveListener(InputListener* listener);
 	private:
-		unsigned char _keyStates[256] = {};
-		unsigned char _prevKeyStates[256] = {};
-
+		//int _keyStates[99] = {};
+		//int _keyStatesPrev[99] = {};
 		//std::map<unsigned char, void*()> keyMappings;
-
+		bool _initialized = false;
 		float _zoomPerScroll;
 		float _moveSpeed;
 		float _directionSpeedX;

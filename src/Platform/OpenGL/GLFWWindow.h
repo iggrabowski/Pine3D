@@ -21,6 +21,9 @@ namespace Pine {
 		glm::ivec2 GetMousePosition() override;
 		glm::ivec2 GetSize() override;
 		void OnUpdate() override;
+		GLFWwindow* GetWindow() {
+			return _window;
+		};
 
 		//void Init() override;
 		//void Sleep(float seconds) override;

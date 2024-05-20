@@ -1,9 +1,11 @@
 #pragma once
 #include "Utils/Utils.h"
+//#include "Runtime/Scene/SceneObject.h"
+#include "Runtime/Components/Component.h"
 
 namespace Pine {
 
-	class Camera/* : public SceneObject*/ {
+	class Camera : Component{
 	public:
 		Camera(const glm::vec3& pos = glm::vec3(2.0f, 2.0f, -5.0f),
 			float fov = 70.0f,

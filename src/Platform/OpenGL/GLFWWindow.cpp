@@ -5,29 +5,6 @@
 
 namespace Pine {
 
-	void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-		//--------------CONTROLS--------------//
-		if (key == GLFW_KEY_A && action == GLFW_PRESS)
-		{
-			inputHandler->MoveLeft();
-		}
-
-		if (key == GLFW_KEY_D && action == GLFW_PRESS)
-		{
-			inputHandler->MoveRight();
-		}
-
-		if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		{
-			inputHandler->MoveUp();
-		}
-
-		if (key == GLFW_KEY_S && action == GLFW_PRESS)
-		{
-			inputHandler->MoveDown();
-		}
-	}
-
 	GLFWWindow::GLFWWindow(const WindowSettings& windowSettings)
 	{
 		_settings = windowSettings;
@@ -59,8 +36,6 @@ namespace Pine {
 		);
 
 		glfwMakeContextCurrent(_window);
-
-		glfwSetKeyCallback(_window, KeyCallback);
 	}
 
 	GLFWWindow::~GLFWWindow()

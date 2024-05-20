@@ -10,7 +10,7 @@
 
 namespace Pine {
 
-	extern UniquePtr<Window> window;
+	extern UniquePtr<GLFWWindow> window;
 	extern UniquePtr<Renderer> renderer;
 	extern UniquePtr<InputHandler> inputHandler;
 

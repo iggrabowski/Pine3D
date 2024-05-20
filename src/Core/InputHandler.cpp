@@ -1,9 +1,23 @@
 #pragma once
 #include "Core/InputHandler.h"
 #include "Core/Application.h"
+#include <stdio.h>
 
 namespace Pine {
 
+    void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+        //--------------CONTROLS--------------//
+        //std::cout << "Button " << key << " pressed" << std::endl;
+        for (const auto& i : inputHandler->m_Listeners) {
+            if (action == GLFW_RELEASE) {
+                i->OnInput(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_RELEASE);
+            }
+            else if (action == GLFW_PRESS)
+                i->OnInput(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_PRESS);
+            //else if (GLFW_REPEAT)
+            //    i->first->OnInput(i->second, KeyAction::KEY_REPEAT);
+        }
+    }
     InputHandler::InputHandler()
     {
         //this->alreadyScrolled = false;
@@ -20,21 +34,11 @@ namespace Pine {
 
     void InputHandler::OnUpdate()
     {
-        if (::GetKeyboardState(_keyStates))
-        {
-            for (unsigned int i = 0; i < 256; i++)
-            {
-                if (_keyStates[i] & 0x80) // key down
-                { 
-
-                }
-                else // key down
-                { 
-
-                }
-            }
-            ::memcpy(_prevKeyStates, _keyStates, sizeof(unsigned char)*256);
+        if (!_initialized) {
+            glfwSetKeyCallback(window->GetWindow(), KeyCallback);
+            _initialized = true;
         }
+        glfwPollEvents();
     }
 
     void InputHandler::Zoom(int delta)
@@ -85,6 +89,22 @@ namespace Pine {
     void InputHandler::MoveDown()
     {
         MoveInDirection(-renderer->GetRenderCamera().up);
+    }
+
+    void InputHandler::AddListener(InputListener* listener)
+    {
+        auto i = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
+        if (i == m_Listeners.end())
+            m_Listeners.push_back(listener);
+        else {};
+            // Listener already registered
+    }
+
+    void InputHandler::RemoveListener(InputListener* listener)
+    {
+        auto i = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
+        if (i != m_Listeners.end())
+            m_Listeners.erase(i);
     }
 
     void InputHandler::MoveInDirection(glm::vec3 direction)

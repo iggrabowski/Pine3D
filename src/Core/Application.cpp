@@ -5,7 +5,7 @@
 
 namespace Pine {
 
-	UniquePtr<Window> window;
+	UniquePtr<GLFWWindow> window;
 	UniquePtr<Renderer> renderer;
 	UniquePtr<InputHandler> inputHandler;
 
@@ -47,12 +47,15 @@ namespace Pine {
 
 		//controls.Update(transform, event);
 
+		inputHandler->OnUpdate();
+
 		// Run update function on every scene object.
 		for (unsigned int i = 0; i < sceneObjects.size(); i++) {
 			sceneObjects[i]->OnUpdate();
 		}
 
 		window->OnUpdate();
+
 
 		//window->Display();
 		//window->Sleep(0.02f);
@@ -69,7 +72,7 @@ namespace Pine {
 
 	void Init(WindowSettings windowSettings)
 	{
-		window = Window::Init(windowSettings);
+		window = MakeUnique<GLFWWindow>(windowSettings);;
 
 		// Default API is OpenGL due to the lack of other implementations obviously lol
 		renderer = Renderer::Init(GRAPHICS_API::OPENGL_API);
