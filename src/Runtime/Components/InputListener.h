@@ -17,7 +17,7 @@ namespace Pine {
 
 	class InputListener {
 	public:
-		virtual void OnInput(InputType type, KeyCode key, KeyAction action) = 0;
+		virtual void OnInputAction(InputType type, KeyCode key, KeyAction action) = 0;
 
 	protected:
 		InputListener();

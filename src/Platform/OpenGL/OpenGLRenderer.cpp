@@ -1,5 +1,6 @@
 #pragma once
 #include "Platform/OpenGL/OpenGLRenderer.h"
+#include "Core/Application.h"
 
 namespace Pine {
 	
@@ -77,7 +78,10 @@ namespace Pine {
 		//s_Instance = this;
 		m_rendererAPI = GRAPHICS_API::OPENGL_API;
 
-		_camera = new Camera();
+		//if in editor
+		_camera = editor->GetCamera();
+
+		//_camera = new Camera();
 
 		glewInit();
 

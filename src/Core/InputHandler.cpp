@@ -1,19 +1,19 @@
 #pragma once
 #include "Core/InputHandler.h"
 #include "Core/Application.h"
-#include <stdio.h>
+//#include <stdio.h>
 
 namespace Pine {
 
     void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
         //--------------CONTROLS--------------//
         //std::cout << "Button " << key << " pressed" << std::endl;
-        for (const auto& i : inputHandler->m_Listeners) {
+        for (const auto& i : inputHandler->GetListeners()) {
             if (action == GLFW_RELEASE) {
-                i->OnInput(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_RELEASE);
+                i->OnInputAction(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_RELEASE);
             }
             else if (action == GLFW_PRESS)
-                i->OnInput(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_PRESS);
+                i->OnInputAction(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_PRESS);
             //else if (GLFW_REPEAT)
             //    i->first->OnInput(i->second, KeyAction::KEY_REPEAT);
         }
@@ -65,54 +65,31 @@ namespace Pine {
         //camera.SetDirection(vec3);
     }
 
-    void InputHandler::MoveLeft()
-    {
-        glm::vec3 moveDir = -glm::normalize(
-            Cross(renderer->GetRenderCamera().GetDirection(), renderer->GetRenderCamera().up)
-        );
-        MoveInDirection(moveDir);
-    }
-
-    void InputHandler::MoveRight()
-    {
-        glm::vec3 moveDir = glm::normalize(
-            Cross(renderer->GetRenderCamera().GetDirection(), renderer->GetRenderCamera().up)
-        );
-        MoveInDirection(moveDir);
-    }
-
-    void InputHandler::MoveUp()
-    {
-        MoveInDirection(renderer->GetRenderCamera().up);
-    }
-
-    void InputHandler::MoveDown()
-    {
-        MoveInDirection(-renderer->GetRenderCamera().up);
-    }
-
     void InputHandler::AddListener(InputListener* listener)
     {
-        auto i = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
-        if (i == m_Listeners.end())
-            m_Listeners.push_back(listener);
+        auto i = std::find(_listeners.begin(), _listeners.end(), listener);
+        if (i == _listeners.end())
+            _listeners.push_back(listener);
         else {};
             // Listener already registered
     }
 
     void InputHandler::RemoveListener(InputListener* listener)
     {
-        auto i = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
-        if (i != m_Listeners.end())
-            m_Listeners.erase(i);
+        auto i = std::find(_listeners.begin(), _listeners.end(), listener);
+        if (i != _listeners.end())
+            _listeners.erase(i);
     }
 
-    void InputHandler::MoveInDirection(glm::vec3 direction)
+    bool InputHandler::IsKeyPressed(KeyCode keyCode)
     {
-        Camera& camera = renderer->GetRenderCamera();
-        glm::vec3 pos = camera.GetPos();
+        int state = glfwGetKey(window->GetWindow(), keyCode);
 
-        camera.SetPos(pos + direction * _moveSpeed);
+        if (state == GLFW_PRESS) {
+            return true;
+        }
+
+        return false;
     }
 
 }

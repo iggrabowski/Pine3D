@@ -6,9 +6,13 @@
 #include "Runtime/Components/MeshRenderer.h"
 #include "Utils/Utils.h"
 #include "Runtime/Components/Polygon.h"
+#include "Editor/Editor.h"
 
 
 namespace Pine {
+	
+	//If in editor
+	extern UniquePtr<Editor> editor;
 
 	extern UniquePtr<GLFWWindow> window;
 	extern UniquePtr<Renderer> renderer;

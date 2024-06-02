@@ -29,11 +29,12 @@ source_group("Source Files" FILES ${PINE3D-MAIN})
 set(PINE3D-CORE
 	${SRC_ROOT}/Core/Application.cpp
 	${SRC_ROOT}/Core/Application.h
+	${SRC_ROOT}/Core/InputHandler.cpp
+	${SRC_ROOT}/Core/InputHandler.h
+	${SRC_ROOT}/Core/KeyCodes.h
 	${SRC_ROOT}/Core/Sfsf.h
 	${SRC_ROOT}/Core/Window.cpp
 	${SRC_ROOT}/Core/Window.h
-	${SRC_ROOT}/Core/InputHandler.cpp
-	${SRC_ROOT}/Core/InputHandler.h
 	)
 	
 source_group("Source Files/Core" FILES ${PINE3D-CORE})
@@ -57,6 +58,8 @@ source_group("Source Files/Platform/ImGui" FILES ${PINE3D-PLATFORM-IMGUI})
 set(PINE3D-EDITOR
 	${SRC_ROOT}/Editor/EditorGUI.cpp
 	${SRC_ROOT}/Editor/EditorGUI.h
+	${SRC_ROOT}/Editor/Editor.cpp
+	${SRC_ROOT}/Editor/Editor.h
 	)
 	
 source_group("Source Files/Editor" FILES ${PINE3D-EDITOR})
@@ -69,10 +72,13 @@ set(PINE3D-RUNTIME-CAMERA
 source_group("Source Files/Runtime/Camera" FILES ${PINE3D-RUNTIME-CAMERA})
 
 set(PINE3D-RUNTIME-COMPONENTS
+	${SRC_ROOT}/Runtime/Components/Component.h
 	${SRC_ROOT}/Runtime/Components/Cube.cpp
 	${SRC_ROOT}/Runtime/Components/Cube.h
 	${SRC_ROOT}/Runtime/Components/Image.cpp
 	${SRC_ROOT}/Runtime/Components/Image.h
+	${SRC_ROOT}/Runtime/Components/InputListener.cpp
+	${SRC_ROOT}/Runtime/Components/InputListener.h
 	${SRC_ROOT}/Runtime/Components/Material.cpp
 	${SRC_ROOT}/Runtime/Components/Material.h
 	${SRC_ROOT}/Runtime/Components/Mesh.cpp

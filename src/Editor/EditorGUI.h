@@ -6,7 +6,7 @@ namespace Pine {
 	class EditorGUI {
 
 	public:
-		static std::unique_ptr<EditorGUI> Init();
+		//static std::unique_ptr<EditorGUI> Init();
 	};
 
 }

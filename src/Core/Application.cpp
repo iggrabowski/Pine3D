@@ -5,6 +5,9 @@
 
 namespace Pine {
 
+	//If in Editor
+	UniquePtr<Editor> editor;
+
 	UniquePtr<GLFWWindow> window;
 	UniquePtr<Renderer> renderer;
 	UniquePtr<InputHandler> inputHandler;
@@ -49,6 +52,8 @@ namespace Pine {
 
 		inputHandler->OnUpdate();
 
+		editor->OnUpdate();
+
 		// Run update function on every scene object.
 		for (unsigned int i = 0; i < sceneObjects.size(); i++) {
 			sceneObjects[i]->OnUpdate();
@@ -72,11 +77,15 @@ namespace Pine {
 
 	void Init(WindowSettings windowSettings)
 	{
-		window = MakeUnique<GLFWWindow>(windowSettings);;
+		window = MakeUnique<GLFWWindow>(windowSettings);
+
+		inputHandler = InputHandler::Init();
+
+		//If in editor
+		editor = Editor::Init();
 
 		// Default API is OpenGL due to the lack of other implementations obviously lol
 		renderer = Renderer::Init(GRAPHICS_API::OPENGL_API);
-		inputHandler = InputHandler::Init();
 	}
 
 }

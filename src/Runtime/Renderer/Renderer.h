@@ -27,8 +27,7 @@ namespace Pine {
 
 		virtual void Clear() = 0;
 	protected:
-		Camera* _camera
-			;
+		Camera* _camera;
 	};
 
 }

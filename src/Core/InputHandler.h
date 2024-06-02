@@ -25,13 +25,17 @@ namespace Pine {
 		void MoveUp();
 		void MoveDown();
 
-		std::vector<InputListener*> m_Listeners;
 		void AddListener(InputListener* listener);
 		void RemoveListener(InputListener* listener);
+
+		bool IsKeyPressed(KeyCode keyCode);
+
+		std::vector<InputListener*>& GetListeners() { return _listeners; };
 	private:
 		//int _keyStates[99] = {};
 		//int _keyStatesPrev[99] = {};
-		//std::map<unsigned char, void*()> keyMappings;
+		std::map<KeyCode, bool> _keyStates;
+		std::vector<InputListener*> _listeners;
 		bool _initialized = false;
 		float _zoomPerScroll;
 		float _moveSpeed;
