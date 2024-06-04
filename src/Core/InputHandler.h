@@ -20,15 +20,12 @@ namespace Pine {
 
 		void Zoom(int delta);
 		void ChangeDirection(int x, int y);
-		void MoveLeft();
-		void MoveRight();
-		void MoveUp();
-		void MoveDown();
 
 		void AddListener(InputListener* listener);
 		void RemoveListener(InputListener* listener);
 
 		bool IsKeyPressed(KeyCode keyCode);
+		bool IsMouseButtonPressed(MouseButtons mouseCode);
 
 		std::vector<InputListener*>& GetListeners() { return _listeners; };
 	private:
@@ -41,8 +38,6 @@ namespace Pine {
 		float _moveSpeed;
 		float _directionSpeedX;
 		float _directionSpeedY;
-		
-		void MoveInDirection(glm::vec3 direction);
 	};
 
 }

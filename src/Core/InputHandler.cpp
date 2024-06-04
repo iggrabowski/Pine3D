@@ -10,14 +10,29 @@ namespace Pine {
         //std::cout << "Button " << key << " pressed" << std::endl;
         for (const auto& i : inputHandler->GetListeners()) {
             if (action == GLFW_RELEASE) {
-                i->OnInputAction(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_RELEASE);
+                i->OnInputAction(InputType::KEYBOARD, (KeyCode)key, KeyAction::KEY_RELEASE);
             }
             else if (action == GLFW_PRESS)
-                i->OnInputAction(InputType::Keyboard, (KeyCode)key, KeyAction::KEY_PRESS);
+                i->OnInputAction(InputType::KEYBOARD, (KeyCode)key, KeyAction::KEY_PRESS);
             //else if (GLFW_REPEAT)
             //    i->first->OnInput(i->second, KeyAction::KEY_REPEAT);
         }
     }
+
+    void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+        //--------------CONTROLS--------------//
+        //std::cout << "Button " << key << " pressed" << std::endl;
+        for (const auto& i : inputHandler->GetListeners()) {
+            if (action == GLFW_RELEASE) {
+                i->OnInputAction(InputType::MOUSE, (MouseButtons)button, KeyAction::KEY_RELEASE);
+            }
+            else if (action == GLFW_PRESS)
+                i->OnInputAction(InputType::MOUSE, (MouseButtons)button, KeyAction::KEY_PRESS);
+            //else if (GLFW_REPEAT)
+            //    i->first->OnInput(i->second, KeyAction::KEY_REPEAT);
+        }
+    }
+
     InputHandler::InputHandler()
     {
         //this->alreadyScrolled = false;
@@ -36,6 +51,7 @@ namespace Pine {
     {
         if (!_initialized) {
             glfwSetKeyCallback(window->GetWindow(), KeyCallback);
+            glfwSetMouseButtonCallback(window->GetWindow(), MouseButtonCallback);
             _initialized = true;
         }
         glfwPollEvents();
@@ -89,6 +105,14 @@ namespace Pine {
             return true;
         }
 
+        return false;
+    }
+
+    bool InputHandler::IsMouseButtonPressed(MouseButtons mouseCode)
+    {
+        if (glfwGetMouseButton(window->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            return true;
+        }
         return false;
     }
 

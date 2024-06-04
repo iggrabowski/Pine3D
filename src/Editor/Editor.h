@@ -6,7 +6,7 @@ namespace Pine {
 	class Editor : InputListener {
 	public: 
 		Editor();
-		void OnInputAction(InputType type, KeyCode key, KeyAction action) override;
+		void OnInputAction(InputType type, int key, KeyAction action) override;
 		void OnUpdate();
 		static std::unique_ptr<Editor> Init();
 

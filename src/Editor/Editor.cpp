@@ -7,7 +7,7 @@ namespace Pine {
 	{
 		_mainCamera = new Camera();
 	}
-	void Editor::OnInputAction(InputType type, KeyCode key, KeyAction action)
+	void Editor::OnInputAction(InputType type, int key, KeyAction action)
 	{
 		
 	}
