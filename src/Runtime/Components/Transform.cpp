@@ -1,7 +1,7 @@
 #pragma once
 #include "Transform.h"
 
-namespace Pine {
+namespace pine {
 
 	//Default constructor
 	//TODO: check if it actually works

@@ -1,45 +1,46 @@
 #pragma once
 #include "MeshRenderer.h"
+
+#include "Core/Application.h"
 #include "Runtime/Components/Cube.h"
 #include "Runtime/Renderer/Renderer.h"
 
-namespace Pine {
-	extern UniquePtr<Renderer> renderer;
+namespace pine {
 
 	MeshRenderer::MeshRenderer()
 	{
-		m_Transform = new Transform();
+		_transform = new Transform();
 		_mesh = new Cube();
 		_material = new Material();
 	}
 
 	MeshRenderer::~MeshRenderer() {
 		delete _material;
-		delete m_Transform;
+		delete _transform;
 		delete _mesh;
 	}
 
 	void MeshRenderer::OnUpdate()
 	{
-		m_Transform->UpdateModel();
+		_transform->UpdateModel();
 
 		_material->OnUpdate();
 
 		//m_Mesh->Draw();
 
-		m_Transform->UpdateModel();
+		_transform->UpdateModel();
 
 		_material->m_Shader->Bind();
-		glm::mat4 model = m_Transform->GetModel();
+		glm::mat4 model = _transform->GetModel();
 		_material->m_Shader->SetUniform("Model", model);
 
-		glm::mat4 MVP = renderer->GetRenderCamera().GetViewProjection() * model;
-		_material->m_Shader->SetUniform("MVP", MVP);
+		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * model;
+		_material->m_Shader->SetUniform("MVP", mvp);
 
-		glm::vec3 lightDir(0.5, 0.5, 1.0);
-		_material->m_Shader->SetUniform("lightDirection", lightDir);
+		glm::vec3 light_dir(0.5, 0.5, 1.0);
+		_material->m_Shader->SetUniform("lightDirection", light_dir);
 
-		renderer->Draw(*_mesh, *_material);
+		Application::renderer->Draw(*_mesh, *_material);
 	}
 
 }

@@ -3,12 +3,29 @@
 #include "Core/Application.h"
 
 
-namespace Pine {
+namespace pine {
+	GlfwWindow::GlfwWindow()
+	{
+		_settings = WindowSettings();
+		_lastMousePosition = { 0, 0 };
+		glfwInit();
+		_window = glfwCreateWindow(
+			_settings.width, 
+			_settings.height,
+			_settings.title,
+			nullptr,
+			nullptr
+		);
+		glfwMakeContextCurrent(_window);
 
-	GLFWWindow::GLFWWindow(const WindowSettings& windowSettings)
+		//register input devices?
+		//add callbacks?
+	}
+
+	GlfwWindow::GlfwWindow(const WindowSettings& windowSettings)
 	{
 		_settings = windowSettings;
-		_LastMousePosition = { 0, 0 };
+		_lastMousePosition = { 0, 0 };
 
 		// TODO: perform these checks:
 		///* Initialize the library */
@@ -30,21 +47,21 @@ namespace Pine {
 		_window = glfwCreateWindow(
 			_settings.width, 
 			_settings.height,
-			_settings.title, 
-			NULL, 
-			NULL
+			_settings.title,
+			nullptr,
+			nullptr
 		);
 
 		glfwMakeContextCurrent(_window);
 	}
 
-	GLFWWindow::~GLFWWindow()
+	GlfwWindow::~GlfwWindow()
 	{
 		glfwTerminate();
 		//delete m_Window;
 	}
 
-	void GLFWWindow::OnUpdate()
+	void GlfwWindow::OnUpdate()
 	{
 		// Swap buffers
 		glfwSwapBuffers(_window);
@@ -53,7 +70,7 @@ namespace Pine {
 		HandleEvents();
 	}
 
-	glm::ivec2 GLFWWindow::GetMousePosition()
+	glm::ivec2 GlfwWindow::GetMousePosition()
 	{
 		double xPos, yPos;
 		glfwGetCursorPos(_window, &xPos, &yPos);
@@ -63,17 +80,17 @@ namespace Pine {
 		return pos;
 	}
 
-	glm::ivec2 GLFWWindow::GetSize()
+	glm::ivec2 GlfwWindow::GetSize()
 	{
 		return glm::ivec2(_settings.width, _settings.height);
 	}
 
-	bool GLFWWindow::IsOpen()
+	bool GlfwWindow::IsOpen()
 	{
 		return !glfwWindowShouldClose(_window);
 	}
 
-	void GLFWWindow::HandleEvents()
+	void GlfwWindow::HandleEvents()
 	{
 		glfwPollEvents();
 

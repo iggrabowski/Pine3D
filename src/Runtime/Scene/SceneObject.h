@@ -1,15 +1,16 @@
 #pragma once
 #include "Runtime/Components/Transform.h"
 
-namespace Pine {
+namespace pine {
 
 	class SceneObject {
 	public:
+		virtual ~SceneObject() = default;
 		//SceneObject();
 
 		virtual void OnUpdate() = 0;
 	protected:
-		Transform* m_Transform;
+		Transform* _transform = nullptr;
 		//MeshRenderer m_MeshRenderer;
 	};
 

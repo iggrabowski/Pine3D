@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace Pine {
+namespace pine {
 
 	//extern class Application;
 
@@ -31,19 +31,20 @@ namespace Pine {
 		const char* title;
 		unsigned int width;
 		unsigned int height;
-		bool vSync;
+		bool v_sync;
 
-		WindowSettings(
+		explicit WindowSettings(
 			const char title[] = "Pine3D",
-			unsigned int width = 1200,
-			unsigned int height = 900,
-			bool vsync = true
-		) : title(title), width(width), height(height), vSync(vsync) {}
+			const unsigned int width = 1200,
+			const unsigned int height = 900,
+			const bool vsync = true
+		) : title(title), width(width), height(height), v_sync(vsync) {}
 	};
 
 	class Window {
 		//friend class Application;
 	public:
+		virtual ~Window() = default;
 		static UniquePtr<Window> Init(const WindowSettings& windowSettings);
 		//static Window* s_Instance;
 
@@ -55,7 +56,7 @@ namespace Pine {
 		virtual bool IsOpen() = 0;
 	protected:
 		WindowSettings _settings;
-		bool _isActive;
+		bool _isActive = false;
 	private:
 		//static UniquePtr<Window> Create(const WindowSettings& windowSettings);
 	};

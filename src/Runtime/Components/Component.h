@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Pine {
+namespace pine {
 
 	class Component {
 	

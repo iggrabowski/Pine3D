@@ -2,12 +2,12 @@
 #include "Runtime/RenderCore/Shader.h"
 #include "Runtime/Components/Texture.h"
 
-namespace Pine {
+namespace pine {
 
 	class Material {
 	public:
 		Material();
-		Material(Shader* shader);
+		explicit Material(Shader* shader);
 		Material(Shader* shader, Texture* texture);
 
 		void OnUpdate();

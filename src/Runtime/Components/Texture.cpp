@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace Pine {
+namespace pine {
 
 	Texture::Texture() {
 
@@ -46,11 +46,11 @@ namespace Pine {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		GLsizei texWidth, texHeight;
-		texWidth = image.getWidth();
-		texHeight = image.getHeight();
+		texWidth = image.GetWidth();
+		texHeight = image.GetHeight();
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight,
-			0, GL_RGB, GL_UNSIGNED_BYTE, image.getPixelsPtr());
+			0, GL_RGB, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
 	}
 
     Texture::~Texture()

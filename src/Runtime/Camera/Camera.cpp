@@ -1,41 +1,41 @@
 #pragma once
 #include "Camera.h"
 
-namespace Pine {
+namespace pine {
 
 	glm::mat4 Camera::GetViewProjection() const
 	{
-		return m_Projection * LookAt(m_Pos, m_Pos + m_Direction, up);
+		return _projection * LookAt(_pos, _pos + _direction, up);
 	}
 
 	glm::mat4 Camera::GetProjectionMatrix() const
 	{
-		return m_Projection;
+		return _projection;
 	}
 
 	glm::mat4 Camera::GetViewMatrix() const
 	{
-		return LookAt(m_Pos, m_Pos + m_Direction, up);
+		return LookAt(_pos, _pos + _direction, up);
 	}
 
 	glm::vec3 Camera::GetPos() const
 	{
-		return m_Pos;
+		return _pos;
 	}
 
 	glm::vec3 Camera::GetDirection() const
 	{
-		return m_Direction;
+		return _direction;
 	}
 
-	void Camera::SetPos(glm::vec3 pos)
+	void Camera::SetPos(const glm::vec3 pos)
 	{
-		m_Pos = pos;
+		_pos = pos;
 	}
 
-	void Camera::SetDirection(glm::vec3 direction)
+	void Camera::SetDirection(const glm::vec3& direction)
 	{
-		m_Direction = direction;
+		_direction = direction;
 	}
 
 }

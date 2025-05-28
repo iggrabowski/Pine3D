@@ -2,7 +2,7 @@
 #include "Runtime/Camera/Camera.h"
 #include "Utils/Utils.h"
 
-namespace Pine {
+namespace pine {
 
 	class Transform {
 	public:

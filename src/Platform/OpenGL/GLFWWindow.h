@@ -5,23 +5,25 @@
 
 #include <GLFW/glfw3.h>
 
-namespace Pine {
+namespace pine {
 	
-	struct GLFWWindowSettings
+	struct GlfwWindowSettings
 	{
 		/*sf::ContextSettings contextSettings;
 		bool VSync;*/
 	};
 
-	class GLFWWindow : public Window {
+	class GlfwWindow final : public Window {
 	public:
-		GLFWWindow(const WindowSettings& windowSettings);
-		~GLFWWindow();
+		GlfwWindow();
+		explicit GlfwWindow(const WindowSettings& windowSettings);
+		~GlfwWindow();
 
 		glm::ivec2 GetMousePosition() override;
 		glm::ivec2 GetSize() override;
 		void OnUpdate() override;
-		GLFWwindow* GetWindow() {
+		GLFWwindow* GetWindow() const
+		{
 			return _window;
 		};
 
@@ -34,7 +36,7 @@ namespace Pine {
 		GLFWwindow* _window;
 
 		//sf::RenderWindow* m_Window;
-		glm::vec2 _LastMousePosition;
+		glm::vec2 _lastMousePosition;
 
 		void HandleEvents();
 	};

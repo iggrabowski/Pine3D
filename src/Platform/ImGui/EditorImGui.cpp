@@ -1,6 +1,6 @@
 #include "EditorImGui.h"
 
-Pine::EditorImGui::EditorImGui()
+pine::EditorImGui::EditorImGui()
 {
 
 }

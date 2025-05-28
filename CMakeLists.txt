@@ -1,10 +1,11 @@
-cmake_minimum_required( VERSION 3.8 )
+cmake_minimum_required(VERSION 3.8)
 
 project(Pine3D VERSION 0.1.0)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only")
 set(GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only")
 
+add_definitions(-DCMAKE_POLICY_VERSION_MINIMUM=3.5)
 add_definitions(-DGLEW_STATIC)
 add_subdirectory(lib/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glew EXCLUDE_FROM_ALL)
@@ -29,15 +30,24 @@ source_group("Source Files" FILES ${PINE3D-MAIN})
 set(PINE3D-CORE
 	${SRC_ROOT}/Core/Application.cpp
 	${SRC_ROOT}/Core/Application.h
-	${SRC_ROOT}/Core/InputHandler.cpp
-	${SRC_ROOT}/Core/InputHandler.h
-	${SRC_ROOT}/Core/KeyCodes.h
 	${SRC_ROOT}/Core/Sfsf.h
 	${SRC_ROOT}/Core/Window.cpp
 	${SRC_ROOT}/Core/Window.h
 	)
 	
 source_group("Source Files/Core" FILES ${PINE3D-CORE})
+
+set(PINE3D-CORE-INPUT
+	${SRC_ROOT}/Input/InputHandler.cpp
+	${SRC_ROOT}/Input/InputHandler.h
+	${SRC_ROOT}/Input/KeyCodes.h
+	${SRC_ROOT}/Input/InputDevices.h
+	${SRC_ROOT}/Input/InputState.h
+	${SRC_ROOT}/Input/InputState.cpp
+	${SRC_ROOT}/Input/MouseButtons.h
+	)
+	
+source_group("Source Files/Input" FILES ${PINE3D-CORE-INPUT})
 
 set(PINE3D-PLATFORM-OPENGL
 	${SRC_ROOT}/Platform/OpenGL/OpenGLRenderer.cpp
@@ -124,6 +134,7 @@ source_group("Source Files/Utils" FILES ${PINE3D-UTILS})
 add_executable(${PROJECT_NAME} WIN32 
 	${PINE3D-MAIN}
 	${PINE3D-CORE}
+	${PINE3D-CORE-INPUT}
 	${PINE3D-EDITOR}
 	${PINE3D-PLATFORM-IMGUI}
 	${PINE3D-PLATFORM-OPENGL}
@@ -146,7 +157,7 @@ set(IMGUI_INCLUDE
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRC_ROOT} ${STD_INCLUDE} ${IMGUI_INCLUDE})
 ## ------------------------------------------------ ##
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw libglew_static glm)
 

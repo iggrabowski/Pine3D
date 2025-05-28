@@ -1,29 +1,27 @@
 #include "Image.h"
 
-// Inlude stb image library
+// Include stb image library
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #endif
 
-Pine::Image::Image()
-{
+pine::Image::Image()
+= default;
 
-}
-
-Pine::Image::Image(const char * path)
+pine::Image::Image(const char * path)
 {
 	this->Create(path);
 }
 
-const void * Pine::Image::getPixelsPtr()
+const void * pine::Image::GetPixelsPtr() const
 {
-	return m_bytes;
+	return _bytes;
 }
 
-bool Pine::Image::Create(const char * path)
+bool pine::Image::Create(const char * path)
 {
 	// TODO: figure out how to return false if file not loaded
-	m_bytes = stbi_load(path, &_width, &_height, &_numColorCh, 0);
+	_bytes = stbi_load(path, &_width, &_height, &_numColorCh, 0);
 	return true;
 }

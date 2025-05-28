@@ -9,7 +9,7 @@
 
 #define NUM_BUFFERS 4
 
-namespace Pine {
+namespace pine {
 
 	/*struct Vertex
 	{

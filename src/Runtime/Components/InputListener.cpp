@@ -1,13 +1,13 @@
 #include "Runtime/Components/InputListener.h"
 #include "Core/Application.h"
 
-namespace Pine {
+namespace pine {
 	InputListener::InputListener()
 	{
-		inputHandler->AddListener(this);
+		Application::input_handler->AddListener(this);
 	}
 	InputListener::~InputListener()
 	{
-		inputHandler->RemoveListener(this);
+		Application::input_handler->RemoveListener(this);
 	}
 }

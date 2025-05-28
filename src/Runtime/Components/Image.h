@@ -1,15 +1,15 @@
 #pragma once
 #include <Utils/Utils.h>
 
-namespace Pine {
+namespace pine {
 
 	class Image {
 	public:
 		Image();
-		Image(const char* path);
-		const void* getPixelsPtr();
-		inline int getWidth() const { return _width; };
-		inline int getHeight() const { return _height; };
+		explicit Image(const char* path);
+		[[nodiscard]] const void* GetPixelsPtr() const;
+		inline int GetWidth() const { return _width; };
+		inline int GetHeight() const { return _height; };
 
 		bool Create(const char* path);
 	private:
@@ -17,7 +17,7 @@ namespace Pine {
 		int _height;
 		int _numColorCh;
 
-		unsigned char* m_bytes;
+		unsigned char* _bytes;
 	};
 
 }

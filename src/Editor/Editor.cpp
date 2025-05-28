@@ -2,30 +2,47 @@
 #include "Editor/Editor.h"
 #include "Core/Application.h"
 
-namespace Pine {
+namespace pine {
 	Editor::Editor()
 	{
 		_mainCamera = new Camera();
 	}
-	void Editor::OnInputAction(InputType type, int key, KeyAction action)
+	void Editor::OnInputAction(InputType type, const int key, KeyAction action)
 	{
-		
+		switch (key)
+		{
+		case KeyCode::A:
+			MoveLeft();
+			break;
+		case KeyCode::D:
+			MoveRight();
+			break;
+		case KeyCode::W:
+			MoveUp();
+			break;
+		case KeyCode::S:
+			MoveDown();
+			break;
+		default:
+			break;
+		}
 	}
 
 	std::unique_ptr<Editor> Editor::Init()
 	{
-		return std::unique_ptr<Editor>(new Editor());
+		return std::make_unique<Editor>();
 	}
-	void Editor::HandleEventlessInput()
+	
+	void Editor::HandleEventlessInput() const
 	{
-		if (inputHandler->IsKeyPressed(KeyCode::A))
+		/*if (Application::input_handler->IsKeyPressed(KeyCode::A))
 			MoveLeft();
-		if (inputHandler->IsKeyPressed(KeyCode::D))
+		if (Application::input_handler->IsKeyPressed(KeyCode::D))
 			MoveRight();
-		if (inputHandler->IsKeyPressed(KeyCode::W))
+		if (Application::input_handler->IsKeyPressed(KeyCode::W))
 			MoveUp();
-		if (inputHandler->IsKeyPressed(KeyCode::S))
-			MoveDown();
+		if (Application::input_handler->IsKeyPressed(KeyCode::S))
+			MoveDown();*/
 	}
 
 	void Editor::OnUpdate()
@@ -33,40 +50,38 @@ namespace Pine {
 		HandleEventlessInput();
 	}
 
-	void Editor::MoveLeft()
+	void Editor::MoveLeft() const
 	{
 		glm::vec3 moveDir = -glm::normalize(
-			Cross(renderer->GetRenderCamera().GetDirection(), renderer->GetRenderCamera().up)
+			glm::cross(Application::renderer->GetRenderCamera().GetDirection(), Application::renderer->GetRenderCamera().up)
 		);
 		MoveInDirection(moveDir);
 	}
 
-	void Editor::MoveRight()
+	void Editor::MoveRight() const
 	{
 		glm::vec3 moveDir = glm::normalize(
-			Cross(renderer->GetRenderCamera().GetDirection(), renderer->GetRenderCamera().up)
+			glm::cross(Application::renderer->GetRenderCamera().GetDirection(), Application::renderer->GetRenderCamera().up)
 		);
 		MoveInDirection(moveDir);
 	}
 
-	void Editor::MoveUp()
+	void Editor::MoveUp() const
 	{
-		MoveInDirection(renderer->GetRenderCamera().up);
+		MoveInDirection(Application::renderer->GetRenderCamera().up);
 	}
 
-	void Editor::MoveDown()
+	void Editor::MoveDown() const
 	{
-		MoveInDirection(-renderer->GetRenderCamera().up);
+		MoveInDirection(-Application::renderer->GetRenderCamera().up);
 	}
 
-
-	void Editor::MoveInDirection(glm::vec3 direction)
+	void Editor::MoveInDirection(glm::vec3 direction) const
 	{
-		Camera& camera = renderer->GetRenderCamera();
+		Camera& camera = Application::renderer->GetRenderCamera();
 		glm::vec3 pos = camera.GetPos();
 
 		camera.SetPos(pos + direction * _moveSpeed);
 	}
-
 
 }

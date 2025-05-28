@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace Pine {
+namespace pine {
 
     extern UniquePtr<Renderer> renderer;
 

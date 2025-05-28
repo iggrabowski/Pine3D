@@ -1,7 +1,7 @@
 #pragma once
 #include <Editor/EditorGUI.h>
 
-namespace Pine {
+namespace pine {
 
 	class EditorImGui : EditorGUI {
 

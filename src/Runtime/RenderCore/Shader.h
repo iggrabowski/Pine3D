@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace Pine {
+namespace pine {
 
 	enum SHADER_TYPE
 	{

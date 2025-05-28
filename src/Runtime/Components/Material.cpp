@@ -1,7 +1,7 @@
 #pragma once
 #include "Runtime/Components/Material.h"
 
-namespace Pine {
+namespace pine {
 
 	Material::Material()
 	{
@@ -14,7 +14,7 @@ namespace Pine {
 		m_Texture->LoadFromImage(img);
 	}
 
-	Material::Material(Shader* shader)
+	Material::Material(Shader* shader): m_Texture(nullptr)
 	{
 		m_Shader = shader;
 	}

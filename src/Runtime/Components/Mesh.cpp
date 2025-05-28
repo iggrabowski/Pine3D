@@ -8,7 +8,7 @@
 #include <stdlib.h>
 //#include <chrono>
 
-namespace Pine {
+namespace pine {
 
 	Mesh::Mesh()
 	{

@@ -4,7 +4,7 @@
 #include "Runtime/Components/Transform.h"
 #include "Runtime/Scene/SceneObject.h"
 
-namespace Pine {
+namespace pine {
 
 	class MeshRenderer : public SceneObject {
 	public:

@@ -12,7 +12,7 @@
 #include <string>
 #include <iostream>
 
-namespace Pine {
+namespace pine {
 
 //#ifdef GRAPHICS_API_OPENGL
 	/*typedef glm::glm::vec2 glm::vec2;
@@ -69,7 +69,7 @@ namespace Pine {
 	template<typename T, typename ... Args>
 	static constexpr UniquePtr<T> MakeUnique(Args&& ... args)
 	{
-		return std::make_unique<T>(std::forward<Args>(args)...);
+		return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 	}
 
 }

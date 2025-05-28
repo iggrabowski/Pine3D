@@ -2,7 +2,7 @@
 
 #include "Runtime/Renderer/Renderer.h"
 
-namespace Pine {
+namespace pine {
 
 	class OpenGLRenderer : public Renderer {
 	public:

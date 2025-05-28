@@ -1,7 +1,7 @@
 #pragma once
 #include "Runtime/Components/Cube.h"
 
-namespace Pine {
+namespace pine {
 
 	Cube::Cube()
 	{

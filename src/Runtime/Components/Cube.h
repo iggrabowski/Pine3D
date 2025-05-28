@@ -1,7 +1,7 @@
 #pragma once
 #include "Runtime/Components/Mesh.h"
 
-namespace Pine
+namespace pine
 {
 
     class Cube : public Mesh

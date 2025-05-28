@@ -6,7 +6,7 @@
 #include <vector>
 
 
-namespace Pine {
+namespace pine {
 
 	class Polygon : public SceneObject {
 	public:

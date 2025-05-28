@@ -2,30 +2,30 @@
 #include "Core/Window.h"
 #include "Runtime/Renderer/Renderer.h"
 #include "Runtime/Scene/SceneObject.h"
-#include "Core/InputHandler.h"
+#include "Input/InputHandler.h"
 #include "Runtime/Components/MeshRenderer.h"
 #include "Utils/Utils.h"
 #include "Runtime/Components/Polygon.h"
 #include "Editor/Editor.h"
 
+namespace pine {
 
-namespace Pine {
-	
-	//If in editor
-	extern UniquePtr<Editor> editor;
+	 class Application {
 
-	extern UniquePtr<GLFWWindow> window;
-	extern UniquePtr<Renderer> renderer;
-	extern UniquePtr<InputHandler> inputHandler;
+	 public:
+		static int Run();
+		static void Update_Frame();
+		static void Init();
 
-	extern Vector<SceneObject*> sceneObjects;
-
-	int Run();
-	void UpdateFrame();
-
-	void Init(WindowSettings windowSettings = WindowSettings());
+		static inline UniquePtr<Editor> editor = nullptr;
+		static inline UniquePtr<GlfwWindow> window = nullptr; //for now only GLFW window implementation
+		static inline UniquePtr<Renderer> renderer = nullptr;
+		static inline UniquePtr<InputHandler> input_handler = nullptr;
+		static inline Vector<SceneObject*> scene_objects;
+	};
 
 }
+
 //
 ////#include <string>
 //
@@ -46,7 +46,7 @@ namespace Pine {
 //		String m_Name;
 //
 //		UniquePtr<Window> m_Window;
-//		UniquePtr<Renderer> m_Renderer;
+//		UniquePtr<Renderer> m_Rendereiir;
 //		UniquePtr<Controls> m_Controls;
 //		//Scene objects
 //		Vector<MeshRenderer*> m_SceneObjects;

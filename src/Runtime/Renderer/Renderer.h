@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace Pine {
+namespace pine {
 
 	enum class GRAPHICS_API {
 		UNDEFINED_API,
@@ -14,7 +14,7 @@ namespace Pine {
 
 	//main rendering object
 	class Renderer {
-		friend class Application;
+
 	public:
 		static UniquePtr<Renderer> Init(GRAPHICS_API API);
 			

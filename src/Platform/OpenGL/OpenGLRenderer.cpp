@@ -2,7 +2,7 @@
 #include "Platform/OpenGL/OpenGLRenderer.h"
 #include "Core/Application.h"
 
-namespace Pine {
+namespace pine {
 	
 	void OpenGLRenderer::DrawIndexed(/*const IndexedModel& model*/)
 	{
@@ -79,7 +79,7 @@ namespace Pine {
 		m_rendererAPI = GRAPHICS_API::OPENGL_API;
 
 		//if in editor
-		_camera = editor->GetCamera();
+		_camera = Application::editor->GetCamera();
 
 		//_camera = new Camera();
 

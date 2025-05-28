@@ -5,7 +5,7 @@
 // Has to be sufficient for now
 #include <Utils/Utils.h>
 
-namespace Pine {
+namespace pine {
 
 	class Texture
 	{

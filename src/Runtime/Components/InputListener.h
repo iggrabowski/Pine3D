@@ -1,8 +1,8 @@
 #pragma once
-#include "Core/KeyCodes.h"
+#include "Input/KeyCodes.h"
 #include "Platform/OpenGL/GLFWWindow.h"
 
-namespace Pine {
+namespace pine {
 
 	enum MousButtonAction : int {
 		MOUSE_PRESS = GLFW_PRESS,

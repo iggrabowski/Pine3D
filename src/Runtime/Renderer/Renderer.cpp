@@ -2,7 +2,7 @@
 #include "Renderer.h"
 #include "Platform/OpenGL/OpenGLRenderer.h"
 
-namespace Pine {
+namespace pine {
 
 	//Renderer* Renderer::s_Instance = nullptr;
 	
