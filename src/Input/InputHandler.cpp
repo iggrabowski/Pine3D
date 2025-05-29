@@ -58,7 +58,8 @@ namespace pine {
             glfwSetMouseButtonCallback(window->GetWindow(), MouseButtonCallback);
             _initialized = true;
         }*/
-        glfwPollEvents();
+        //glfwPollEvents();
+        ProcessInput();
     }
 
     void InputHandler::Zoom(const int delta) const
@@ -129,17 +130,17 @@ namespace pine {
 	    for (auto& input_device : _inputDevices)
         {
 			// get the current state of the input device
-            auto new_state = input_device.callback_func(input_device.index);
+            auto new_state = input_device->state_func();
             
 			// compare old and new state
 			for (const auto& [first, second] : new_state)
 			{
-                if (constexpr float epsilon = 1e-5f; glm::abs(input_device.states[first].value - second.value < epsilon))
+                if (constexpr float epsilon = 1e-5f; glm::abs(input_device->states[first].value - second.value < epsilon))
                 {
-                    for (const auto& action_event : GenerateActionEvent(input_device.index, first, input_device.states[first].value))
+                    for (const auto& action_event : GenerateActionEvent(input_device->index, first, input_device->states[first].value))
                     {
                         action_events.emplace_back(action_event);
-                        input_device.states[first].value = second.value;
+                        input_device->states[first].value = second.value;
                     }
                 }
             }
@@ -162,15 +163,16 @@ namespace pine {
        }
 	}
 
-    void InputHandler::RegisterDevice(InputDevice device)
+    void InputHandler::RegisterDevice(const std::shared_ptr<InputDevice>& device)
     {
-		_inputDevices.emplace_back(std::move(device));
+        // TODO ERROR INPUT HANDLER NOT INITIALIZED YET
+        _inputDevices.emplace_back(device);
     }
 
     void InputHandler::UnregisterDevice(int deviceIndex, InputDeviceType type)
     {
-		erase_if(_inputDevices, [type, deviceIndex](const InputDevice& device) {
-			return device.type == type && device.index == deviceIndex;
+		erase_if(_inputDevices, [type, deviceIndex](const std::shared_ptr<InputDevice>& device) {
+			return device->type == type && device->index == deviceIndex;
 		});
     }
 

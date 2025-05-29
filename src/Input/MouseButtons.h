@@ -1,6 +1,10 @@
 #pragma once
 
 // GLFW mouse buttons
+// https://www.glfw.org/docs/latest/group__buttons.html
+// NOTE: For now all buttons and keycodes are put together in KeyCodes.h
+// (unused)
+// TODO: either delete or sort the KeyCodes.h file
 enum MouseButtons : char8_t
 {
 	// Mouse buttons

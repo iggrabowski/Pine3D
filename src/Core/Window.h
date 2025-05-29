@@ -8,35 +8,16 @@ namespace pine {
 
 	//extern class Application;
 
-	////flags for window response
-	//enum class WindowEvent : unsigned int {
-	//	None = 0,
-	//	Closed = 1,
-	//	Resized = 1 << 1,
-	//	First = Closed,
-	//	Last = Resized
-	//};
-
-	//constexpr inline WindowEvent operator|(WindowEvent a, WindowEvent b)
-	//{
-	//	return (enum WindowEvent)((unsigned int)(a) | (unsigned int)(b));
-	//}
-
-	//constexpr inline WindowEvent operator&(WindowEvent a, WindowEvent b)
-	//{
-	//	return (enum WindowEvent)((unsigned int)(a) & (unsigned int)(b));
-	//}
-
 	struct WindowSettings {
 		const char* title;
-		unsigned int width;
-		unsigned int height;
+		int width;
+		int height;
 		bool v_sync;
 
 		explicit WindowSettings(
 			const char title[] = "Pine3D",
-			const unsigned int width = 1200,
-			const unsigned int height = 900,
+			const int width = 1200,
+			const int height = 900,
 			const bool vsync = true
 		) : title(title), width(width), height(height), v_sync(vsync) {}
 	};
@@ -46,6 +27,8 @@ namespace pine {
 	public:
 		virtual ~Window() = default;
 		static UniquePtr<Window> Init(const WindowSettings& windowSettings);
+		virtual void Startup() = 0;
+		virtual void RegisterInputCallback(int key, int scancode, int action, int mods) = 0;
 		//static Window* s_Instance;
 
 		virtual glm::ivec2 GetMousePosition() = 0;

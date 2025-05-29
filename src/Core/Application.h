@@ -1,12 +1,13 @@
 #pragma once
-#include "Core/Window.h"
+//#include "Core/Window.h"
 #include "Runtime/Renderer/Renderer.h"
 #include "Runtime/Scene/SceneObject.h"
 #include "Input/InputHandler.h"
-#include "Runtime/Components/MeshRenderer.h"
-#include "Utils/Utils.h"
+//#include "Runtime/Components/MeshRenderer.h"
+//#include "Utils/Utils.h"
 #include "Runtime/Components/Polygon.h"
 #include "Editor/Editor.h"
+#include "Utils/Logger.h"
 
 namespace pine {
 
@@ -16,12 +17,14 @@ namespace pine {
 		static int Run();
 		static void Update_Frame();
 		static void Init();
+		static void Startup();
 
-		static inline UniquePtr<Editor> editor = nullptr;
-		static inline UniquePtr<GlfwWindow> window = nullptr; //for now only GLFW window implementation
-		static inline UniquePtr<Renderer> renderer = nullptr;
-		static inline UniquePtr<InputHandler> input_handler = nullptr;
-		static inline Vector<SceneObject*> scene_objects;
+		static inline std::unique_ptr<Editor> editor = nullptr;
+		static inline std::unique_ptr<GlfwWindow> window = nullptr; //for now only GLFW window implementation
+		static inline std::unique_ptr<Renderer> renderer = nullptr;
+		static inline std::unique_ptr<InputHandler> input_handler = nullptr;
+		static inline std::vector<SceneObject*> scene_objects;
+		//static inline std::unique_ptr<Logger> logger = nullptr;
 	};
 
 }

@@ -4,6 +4,7 @@ int main(void)
 {
 	/* INITIATE THE APPLICATION */
 	pine::Application::Init();
+	pine::Application::Startup();
 
 	// TODO: fix loading textures after migrating from GLFW
 	// until then, no mesh rendering

@@ -1,7 +1,43 @@
 #pragma once
 namespace pine {
+	// KeyCode
 	enum KeyCode : int
 	{
+		// Gamepad codes
+		// Note: These are not the same as GLFW gamepad button codes, but are used for input handling in Pine (for now).
+		GAMEPAD_BUTTON_A = 0,
+		GAMEPAD_BUTTON_B = 1,
+		GAMEPAD_BUTTON_X = 2,
+		GAMEPAD_BUTTON_Y = 3,
+		GAMEPAD_BUTTON_LEFT_BUMPER = 4,
+		GAMEPAD_BUTTON_RIGHT_BUMPER = 5,
+		GAMEPAD_BUTTON_BACK = 6,
+		GAMEPAD_BUTTON_START = 7,
+		GAMEPAD_BUTTON_GUIDE = 8,
+		GAMEPAD_BUTTON_LEFT_THUMB = 9,
+		GAMEPAD_BUTTON_RIGHT_THUMB = 10,
+		GAMEPAD_BUTTON_DPAD_UP = 11,
+		GAMEPAD_BUTTON_DPAD_RIGHT = 12,
+		GAMEPAD_BUTTON_DPAD_DOWN = 13,
+		GAMEPAD_BUTTON_DPAD_LEFT = 14,
+		GAMEPAD_BUTTON_LAST = 14,
+		GAMEPAD_BUTTON_CROSS = 0, // Cross is the same as A on Xbox controllers
+		GAMEPAD_BUTTON_CIRCLE = 1, // Circle is the same as B on Xbox controllers
+		GAMEPAD_BUTTON_SQUARE = 2, // Square is the same as X on Xbox controllers
+		GAMEPAD_BUTTON_TRIANGLE = 3, // Triangle is the same as Y on Xbox controllers
+
+		// MouseButton codes
+		// Note: These are not the same as GLFW mouse button codes, but are used for input handling in Pine (for now).
+		MB_BUTTON_RIGHT = 1,
+		MB_BUTTON_MIDDLE = 2,
+		MB_BUTTON_4 = 3,
+		MB_BUTTON_5 = 4,
+		MB_BUTTON_6 = 5,
+		MB_BUTTON_7 = 6,
+		MB_BUTTON_LAST = 7,
+
+		// Keyboard key codes
+		// Note: These are not the same as GLFW key codes, but are used for input handling in Pine (for now).
 		SPACE = 32,
 		APOSTROPHE = 39, /* ' */
 		COMMA = 44, /* , */

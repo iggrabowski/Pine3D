@@ -42,6 +42,7 @@ namespace pine {
 		//add default Mesh renderer to the scene
 		//sceneObjects.push_back(mr);
 		//---------------------------------------
+		input_handler->OnUpdate();
 		renderer->Clear();
 		//controls.Update(transform, event);
 		input_handler->OnUpdate();
@@ -65,5 +66,12 @@ namespace pine {
 		// Default API is OpenGL due to the lack of other implementations obviously lol
 		renderer = Renderer::Init(GRAPHICS_API::OPENGL_API);
 	}
+
+	void Application::Startup()
+	{
+		// Startup the window and other components
+		window->Startup();
+	}
+
 	//TODO shutdown impl	
 }

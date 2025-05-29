@@ -42,8 +42,8 @@ set(PINE3D-CORE-INPUT
 	${SRC_ROOT}/Input/InputHandler.h
 	${SRC_ROOT}/Input/KeyCodes.h
 	${SRC_ROOT}/Input/InputDevices.h
-	${SRC_ROOT}/Input/InputState.h
-	${SRC_ROOT}/Input/InputState.cpp
+	${SRC_ROOT}/Input/InputStates.h
+	${SRC_ROOT}/Input/InputStates.cpp
 	${SRC_ROOT}/Input/MouseButtons.h
 	)
 	
@@ -126,6 +126,8 @@ set(PINE3D-RUNTIME-SCENE
 source_group("Source Files/Runtime/Scene" FILES ${PINE3D-RUNTIME-SCENE})
 
 set(PINE3D-UTILS
+    ${SRC_ROOT}/Utils/Logger.cpp
+    ${SRC_ROOT}/Utils/Logger.h
 	${SRC_ROOT}/Utils/Utils.h
 	)
 	

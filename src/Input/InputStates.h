@@ -9,28 +9,29 @@
 namespace pine
 {
 
-	class InputState
+	class InputStates
 	{
 	public:
-		InputState();
-		~InputState();
+		InputStates();
+		~InputStates();
 	private:
-		std::unordered_map<KeyCode, InputDeviceState> GetKeyboardState(int index) { return _keyboardState; }
-		std::unordered_map<MouseButtons, InputDeviceState> GetMouseState(int index) { return _mouseState; }
-		std::unordered_map<int, std::unordered_map<KeyCode, InputDeviceState>>  GetGamepadState(int index) { return _inputGamepadStates; }
-
+	public:
+		std::unordered_map<KeyCode, InputDeviceState> GetKeyboardState() { return _keyboardState; }
+		std::unordered_map<KeyCode, InputDeviceState> GetMouseState() { return _mouseState; }
+		std::unordered_map<int, std::unordered_map<KeyCode, InputDeviceState>>  GetGamepadState() { return _inputGamepadStates; }
+		
 		void UpdateKeyboardState(int index, KeyCode key, InputDeviceState state) {
 			_keyboardState[key] = state;
 		}
-		void UpdateMouseState(MouseButtons button, InputDeviceState state) {
+		void UpdateMouseState(int index, KeyCode button, InputDeviceState state) {
 			_mouseState[button] = state;
 		}
 		void UpdateGamepadState(int index, KeyCode key, InputDeviceState state) {
 			_inputGamepadStates[index][key] = state;
 		}
-		
+	private:	
 		std::unordered_map<KeyCode, InputDeviceState> _keyboardState{};
-		std::unordered_map<MouseButtons, InputDeviceState> _mouseState{};
+		std::unordered_map<KeyCode, InputDeviceState> _mouseState{};
 		std::unordered_map<int, std::unordered_map<KeyCode, InputDeviceState>> _inputGamepadStates{};
 	};
 }

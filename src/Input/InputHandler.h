@@ -4,7 +4,7 @@
 #pragma once
 #include "Utils/Utils.h"
 #include "Runtime/Components/InputListener.h"
-#include "Input/InputState.h"
+#include "Input/InputStates.h"
 //#include "Input/InputDevices.h"
 #include <unordered_map>
 #include <unordered_set>
@@ -34,10 +34,32 @@ namespace pine {
 		void MapInputToAction(KeyCode key, const std::string& action);
 		void UnmapInputFromAction(KeyCode key, const std::string& action);
 		void ProcessInput();
+		void RegisterDevice(const std::shared_ptr<InputDevice>& device);
 		bool IsMouseButtonPressed(MouseButtons mouseCode);
 		std::vector<InputListener*>& GetListeners()
 		{
 			return _listeners;
+		}
+		void UpdateKeyboardState(int index, KeyCode key, InputDeviceState state) {
+			_inputState.UpdateKeyboardState(index, key, state);
+		}
+		void UpdateMouseState(int index, KeyCode button, InputDeviceState state) {
+			_inputState.UpdateMouseState(index, button, state);
+		}
+		void UpdateGamepadState(int index, KeyCode key, InputDeviceState state) {
+			_inputState.UpdateGamepadState(index, key, state);
+		}
+		std::unordered_map<KeyCode, InputDeviceState> GetMouseState()
+		{
+			return _inputState.GetMouseState();
+		}
+		std::unordered_map<KeyCode, InputDeviceState> GetKeyboardState()
+		{
+			return _inputState.GetKeyboardState();
+		}
+		std::unordered_map<int, std::unordered_map<KeyCode, InputDeviceState>> GetGamepadState(int index)
+		{
+			return _inputState.GetGamepadState();
 		}
 
 	private:
@@ -50,21 +72,20 @@ namespace pine {
 		bool IsKeyPressed(KeyCode keyCode);
 		std::vector<ActionEvent> GenerateActionEvent(int deviceIndex, KeyCode keyCode, float newVal);
 		void PropagateActionEvent(const ActionEvent& actionEvent);
-		void RegisterDevice(InputDevice device);
 		void UnregisterDevice(int deviceIndex, InputDeviceType type);
 		//int _keyStates[99] = {};
 		//int _keyStatesPrev[99] = {};
 		std::unordered_map<KeyCode, std::unordered_set<std::string>> _inputActionMapping;
 		std::unordered_map<std::string, std::vector<ActionCallback>> _actionCallbacks;
 		std::vector<InputListener*> _listeners;
-		std::vector<InputDevice> _inputDevices;
+		std::vector<std::shared_ptr<InputDevice>> _inputDevices;
 		//bool _initialized = false;
 		float _moveSpeed;
 		float _zoomPerScroll;
 		float _directionSpeedX;
 		float _directionSpeedY;
 
-		InputState _inputState;
+		InputStates _inputState;
 	};
 	
 }

@@ -2,7 +2,6 @@
 
 #include "Core/Window.h"
 #include "Utils/Utils.h"
-
 #include <GLFW/glfw3.h>
 
 namespace pine {
@@ -16,16 +15,16 @@ namespace pine {
 	class GlfwWindow final : public Window {
 	public:
 		GlfwWindow();
+		~GlfwWindow() override;
 		explicit GlfwWindow(const WindowSettings& windowSettings);
-		~GlfwWindow();
-
+		void Startup() override;
+		void RegisterInputCallback(int key, int scancode, int action, int mods) override;
+	
 		glm::ivec2 GetMousePosition() override;
 		glm::ivec2 GetSize() override;
 		void OnUpdate() override;
-		GLFWwindow* GetWindow() const
-		{
-			return _window;
-		};
+
+		[[nodiscard]] GLFWwindow* GetWindow() const;
 
 		//void Init() override;
 		//void Sleep(float seconds) override;
