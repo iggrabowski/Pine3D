@@ -8,9 +8,11 @@
 namespace pine {
 
 enum class LogLevel {
-    INF,
-    WAR,
-    ERR
+	INF, // Information
+    SUC, // Success
+    MSC, // Misc
+	WAR, // Warning
+	ERR  // Error
 };
 
 class Logger {
@@ -22,6 +24,8 @@ public:
 
     // Convenience methods
     void Info(const std::string& message);
+    void Success(const std::string& message);
+    void Misc(const std::string& message);
     void Warning(const std::string& message);
     void Error(const std::string& message);
 

@@ -5,7 +5,7 @@
 
 
 namespace pine {
-
+	
 GlfwWindow::GlfwWindow()
 {
 	_settings = WindowSettings();
@@ -58,8 +58,7 @@ GlfwWindow::GlfwWindow(const WindowSettings& windowSettings)
 void GlfwWindow::Startup()
 {
 	// Starting up the GLFW window
-	Logger::Instance().SetLogFile("Log.txt");
-	Logger::Instance().Info("Starting GlfwWindow.");
+	Logger::Instance().Info("GLFW Window : starting window...");
 
 	// assign input_handler as window user pointer
 	//glfwSetWindowUserPointer(_window, &Application::input_handler);
@@ -68,18 +67,25 @@ void GlfwWindow::Startup()
 	// set keyboard callbacks
 	glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 		float value = 0.0f;
+		if (action == GLFW_PRESS) {
+			value = 1.0f; // key pressed
+		} else if (action == GLFW_RELEASE) {
+			value = 0.0f; // key released
+		} else if (action == GLFW_REPEAT) {
+			value = 1.0f; // key held down
+		}
 		Application::input_handler->UpdateKeyboardState(0, static_cast<KeyCode>(key), {
-			action == GLFW_PRESS ? 1.0f : 0.0f
+			.value = value
 		}); 
 	});
 
 	// set mouse callbacks
-	glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
-			float value = 0.0f;
-			Application::input_handler->UpdateMouseState(0, static_cast<KeyCode>(button), {
-				action == GLFW_PRESS ? 1.0f : 0.0f
-			}); 
-	});
+	//glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
+	//		Application::input_handler->UpdateMouseState(0, static_cast<KeyCode>(button), {
+	//			// TODO: does mouse raise GLFW_REPEAT on hold?
+	//			action == GLFW_PRESS ? 1.0f : 0.0f
+	//		}); 
+	//});
 
 	// TODO:
 	// set mouse position callback
@@ -101,6 +107,7 @@ void GlfwWindow::Startup()
 	default_mouse->index = 1;
 	default_mouse->type = InputDeviceType::MOUSE;
 	default_mouse->states = {};
+
 	//NOTE: mouse button codes are kept with the keys in the KeyCodes.h
 	default_mouse->state_func = []
 	{
@@ -108,7 +115,7 @@ void GlfwWindow::Startup()
 	};
 	Application::input_handler->RegisterDevice(default_mouse);
 
-	Logger::Instance().Info("GlfwWindow started successfully.");
+	Logger::Instance().Success("GLFW Window : ...startup complete.");
 }
 
 void GlfwWindow::RegisterInputCallback(int key, int scancode, int action, int mods)

@@ -160,6 +160,13 @@ namespace pine {
 		MENU = 348
 	};
 
+	enum KeyActionType : int
+	{
+		KEY_ON_RELEASE,
+		KEY_ON_PRESS,
+		KEY_ON_HOLD,
+		KEY_ON_REPEAT  
+	};
 /*	enum InputDevice : uint8_t
 	{
 		KEYBOARD = 0,

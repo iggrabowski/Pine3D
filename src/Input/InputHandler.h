@@ -12,6 +12,13 @@
 
 namespace pine {
 	//extern class Application;
+
+	struct InputAction
+	{
+		std::string name;
+		KeyActionType type;
+		float scale = 1.0f;
+	};
 	
 	class InputHandler {
 		//friend class Application;
@@ -31,7 +38,7 @@ namespace pine {
 		void RemoveListener(const InputListener* listener);
 		void AddActionCallback(const std::string& actionName, const ActionCallback& callback);
 		void RemoveActionCallback(const std::string& actionName, const std::string& callbackRef);
-		void MapInputToAction(KeyCode key, const std::string& action);
+		void MapInputToAction(KeyCode key, const InputAction& inputAction);
 		void UnmapInputFromAction(KeyCode key, const std::string& action);
 		void ProcessInput();
 		void RegisterDevice(const std::shared_ptr<InputDevice>& device);
@@ -70,12 +77,12 @@ namespace pine {
 			std::string action_name;
 		};
 		bool IsKeyPressed(KeyCode keyCode);
-		std::vector<ActionEvent> GenerateActionEvent(int deviceIndex, KeyCode keyCode, float newVal);
+		std::vector<ActionEvent> GenerateActionEvent(int deviceIndex, KeyCode keyCode, float oldVal, float newVal);
 		void PropagateActionEvent(const ActionEvent& actionEvent);
 		void UnregisterDevice(int deviceIndex, InputDeviceType type);
 		//int _keyStates[99] = {};
 		//int _keyStatesPrev[99] = {};
-		std::unordered_map<KeyCode, std::unordered_set<std::string>> _inputActionMapping;
+		std::unordered_map<KeyCode, std::vector<InputAction>> _inputActionMapping;
 		std::unordered_map<std::string, std::vector<ActionCallback>> _actionCallbacks;
 		std::vector<InputListener*> _listeners;
 		std::vector<std::shared_ptr<InputDevice>> _inputDevices;

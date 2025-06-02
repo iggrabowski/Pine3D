@@ -6,34 +6,6 @@
 
 namespace pine {
 
-    //void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    //    //--------------CONTROLS--------------//
-    //    //std::cout << "Button " << key << " pressed" << std::endl;
-    //    for (const auto& i : inputHandler->GetListeners()) {
-    //        if (action == GLFW_RELEASE) {
-    //            i->OnInputAction(InputType::KEYBOARD, (KeyCode)key, KeyAction::KEY_RELEASE);
-    //        }
-    //        else if (action == GLFW_PRESS)
-    //            i->OnInputAction(InputType::KEYBOARD, (KeyCode)key, KeyAction::KEY_PRESS);
-    //        //else if (GLFW_REPEAT)
-    //        //    i->first->OnInput(i->second, KeyAction::KEY_REPEAT);
-    //    }
-    //}
-
-    //void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    //    //--------------CONTROLS--------------//
-    //    //std::cout << "Button " << key << " pressed" << std::endl;
-    //    for (const auto& i : inputHandler->GetListeners()) {
-    //        if (action == GLFW_RELEASE) {
-    //            i->OnInputAction(InputType::MOUSE, (MouseButtons)button, KeyAction::KEY_RELEASE);
-    //        }
-    //        else if (action == GLFW_PRESS)
-    //            i->OnInputAction(InputType::MOUSE, (MouseButtons)button, KeyAction::KEY_PRESS);
-    //        //else if (GLFW_REPEAT)
-    //        //    i->first->OnInput(i->second, KeyAction::KEY_REPEAT);
-    //    }
-    //}
-
     InputHandler::InputHandler()
     {
         //this->alreadyScrolled = false;
@@ -114,14 +86,16 @@ namespace pine {
         });
     }
 
-    void InputHandler::MapInputToAction(const KeyCode key, const std::string& action)
+    void InputHandler::MapInputToAction(const KeyCode key, const InputAction& action)
     {
-		_inputActionMapping[key].emplace(action);
+        _inputActionMapping[key].emplace_back(action);
 	}
 
     void InputHandler::UnmapInputFromAction(const KeyCode key, const std::string& action)
     {
-		_inputActionMapping[key].erase(action);
+        erase_if(_inputActionMapping[key], [&action](const InputAction& inputAction) {
+            return inputAction.name == action;
+			});
     }
 
     void InputHandler::ProcessInput()
@@ -135,14 +109,11 @@ namespace pine {
 			// compare old and new state
 			for (const auto& [first, second] : new_state)
 			{
-                if (constexpr float epsilon = 1e-5f; glm::abs(input_device->states[first].value - second.value < epsilon))
-                {
-                    for (const auto& action_event : GenerateActionEvent(input_device->index, first, input_device->states[first].value))
-                    {
-                        action_events.emplace_back(action_event);
-                        input_device->states[first].value = second.value;
-                    }
-                }
+				for (const auto& action_event : GenerateActionEvent(input_device->index, first, input_device->states[first].value, second.value))
+				{
+                    action_events.emplace_back(action_event);
+				}
+                input_device->states[first].value = second.value;
             }
         }
 
@@ -185,18 +156,58 @@ namespace pine {
         return false;
     }
 
-    std::vector<InputHandler::ActionEvent> InputHandler::GenerateActionEvent(const int deviceIndex, const KeyCode keyCode, const float newVal)
+    std::vector<InputHandler::ActionEvent> InputHandler::GenerateActionEvent(const int deviceIndex, const KeyCode keyCode, const float oldVal, const float newVal)
     {
 		std::vector<ActionEvent> action_events;
 
 		const auto& actions = _inputActionMapping[keyCode];
 
         for (const auto& action : actions) {
-            action_events.emplace_back(ActionEvent {
-                .device_index = deviceIndex,
-                .new_value = newVal,
-                .action_name = action
-                });
+
+            if (constexpr float epsilon = 1e-5f; glm::abs(newVal - oldVal) < epsilon)
+            {
+	            // No change in value, generate continuous action events
+				// if newVal is close to 1.0
+                if (glm::abs(1.0f - newVal) < epsilon)
+                {
+					if (action.type == KEY_ON_HOLD)
+					{
+                        action_events.emplace_back(ActionEvent {
+                        .device_index = deviceIndex,
+                        .new_value = newVal * action.scale,
+                        .action_name = action.name
+                        });
+					}
+                }
+            }
+            else
+            {
+	            // Value has changed, generate on value change action events
+				// if newVal is close to 1.0
+                if (glm::abs(1.0f - newVal) < epsilon)
+                {
+					if (action.type == KEY_ON_PRESS)
+					{
+                        action_events.emplace_back(ActionEvent {
+                            .device_index = deviceIndex,
+                            .new_value = newVal * action.scale,
+                            .action_name = action.name
+                            });
+					}
+                }
+                // if newVal is close to 0.0
+                else if (glm::abs(newVal) < epsilon)
+                {
+					if (action.type == KEY_ON_RELEASE)
+					{
+                        action_events.emplace_back(ActionEvent {
+                            .device_index = deviceIndex,
+                            .new_value = newVal * action.scale,
+                            .action_name = action.name
+                            });
+					}
+                }
+            }
         }
         return action_events;
     }

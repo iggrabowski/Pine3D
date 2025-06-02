@@ -10,7 +10,7 @@ namespace pine {
 	UniquePtr<Window> Window::Init(const WindowSettings& windowSettings)
 	{
 		//#ifdef WINDOW_GLFW
-		return MakeUnique<GlfwWindow>(windowSettings);
+		return std::make_unique<GlfwWindow>(windowSettings);
 		//#endif
 	}
 

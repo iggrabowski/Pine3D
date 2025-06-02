@@ -59,18 +59,23 @@ namespace pine {
 
 	void Application::Init()
 	{
+		Logger::Instance().Info("Pine3D: begin initiating objects...");
 		window = std::make_unique<GlfwWindow>();
 		input_handler = InputHandler::Init();
 		//If in editor
 		editor = Editor::Init();
 		// Default API is OpenGL due to the lack of other implementations obviously lol
 		renderer = Renderer::Init(GRAPHICS_API::OPENGL_API);
+		Logger::Instance().Success("Pine3D: ...initiating objects complete.");
 	}
 
 	void Application::Startup()
 	{
+		Logger::Instance().Info("Pine3D: starting...");
 		// Startup the window and other components
 		window->Startup();
+		Logger::Instance().Success("Pine3D: ...startup complete.");
+
 	}
 
 	//TODO shutdown impl	

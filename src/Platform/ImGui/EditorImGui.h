@@ -1,5 +1,6 @@
 #pragma once
 #include <Editor/EditorGUI.h>
+#include <imgui.h>
 
 namespace pine {
 
@@ -7,6 +8,9 @@ namespace pine {
 
 	public:
 		EditorImGui();
+
+		// Draws a sample/template ImGui window
+		void ShowSampleWindow();
 	};
 
 }
