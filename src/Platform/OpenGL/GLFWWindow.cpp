@@ -80,12 +80,18 @@ void GlfwWindow::Startup()
 	});
 
 	// set mouse callbacks
-	//glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
-	//		Application::input_handler->UpdateMouseState(0, static_cast<KeyCode>(button), {
-	//			// TODO: does mouse raise GLFW_REPEAT on hold?
-	//			action == GLFW_PRESS ? 1.0f : 0.0f
-	//		}); 
-	//});
+	glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
+			float value = 0.0f;
+			if (action == GLFW_PRESS) {
+				value = 1.0f; // key pressed
+			} else if (action == GLFW_RELEASE) {
+				value = 0.0f; // key released
+			}
+			Application::input_handler->UpdateMouseState(0, static_cast<KeyCode>(button), {
+				// TODO: does mouse raise GLFW_REPEAT on hold?
+				.value = value
+			}); 
+	});
 
 	// TODO:
 	// set mouse position callback

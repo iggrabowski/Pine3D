@@ -170,7 +170,7 @@ namespace pine {
 				// if newVal is close to 1.0
                 if (glm::abs(1.0f - newVal) < epsilon)
                 {
-					if (action.type == KEY_ON_HOLD)
+					if (action.type & KEY_ON_HOLD)
 					{
                         action_events.emplace_back(ActionEvent {
                         .device_index = deviceIndex,
@@ -186,7 +186,7 @@ namespace pine {
 				// if newVal is close to 1.0
                 if (glm::abs(1.0f - newVal) < epsilon)
                 {
-					if (action.type == KEY_ON_PRESS)
+					if (action.type & KEY_ON_PRESS || action.type & KEY_ON_HOLD)
 					{
                         action_events.emplace_back(ActionEvent {
                             .device_index = deviceIndex,
@@ -198,7 +198,7 @@ namespace pine {
                 // if newVal is close to 0.0
                 else if (glm::abs(newVal) < epsilon)
                 {
-					if (action.type == KEY_ON_RELEASE)
+					if (action.type & KEY_ON_RELEASE)
 					{
                         action_events.emplace_back(ActionEvent {
                             .device_index = deviceIndex,

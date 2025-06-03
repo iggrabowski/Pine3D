@@ -28,12 +28,17 @@ namespace pine {
 
 		// MouseButton codes
 		// Note: These are not the same as GLFW mouse button codes, but are used for input handling in Pine (for now).
+		MB_BUTTON_LEFT = 0,
 		MB_BUTTON_RIGHT = 1,
 		MB_BUTTON_MIDDLE = 2,
+		MB_BUTTON_1 = 0, // Left button
+		MB_BUTTON_2 = 1, // Right button
+		MB_BUTTON_3 = 2, // Middle button (usually scroll wheel)
 		MB_BUTTON_4 = 3,
 		MB_BUTTON_5 = 4,
 		MB_BUTTON_6 = 5,
 		MB_BUTTON_7 = 6,
+		MB_BUTTON_8 = 7,
 		MB_BUTTON_LAST = 7,
 
 		// Keyboard key codes
@@ -162,10 +167,10 @@ namespace pine {
 
 	enum KeyActionType : int
 	{
-		KEY_ON_RELEASE,
-		KEY_ON_PRESS,
-		KEY_ON_HOLD,
-		KEY_ON_REPEAT  
+		KEY_ON_RELEASE = 1,
+		KEY_ON_PRESS = 2,
+		KEY_ON_HOLD = 4,
+		KEY_ON_REPEAT = 8  
 	};
 /*	enum InputDevice : uint8_t
 	{

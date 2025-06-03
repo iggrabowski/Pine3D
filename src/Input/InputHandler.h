@@ -16,7 +16,7 @@ namespace pine {
 	struct InputAction
 	{
 		std::string name;
-		KeyActionType type;
+		short int type;
 		float scale = 1.0f;
 	};
 	
