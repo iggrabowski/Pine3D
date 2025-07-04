@@ -74,6 +74,7 @@ namespace pine {
 		Logger::Instance().Info("Pine3D: starting...");
 		// Startup the window and other components
 		window->Startup();
+		editor->Startup();
 		Logger::Instance().Success("Pine3D: ...startup complete.");
 
 	}

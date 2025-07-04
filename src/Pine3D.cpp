@@ -26,30 +26,30 @@ int main(void)
 
 	// test input mapping
 	// test key mapping
-	pine::Application::input_handler->MapInputToAction(pine::KeyCode::A, { "test", pine::KEY_ON_PRESS + pine::KEY_ON_RELEASE, -1.0f });
-	pine::Application::input_handler->AddActionCallback("test", 
-		pine::InputHandler::ActionCallback {
-			.ref = "test_callback",
-			.func = [](int sourceIndex, float value)
-			{
-				pine::Logger::Instance().Info("test A");
+	//pine::Application::input_handler->MapInputToAction(pine::KeyCode::A, { "test", pine::KEY_ON_PRESS + pine::KEY_ON_RELEASE, -1.0f });
+	//pine::Application::input_handler->AddActionCallback("test", 
+	//	pine::InputHandler::ActionCallback {
+	//		.ref = "test_callback",
+	//		.func = [](int sourceIndex, float value)
+	//		{
+	//			pine::Logger::Instance().Info("test A");
 
-				return true;
-			} 
-		});
+	//			return true;
+	//		} 
+	//	});
 
-	// test mouse mapping
-	pine::Application::input_handler->MapInputToAction(pine::KeyCode::MB_BUTTON_LEFT, { "test_mouse", pine::KEY_ON_PRESS + pine::KEY_ON_RELEASE, 1.0f });
-	pine::Application::input_handler->AddActionCallback("test_mouse", 
-		pine::InputHandler::ActionCallback {
-			.ref = "test_mouse_callback",
-			.func = [](int sourceIndex, float value)
-			{
-				pine::Logger::Instance().Info("test LEFT MOUSE");
+	//// test mouse mapping
+	//pine::Application::input_handler->MapInputToAction(pine::KeyCode::MB_BUTTON_LEFT, { "test_mouse", pine::KEY_ON_PRESS + pine::KEY_ON_RELEASE, 1.0f });
+	//pine::Application::input_handler->AddActionCallback("test_mouse", 
+	//	pine::InputHandler::ActionCallback {
+	//		.ref = "test_mouse_callback",
+	//		.func = [](int sourceIndex, float value)
+	//		{
+	//			pine::Logger::Instance().Info("test LEFT MOUSE");
 
-				return true;
-			} 
-		});
+	//			return true;
+	//		} 
+	//	});
 
 	pine::Application::Run();
 

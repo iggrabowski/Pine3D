@@ -29,6 +29,7 @@ namespace pine {
 			ActionCallbackFunc func;
 		};
 		static UniquePtr<InputHandler> Init();
+		void Startup();
 		InputHandler();
 		~InputHandler();
 		void OnUpdate();
