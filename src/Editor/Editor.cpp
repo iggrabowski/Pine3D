@@ -15,11 +15,16 @@ namespace pine {
 
 	void Editor::Startup()
 	{
-		Application::input_handler->MapInputToAction(A, {
+		SetKeyBinds();
+	}
+
+	void Editor::SetKeyBinds()
+	{
+		Application::input_handler->MapInputToAction(KeyCode::A, {
 			.name = "editor_camera_strafe_x",
 			.type = pine::KEY_ON_HOLD,
 			.scale = -1.0f });
-		Application::input_handler->MapInputToAction(D, {
+		Application::input_handler->MapInputToAction(KeyCode::D, {
 			.name = "editor_camera_strafe_x",
 			.type = pine::KEY_ON_HOLD,
 			.scale = 1.0f });
@@ -33,11 +38,11 @@ namespace pine {
 				} 
 			});
 
-		Application::input_handler->MapInputToAction(S, {
+		Application::input_handler->MapInputToAction(KeyCode::Q, {
 			.name = "editor_camera_strafe_y",
 			.type = pine::KEY_ON_HOLD,
 			.scale = -1.0f });
-		Application::input_handler->MapInputToAction(W, {
+		Application::input_handler->MapInputToAction(KeyCode::E, {
 			.name = "editor_camera_strafe_y",
 			.type = pine::KEY_ON_HOLD,
 			.scale = 1.0f });
@@ -50,8 +55,53 @@ namespace pine {
 					return true;
 				} 
 			});
-	}
 
+		Application::input_handler->MapInputToAction(KeyCode::S, {
+			.name = "editor_camera_strafe_z",
+			.type = pine::KEY_ON_HOLD,
+			.scale = -1.0f });
+		Application::input_handler->MapInputToAction(KeyCode::W, {
+			.name = "editor_camera_strafe_z",
+			.type = pine::KEY_ON_HOLD,
+			.scale = 1.0f });
+		Application::input_handler->AddActionCallback("editor_camera_strafe_z",
+			pine::InputHandler::ActionCallback {
+				.ref = "editor_camera_strafe_z",
+				.func = [this](int sourceIndex, float value)
+				{
+					MoveCameraZ(value);
+					return true;
+				} 
+			});
+
+		Application::input_handler->MapInputToAction(KeyCode::MB_BUTTON_RIGHT, {
+			.name = "editor_camera_rotate",
+			.type = pine::KEY_ON_RELEASE,
+			.scale = -1.0f });
+		Application::input_handler->MapInputToAction(KeyCode::MB_BUTTON_RIGHT, {
+			.name = "editor_camera_rotate",
+			.type = pine::KEY_ON_HOLD,
+			.scale = 1.0f });
+		Application::input_handler->AddActionCallback("editor_camera_rotate",
+			pine::InputHandler::ActionCallback {
+				.ref = "editor_camera_rotate",
+				.func = [this](int sourceIndex, float value)
+				{
+					// get raw mouse motion
+					std::pair<float, float> mousePos = Application::input_handler->GetCurrentMousePosition();
+					std::pair<float, float> lastMousePos = Application::input_handler->GetLastMousePosition();
+
+					float rotX = mousePos.first - lastMousePos.first;
+					float rotY = mousePos.second - lastMousePos.second;
+					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotX, glm::vec3(0.0f, 1.0f,0.0f));
+					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotY, glm::cross(GetCamera()->GetDirection(), GetCamera()->up));
+					Application::window->SetCursorDisabled(value);
+					Application::input_handler->UpdateMousePosition(0, mousePos.first, mousePos.second);
+					return true;
+				} 
+			});
+
+	}
 	void Editor::HandleEventlessInput() const
 	{
 		/*if (Application::input_handler->IsKeyPressed(KeyCode::A))
@@ -80,6 +130,11 @@ namespace pine {
 	void Editor::MoveCameraY(const float scale) const
 	{
 		MoveInDirection(scale * Application::renderer->GetRenderCamera().up);
+	}
+
+	void Editor::MoveCameraZ(const float scale) const
+	{
+		MoveInDirection(scale * Application::renderer->GetRenderCamera().GetDirection());
 	}
 
 	void Editor::MoveInDirection(glm::vec3 direction) const

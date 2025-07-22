@@ -28,7 +28,8 @@ namespace pine {
 		virtual ~Window() = default;
 		static UniquePtr<Window> Init(const WindowSettings& windowSettings);
 		virtual void Startup() = 0;
-		virtual void RegisterInputCallback(int key, int scancode, int action, int mods) = 0;
+		//virtual void RegisterInputCallback(int key, int scancode, int action, int mods) = 0;
+		virtual void SetCursorDisabled(bool hidden) = 0;
 		//static Window* s_Instance;
 
 		virtual glm::ivec2 GetMousePosition() = 0;
@@ -40,6 +41,7 @@ namespace pine {
 	protected:
 		WindowSettings _settings;
 		bool _isActive = false;
+		bool _cursorDisabled = false;
 	private:
 		//static UniquePtr<Window> Create(const WindowSettings& windowSettings);
 	};

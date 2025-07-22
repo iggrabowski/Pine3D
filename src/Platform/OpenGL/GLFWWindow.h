@@ -4,8 +4,11 @@
 #include "Utils/Utils.h"
 #include <GLFW/glfw3.h>
 
+#include "Input/InputDevices.h"
+
 namespace pine {
-	
+	enum class KeyCode;
+
 	struct GlfwWindowSettings
 	{
 		/*sf::ContextSettings contextSettings;
@@ -18,7 +21,7 @@ namespace pine {
 		~GlfwWindow() override;
 		explicit GlfwWindow(const WindowSettings& windowSettings);
 		void Startup() override;
-		void RegisterInputCallback(int key, int scancode, int action, int mods) override;
+		void SetCursorDisabled(bool hidden) override;
 	
 		glm::ivec2 GetMousePosition() override;
 		glm::ivec2 GetSize() override;
@@ -33,6 +36,8 @@ namespace pine {
 		bool IsOpen() override;
 	private:
 		GLFWwindow* _window;
+		static KeyCode GlfwToKeyCode(int glfwCode, InputDeviceType deviceType);
+		static int KeyCodeToGlfw(KeyCode code);
 
 		//sf::RenderWindow* m_Window;
 		glm::vec2 _lastMousePosition;

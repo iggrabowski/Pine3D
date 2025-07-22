@@ -46,16 +46,6 @@ namespace pine {
 
     void InputHandler::ChangeDirection(int xpos, int yPosition)
     {
-        //Camera& camera = renderer->GetRenderCamera();
-        //glm::vec3 dir = camera.GetDirection();
-        //glm::vec2 deltaDir(x * m_directionSpeedX, y * m_directionSpeedY);
-        //glm::vec3 vec3(dir.x, dir.y, dir.z);
-
-        //vec3 = Rotate<glm::vec3>(vec3, deltaDir.x, camera.up);
-        ////@bug when trying to rotate more than up or down camera flickers
-        //vec3 = Rotate<glm::vec3>(vec3, deltaDir.y, Cross(dir, camera.up));
-        //        
-        //camera.SetDirection(vec3);
     }
 
     void InputHandler::AddListener(InputListener* listener)
@@ -145,15 +135,6 @@ namespace pine {
 		erase_if(_inputDevices, [type, deviceIndex](const std::shared_ptr<InputDevice>& device) {
 			return device->type == type && device->index == deviceIndex;
 		});
-    }
-
-    // deprecated
-    bool InputHandler::IsKeyPressed(const KeyCode keyCode)
-    {
-	    if (const int state = glfwGetKey(Application::window->GetWindow(), keyCode); state == GLFW_PRESS) {
-            return true;
-        }
-        return false;
     }
 
     std::vector<InputHandler::ActionEvent> InputHandler::GenerateActionEvent(const int deviceIndex, const KeyCode keyCode, const float oldVal, const float newVal)

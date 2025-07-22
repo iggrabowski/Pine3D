@@ -22,35 +22,35 @@ namespace pine {
 	typedef glm::mat3 glm::mat3;
 	typedef glm::mat4 glm::mat4;*/
 
-#define LookAt glm::lookAt
+//#define LookAt glm::lookAt
 	/*template<typename ... Args>
 	static constexpr glm::mat4 LookAt(Args&& ... args)
 	{
 		return glm::lookAt(std::forward<Args>(args)...);
 	}*/
 
-#define Perspective glm::perspective
+//#define Perspective glm::perspective
 //	template<typename ... Args>
 //	static constexpr glm::mat4 Perspective(Args&& ... args)
 //	{
 //		return glm::perspective(std::forward<Args>(args)...);
 //	}
 
-#define Rotate glm::rotate
+//#define Rotate glm::rotate
 	//template<typename T, typename ... Args>
 	//static constexpr T Rotate(Args&& ... args)
 	//{
 	//	return glm::rotate(std::forward<Args>(args)...);
 	//}
 
-#define Cross glm::cross
+//#define Cross glm::cross
 //	template<typename ... Args>
 //	static constexpr glm::vec3 Cross(Args&& ... args)
 //	{
 //		return glm::cross(std::forward<Args>(args)...);
 //	}
 //
-#define Normalize glm::normalize
+//#define Normalize glm::normalize
 //	template<typename ... Args>
 //	static constexpr glm::vec3 Normalize(Args&& ... args)
 //	{

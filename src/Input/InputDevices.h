@@ -36,7 +36,6 @@ namespace pine {
 		case InputDeviceType::GAMEPAD: return "gamepad";
 		case InputDeviceType::TOUCH_SCREEN: return "touch_screen";
 		case InputDeviceType::NONE: return "none";
-		default: return "unknown";
 		}
 	}
 }

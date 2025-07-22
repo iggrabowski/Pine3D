@@ -12,7 +12,7 @@
 
 namespace pine {
 	//extern class Application;
-
+	//TODO: handle device indexes
 	struct InputAction
 	{
 		std::string name;
@@ -54,18 +54,23 @@ namespace pine {
 		void UpdateMouseState(int index, KeyCode button, InputDeviceState state) {
 			_inputState.UpdateMouseState(index, button, state);
 		}
+		void UpdateMousePosition(int index, float x, float y) {
+			_inputState.UpdateMousePosition(index, x, y);
+		}
 		void UpdateGamepadState(int index, KeyCode key, InputDeviceState state) {
 			_inputState.UpdateGamepadState(index, key, state);
 		}
-		std::unordered_map<KeyCode, InputDeviceState> GetMouseState()
+		[[nodiscard]] std::unordered_map<KeyCode, InputDeviceState> GetMouseState()
 		{
 			return _inputState.GetMouseState();
 		}
-		std::unordered_map<KeyCode, InputDeviceState> GetKeyboardState()
+		[[nodiscard]] std::pair<float, float> GetCurrentMousePosition() const { return _inputState.GetCurrentMousePosition(); }
+		[[nodiscard]] std::pair<float, float> GetLastMousePosition() const { return _inputState.GetLastMousePosition(); }
+		[[nodiscard]] std::unordered_map<KeyCode, InputDeviceState> GetKeyboardState()
 		{
 			return _inputState.GetKeyboardState();
 		}
-		std::unordered_map<int, std::unordered_map<KeyCode, InputDeviceState>> GetGamepadState(int index)
+		[[nodiscard]] std::unordered_map<int, std::unordered_map<KeyCode, InputDeviceState>> GetGamepadState(int index)
 		{
 			return _inputState.GetGamepadState();
 		}
