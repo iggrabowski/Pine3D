@@ -3,7 +3,7 @@
 #include "Runtime/Components/InputListener.h"
 #include "Platform/ImGui/EditorImGui.h"
 
-#define EDITOR_CAMERA_MOVE_SPEED 0.3f
+#define EDITOR_CAMERA_MOVE_SPEED 0.45f
 
 class Application;
 
@@ -17,6 +17,7 @@ namespace pine {
 		static std::unique_ptr<Editor> Init();
 		void Startup();
 		void SetKeyBinds();
+		void SetAspectRatio(float aspectRatio) const;
 
 		[[nodiscard]] Camera* GetCamera() const { return _mainCamera; }
 	private:

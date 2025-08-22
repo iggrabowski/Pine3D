@@ -538,7 +538,17 @@ void GlfwWindow::Startup()
 	// TODO:
 	// set mouse position callback
 	// set gamepad callbacks
-	
+
+	// Set other callbacks
+    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, int width, int height) {
+		// Update the window size in the input handler
+		const float aspectRatio = ((float)width) / height;
+        // Use the entire window for rendering.
+        glViewport(0, 0,width, height);
+		Application::editor->SetAspectRatio(aspectRatio);
+        Application::window->SetSize(width, height);
+    }); 
+
 	// Register the keyboard as an input device
 	const auto default_keyboard = std::make_shared<InputDevice>();
 	default_keyboard->index = 0;

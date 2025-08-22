@@ -1,8 +1,9 @@
 #pragma once
 #include "Utils/Utils.h"
 //#include "Core/Application.h"
-
 #include <string>
+#define WINDOW_WIDTH_DEFAULT 1200
+#define WINDOW_HEIGHT_DEFAULT 900
 
 namespace pine {
 
@@ -16,8 +17,8 @@ namespace pine {
 
 		explicit WindowSettings(
 			const char title[] = "Pine3D",
-			const int width = 1200,
-			const int height = 900,
+			const int width = WINDOW_WIDTH_DEFAULT,
+			const int height = WINDOW_HEIGHT_DEFAULT,
 			const bool vsync = true
 		) : title(title), width(width), height(height), v_sync(vsync) {}
 	};
@@ -32,8 +33,14 @@ namespace pine {
 		virtual void SetCursorDisabled(bool hidden) = 0;
 		//static Window* s_Instance;
 
+		// TODO: fix virtual, no need
 		virtual glm::ivec2 GetMousePosition() = 0;
 		virtual glm::ivec2 GetSize() = 0;
+		void SetSize(const int width, const int height) {
+			_settings.width = width;
+			_settings.height = height;
+		}
+
 		virtual void OnUpdate() = 0;
 		//virtual void Display() = 0;
 		//virtual void Sleep(float seconds) = 0;

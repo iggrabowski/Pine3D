@@ -1,6 +1,8 @@
 #pragma once
 #include "Camera.h"
 
+#include "Utils/Logger.h"
+
 namespace pine {
 
 	glm::mat4 Camera::GetViewProjection() const
@@ -43,5 +45,10 @@ namespace pine {
         glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
 
 		_direction = glm::vec3(rotation * glm::vec4(_direction, 0.0f));
+	}
+
+	void Camera::UpdateAspectRatio(float aspectRatio)
+	{
+		_projection = glm::perspective(glm::radians(fov), aspectRatio, _zNear, _zFar);
 	}
 }

@@ -59,6 +59,7 @@ namespace pine {
 
 	void Application::Init()
 	{
+		// TODO: chekc if some init methods can be moved to Startup
 		Logger::Instance().Info("Pine3D: begin initiating objects...");
 		window = std::make_unique<GlfwWindow>();
 		input_handler = InputHandler::Init();
@@ -76,7 +77,6 @@ namespace pine {
 		window->Startup();
 		editor->Startup();
 		Logger::Instance().Success("Pine3D: ...startup complete.");
-
 	}
 
 	//TODO shutdown impl	

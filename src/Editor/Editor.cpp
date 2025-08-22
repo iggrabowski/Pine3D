@@ -103,6 +103,12 @@ namespace pine {
 			});
 
 	}
+
+	void Editor::SetAspectRatio(float aspectRatio) const
+	{
+		_mainCamera->UpdateAspectRatio(aspectRatio);
+	}
+
 	void Editor::HandleEventlessInput() const
 	{
 		/*if (Application::input_handler->IsKeyPressed(KeyCode::A))
