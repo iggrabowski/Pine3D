@@ -3,6 +3,13 @@
 #include "Core/Window.h"
 #include "Utils/Utils.h"
 #include <GLFW/glfw3.h>
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
+#pragma comment(lib, "legacy_stdio_definitions")
+#endif
+
 
 #include "Input/InputDevices.h"
 
@@ -41,6 +48,11 @@ namespace pine {
 
 		//sf::RenderWindow* m_Window;
 		glm::vec2 _lastMousePosition;
+
+		 // Our ImGUI state
+		bool _show_demo_window = true;
+		bool _show_another_window = false;
+		ImVec4 _clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 		void HandleEvents();
 	};

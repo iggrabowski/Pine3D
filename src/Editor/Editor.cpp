@@ -1,4 +1,3 @@
-#pragma once
 #include "Editor/Editor.h"
 #include "Core/Application.h"
 
@@ -6,6 +5,7 @@ namespace pine {
 	Editor::Editor()
 	{
 		_mainCamera = new Camera();
+		_editorGui = new EditorImGui();
 	}
 
 	std::unique_ptr<Editor> Editor::Init()
@@ -16,6 +16,7 @@ namespace pine {
 	void Editor::Startup()
 	{
 		SetKeyBinds();
+		//_editorGui->Startup();
 	}
 
 	void Editor::SetKeyBinds()

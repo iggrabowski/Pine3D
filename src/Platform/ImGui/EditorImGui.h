@@ -1,15 +1,16 @@
 #pragma once
 #include <Editor/EditorGUI.h>
-#include <imgui.h>
 
 namespace pine {
 
-	class EditorImGui : EditorGUI {
+	class EditorImGui : public EditorGUI {
 
 	public:
 		EditorImGui();
+		void Startup() override;
 
 		// Draws a sample/template ImGui window
+	private:
 		void ShowSampleWindow();
 	};
 

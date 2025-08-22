@@ -5,7 +5,11 @@
 
 
 namespace pine {
-	
+
+static void glfw_error_callback(int error, const char* description)
+{
+    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
 
 int GlfwWindow::KeyCodeToGlfw(KeyCode code)
 {
@@ -362,51 +366,119 @@ KeyCode GlfwWindow::GlfwToKeyCode(int glfwCode, InputDeviceType deviceType)
 
 GlfwWindow::GlfwWindow()
 {
-	_settings = WindowSettings();
-	_lastMousePosition = { 0, 0 };
-	glfwInit();
-	_window = glfwCreateWindow(
-		_settings.width, 
-		_settings.height,
-		_settings.title,
-		nullptr,
-		nullptr
-	);
+    _settings = WindowSettings();
+    _lastMousePosition = { 0, 0 };
+    glfwSetErrorCallback(glfw_error_callback);
+    glfwInit();
 
-	glfwMakeContextCurrent(_window);
+	// Decide GL+GLSL versions
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+    // GL ES 2.0 + GLSL 100
+    const char* glsl_version = "#version 100";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+#elif defined(__APPLE__)
+    // GL 3.2 + GLSL 150
+    const char* glsl_version = "#version 150";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+#else
+    // GL 3.0 + GLSL 130
+    const char* glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+#endif
+
+    _window = glfwCreateWindow(
+        _settings.width,
+        _settings.height,
+        _settings.title,
+        nullptr,
+        nullptr
+    );
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    glfwMakeContextCurrent(_window);
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(_window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);;
+
+	// Enable vsync
+    glfwSwapInterval(1);
 }
 
 GlfwWindow::GlfwWindow(const WindowSettings& windowSettings)
 {
 	_settings = windowSettings;
-	_lastMousePosition = { 0, 0 };
+    _lastMousePosition = { 0, 0 };
+    glfwSetErrorCallback(glfw_error_callback);
+    glfwInit();
 
-	// TODO: perform these checks:
-	///* Initialize the library */
-	//if (!glfwInit())
-	//	return -1;
+	// Decide GL+GLSL versions
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+    // GL ES 2.0 + GLSL 100
+    const char* glsl_version = "#version 100";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+#elif defined(__APPLE__)
+    // GL 3.2 + GLSL 150
+    const char* glsl_version = "#version 150";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+#else
+    // GL 3.0 + GLSL 130
+    const char* glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+#endif
 
-	///* Create a windowed mode window and its OpenGL context */
-	//window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-	//if (!window)
-	//{
-	//	glfwTerminate();
-	//	return -1;
-	//}
+    _window = glfwCreateWindow(
+        _settings.width,
+        _settings.height,
+        _settings.title,
+        nullptr,
+        nullptr
+    );
 
-	// Initialize GLFW
-	glfwInit();
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-	// TODO: vsync settings
-	_window = glfwCreateWindow(
-		_settings.width, 
-		_settings.height,
-		_settings.title,
-		nullptr,
-		nullptr
-	);
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
 
-	glfwMakeContextCurrent(_window);
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(_window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    
+    glfwMakeContextCurrent(_window);
+
+	// Enable vsync
+    glfwSwapInterval(1);
 }
 
 void GlfwWindow::Startup()
@@ -420,6 +492,9 @@ void GlfwWindow::Startup()
 	// set input callbacks
 	// set keyboard callbacks
 	glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		// Call ImGui's key callback
+		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
 		float value = 0.0f;
 		if (action == GLFW_PRESS) {
 			value = 1.0f; // key pressed
@@ -435,7 +510,11 @@ void GlfwWindow::Startup()
 
 	// set mouse callbacks
 	glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
-		float value = 0.0f;
+
+		// Call ImGui's mouse button callback
+        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+
+        float value = 0.0f;
 		if (action == GLFW_PRESS) {
 			value = 1.0f; // key pressed
 		} else if (action == GLFW_RELEASE) {
@@ -448,6 +527,11 @@ void GlfwWindow::Startup()
 	});
 
     glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xpos, double ypos){
+        // Call ImGui's mouse position callback
+        ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+
+        // Update the mouse position in the input handler
+		// Note: xpos and ypos are in screen coordinates, not normalized device coordinates
 		Application::input_handler->UpdateMousePosition(0 , static_cast<float>(xpos), static_cast<float>(ypos));
     });
 
@@ -513,11 +597,57 @@ GlfwWindow::~GlfwWindow()
 
 void GlfwWindow::OnUpdate()
 {
+	glfwPollEvents();
+
+    // ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+        if (_show_demo_window)
+            ImGui::ShowDemoWindow(&_show_demo_window);
+
+  //  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+  //  {
+  //      static float f = 0.0f;
+  //      static int counter = 0;
+
+  //      ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+  //      ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+  //      ImGui::Checkbox("Demo Window", &_show_demo_window);      // Edit bools storing our window open/close state
+  //      ImGui::Checkbox("Another Window", &_show_another_window);
+
+  //      ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+  //      ImGui::ColorEdit3("clear color", (float*)&_clear_color); // Edit 3 floats representing a 
+
+  //      if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+  //          counter++;
+  //      ImGui::SameLine();
+  //      ImGui::Text("counter = %d", counter);
+
+		//ImGuiIO& io = ImGui::GetIO();
+  //      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+  //      ImGui::End();
+  //  }
+
+  //  // 3. Show another simple window.
+  //  if (_show_another_window)
+  //  {
+  //      ImGui::Begin("Another Window", &_show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+  //      ImGui::Text("Hello from another window!");
+  //      if (ImGui::Button("Close Me"))
+  //          _show_another_window = false;
+  //      ImGui::End();
+  //  }
+
+    // Rendering
+    ImGui::Render();
+       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 	// Swap buffers
 	glfwSwapBuffers(_window);
-
-	// TODO: some actual event handling
-	HandleEvents();
 }
 
 GLFWwindow* GlfwWindow::GetWindow() const
@@ -543,76 +673,6 @@ glm::ivec2 GlfwWindow::GetSize()
 bool GlfwWindow::IsOpen()
 {
 	return !glfwWindowShouldClose(_window);
-}
-
-void GlfwWindow::HandleEvents()
-{
-	glfwPollEvents();
-
-	//sf::Event event;
-	////bool mouseRightButtonPressed = false;
-
-	//while (m_Window->pollEvent(event))
-	//{
-	//	// check the type of the event...
-	//	switch (event.type)
-	//	{
-	//		// window closed
-	//	case sf::Event::Closed:
-	//		m_Window->close();
-	//		m_IsActive = false;
-	//		break;
-
-	//		// key pressed
-	//	case sf::Event::Resized:
-	//		std::cout << "ERROR: RESIZED EVENT HANDLING NOT IMPLEMENTED." << std::endl;
-	//		break;
-
-	//	case sf::Event::MouseWheelMoved:
-	//		/*std::cout << "wheel movement: " << event.mouseWheel.delta << std::endl;
-	//		std::cout << "mouse x: " << event.mouseWheel.x << std::endl;
-	//		std::cout << "mouse y: " << event.mouseWheel.y << std::endl;*/
-	//		controls->Zoom(event.mouseWheel.delta);
-	//		break;
-
-	//	case sf::Event::MouseMoved:
-	//		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-	//		{
-	//			/*std::cout << "new mouse x: " << event.mouseMove.x << std::endl;
-	//			std::cout << "new mouse y: " << event.mouseMove.y << std::endl;*/
-	//			controls->ChangeDirection(m_LastMousePosition.x -  event.mouseMove.x, m_LastMousePosition.y - event.mouseMove.y);
-	//		}
-	//		m_LastMousePosition.x = event.mouseMove.x;
-	//		m_LastMousePosition.y = event.mouseMove.y;
-	//		break;
-
-	//		// we don't process other types of events
-	//	default:
-	//		break;
-	//	}
-	//}
-
-	////--------------CONTROLS--------------//
-	////Direct device access responses
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	//{
-	//	controls->MoveLeft();
-	//}
-
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	//{
-	//	controls->MoveRight();
-	//}
-
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-	//{
-	//	controls->MoveUp();
-	//}
-
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-	//{
-	//	controls->MoveDown();
-	//}
 }
 
 /*void GLFWWindow::Sleep(float seconds)

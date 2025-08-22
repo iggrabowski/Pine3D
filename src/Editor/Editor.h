@@ -1,9 +1,9 @@
 #pragma once
 #include "Runtime/Camera/Camera.h"
 #include "Runtime/Components/InputListener.h"
-#include "EditorGUI.h"
+#include "Platform/ImGui/EditorImGui.h"
 
-#define EDITOR_CAMERA_MOVE_SPEED 0.2f
+#define EDITOR_CAMERA_MOVE_SPEED 0.3f
 
 class Application;
 
@@ -23,7 +23,7 @@ namespace pine {
 		void MoveCameraX(float scale) const;
 		void MoveCameraY(float scale) const;
 		void MoveCameraZ(float scale) const;
-		EditorGUI _editorGui;
+		EditorGUI* _editorGui;
 		float _moveSpeed = 0.05f;
 		Camera* _mainCamera;
 		// Input handling methods (prob deprecated)
