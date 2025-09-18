@@ -62,6 +62,21 @@ source_group("Source Files/Platform/OpenGL" FILES ${PINE3D-PLATFORM-OPENGL})
 set(PINE3D-PLATFORM-IMGUI
 	${SRC_ROOT}/Platform/ImGui/EditorImGui.cpp
 	${SRC_ROOT}/Platform/ImGui/EditorImGui.h
+	include/imgui/backends/imgui_impl_glfw.h
+	include/imgui/backends/imgui_impl_opengl3.h	
+	include/imgui/backends/imgui_impl_glfw.cpp
+	include/imgui/backends/imgui_impl_opengl3.cpp
+	include/imgui/imgui.h
+	include/imgui/imgui.cpp
+	include/imgui/imconfig.h
+	include/imgui/imgui_demo.cpp
+	include/imgui/imgui_draw.cpp
+	include/imgui/imgui_internal.h
+	include/imgui/imgui_tables.cpp
+	include/imgui/imgui_widgets.cpp
+	include/imgui/imstb_rectpack.h
+	include/imgui/imstb_textedit.h
+	include/imgui/imstb_truetype.h
 	)
 	
 source_group("Source Files/Platform/ImGui" FILES ${PINE3D-PLATFORM-IMGUI})
