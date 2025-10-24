@@ -1,9 +1,16 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 4.1)
 
 project(Pine3D VERSION 0.1.0)
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW lib only" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "GLFW lib only" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "GLFW lib only" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only")
+
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Assimp build tests" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "Assimp install" FORCE)
+set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "Assimp install PDB" FORCE)
 
 add_definitions(-DCMAKE_POLICY_VERSION_MINIMUM=3.5)
 add_definitions(-DGLEW_STATIC)
@@ -81,6 +88,13 @@ set(PINE3D-PLATFORM-IMGUI
 	
 source_group("Source Files/Platform/ImGui" FILES ${PINE3D-PLATFORM-IMGUI})
 
+set(PINE3D-PLATFORM-ASSIMP
+	${SRC_ROOT}/Platform/Assimp/AssimpModelLoader.cpp
+	${SRC_ROOT}/Platform/Assimp/AssimpModelLoader.h
+	)
+
+source_group("Source Files/Platform/Assimp" FILES ${PINE3D-PLATFORM-ASSIMP})
+
 set(PINE3D-EDITOR
 	${SRC_ROOT}/Editor/EditorGUI.cpp
 	${SRC_ROOT}/Editor/EditorGUI.h
@@ -156,6 +170,7 @@ add_executable(${PROJECT_NAME} WIN32
 	${PINE3D-EDITOR}
 	${PINE3D-PLATFORM-IMGUI}
 	${PINE3D-PLATFORM-OPENGL}
+	${PINE3D-PLATFORM-ASSIMP}
 	${PINE3D-RUNTIME-CAMERA}
 	${PINE3D-RUNTIME-COMPONENTS}
 	${PINE3D-RUNTIME-RENDERCORE}
@@ -177,7 +192,7 @@ target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRC_ROOT} ${STD_INCL
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw libglew_static glm)
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw libglew_static glm assimp::assimp)
 
 # set Pine3D target as a startup project
 if( MSVC )

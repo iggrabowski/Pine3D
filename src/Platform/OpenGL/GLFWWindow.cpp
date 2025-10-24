@@ -2,6 +2,7 @@
 #include "Platform/OpenGL/GLFWWindow.h"
 #include "Core/Application.h"
 #include "Utils/Logger.h"
+#include "Editor/ObjLoaderWindow.h"
 
 
 namespace pine {
@@ -491,63 +492,7 @@ void GlfwWindow::Startup()
 
 	// set input callbacks
 	// set keyboard callbacks
-	glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-		// Call ImGui's key callback
-		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-
-		float value = 0.0f;
-		if (action == GLFW_PRESS) {
-			value = 1.0f; // key pressed
-		} else if (action == GLFW_RELEASE) {
-			value = 0.0f; // key released
-		} else if (action == GLFW_REPEAT) {
-			value = 1.0f; // key held down
-		}
-		Application::input_handler->UpdateKeyboardState(0, GlfwToKeyCode(key, InputDeviceType::KEYBOARD), {
-			.value = value
-		}); 
-	});
-
-	// set mouse callbacks
-	glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
-
-		// Call ImGui's mouse button callback
-        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-
-        float value = 0.0f;
-		if (action == GLFW_PRESS) {
-			value = 1.0f; // key pressed
-		} else if (action == GLFW_RELEASE) {
-			value = 0.0f; // key released
-		}
-		Application::input_handler->UpdateMouseState(0, GlfwToKeyCode(button, InputDeviceType::MOUSE), {
-			// TODO: does mouse raise GLFW_REPEAT on hold?
-			.value = value
-		}); 
-	});
-
-    glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xpos, double ypos){
-        // Call ImGui's mouse position callback
-        ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
-
-        // Update the mouse position in the input handler
-		// Note: xpos and ypos are in screen coordinates, not normalized device coordinates
-		Application::input_handler->UpdateMousePosition(0 , static_cast<float>(xpos), static_cast<float>(ypos));
-    });
-
-	// TODO:
-	// set mouse position callback
-	// set gamepad callbacks
-
-	// Set other callbacks
-    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, int width, int height) {
-		// Update the window size in the input handler
-		const float aspectRatio = ((float)width) / height;
-        // Use the entire window for rendering.
-        glViewport(0, 0,width, height);
-		Application::editor->SetAspectRatio(aspectRatio);
-        Application::window->SetSize(width, height);
-    }); 
+    AddGlfwCallbacks();
 
 	// Register the keyboard as an input device
 	const auto default_keyboard = std::make_shared<InputDevice>();
@@ -617,6 +562,9 @@ void GlfwWindow::OnUpdate()
     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (_show_demo_window)
             ImGui::ShowDemoWindow(&_show_demo_window);
+
+        static ObjLoaderWindow window;
+        window.Show(true);
 
   //  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
   //  {
@@ -689,5 +637,68 @@ bool GlfwWindow::IsOpen()
 {
 	sf::sleep(sf::seconds(seconds));
 }*/
+void GlfwWindow::AddGlfwCallbacks()
+{
+
+	glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		// Call ImGui's key callback
+		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
+		float value = 0.0f;
+		if (action == GLFW_PRESS) {
+			value = 1.0f; // key pressed
+		} else if (action == GLFW_RELEASE) {
+			value = 0.0f; // key released
+		} else if (action == GLFW_REPEAT) {
+			value = 1.0f; // key held down
+		}
+		Application::input_handler->UpdateKeyboardState(0, GlfwToKeyCode(key, InputDeviceType::KEYBOARD), {
+			.value = value
+		}); 
+	});
+
+	// set mouse callbacks
+	glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
+
+		// Call ImGui's mouse button callback
+        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+
+        float value = 0.0f;
+		if (action == GLFW_PRESS) {
+			value = 1.0f; // key pressed
+		} else if (action == GLFW_RELEASE) {
+			value = 0.0f; // key released
+		}
+		Application::input_handler->UpdateMouseState(0, GlfwToKeyCode(button, InputDeviceType::MOUSE), {
+			// TODO: does mouse raise GLFW_REPEAT on hold?
+			.value = value
+		}); 
+	});
+
+    glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xpos, double ypos){
+        // Call ImGui's mouse position callback
+        ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+
+        // Update the mouse position in the input handler
+		// Note: xpos and ypos are in screen coordinates, not normalized device coordinates
+		Application::input_handler->UpdateMousePosition(0 , static_cast<float>(xpos), static_cast<float>(ypos));
+    });
+
+	// TODO:
+	// set mouse position callback
+	// set gamepad callbacks
+
+	// Set other callbacks
+    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, int width, int height) {
+		// Update the window size in the input handler
+		const float aspectRatio = ((float)width) / height;
+        // Use the entire window for rendering.
+        if (!isnan(aspectRatio)) {
+            glViewport(0, 0, width, height);
+            Application::editor->SetAspectRatio(aspectRatio);
+            Application::window->SetSize(width, height);
+        }
+    }); 
+}
 
 }
