@@ -4,7 +4,7 @@
 #include <assimp/postprocess.h>
 #include <algorithm>
 
-namespace Pine {
+namespace pine {
 
     std::string GetDirectory(const std::string& path)
     {
@@ -49,6 +49,7 @@ namespace Pine {
 
             out.vertices.push_back(v);
         }
+        Mesh* meshPtr = new Mesh(mesh->mVertices, mesh->mTextureCoords, mesh->mNormals);
 
         // indices
         for (unsigned int i = 0; i < mesh->mNumFaces; ++i)

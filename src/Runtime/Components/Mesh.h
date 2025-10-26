@@ -44,16 +44,20 @@ namespace pine {
 	class Mesh {
 		friend OpenGLRenderer;
 	public:
-		std::vector<glm::vec3>			m_positions;
-		std::vector<glm::vec2>			m_texCoords;
-		std::vector<glm::vec3>			m_normals;
-		std::vector<unsigned int>		m_indices;
+		std::vector<glm::vec3>			positions;
+		std::vector<glm::vec2>			texCoords;
+		std::vector<glm::vec3>			normals;
+		std::vector<unsigned int>		indices;
 
 		Mesh();
 		//Mesh(const std::string& fileName);
+		Mesh(std::vector<glm::vec3>& positions);
 		Mesh(std::vector<glm::vec3>& positions, std::vector<unsigned int>& indices);
 		Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<unsigned int>& indices);	
+		Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector <glm::vec3>& normals);
 		Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<glm::vec3>& normals, std::vector<unsigned int>& indices);
+
+		Mesh(aiMesh* mesh)
 
 		void InitMesh();
 		//void Draw();
