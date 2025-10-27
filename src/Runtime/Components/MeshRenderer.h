@@ -6,6 +6,13 @@
 
 namespace pine {
 
+	struct Model {
+		std::vector<Mesh>		meshes;
+		std::vector<Material>	materials;
+		unsigned int num_vertices;
+		unsigned int num_indices;
+	};
+
 	class MeshRenderer : public SceneObject {
 	public:
 		MeshRenderer();
@@ -13,8 +20,8 @@ namespace pine {
 
 		void OnUpdate() override;
 	private:
-		Mesh* _mesh;
-		Material* _material;
+		Mesh*		_mesh;
+		Material*	_material;
 	};
 
 }

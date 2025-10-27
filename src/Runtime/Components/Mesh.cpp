@@ -24,35 +24,35 @@ namespace pine {
 
 	Mesh::Mesh(std::vector<glm::vec3>& positions)
 	{
-		this->positions = positions;
+		this->m_Positions = positions;
 	}
 
 	Mesh::Mesh(std::vector<glm::vec3>& positions, std::vector<unsigned int>& indices)
 	{
-		this->positions = positions;
-		this->indices = indices;
+		this->m_Positions = positions;
+		this->m_Indices = indices;
 	}
 
 	Mesh::Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<glm::vec3>& normals)
 	{
-		this->positions = positions;
-		this->texCoords = uv;
-		this->normals = normals;
+		this->m_Positions = positions;
+		this->m_TexCoords = uv;
+		this->m_Normals = normals;
 	}
 
 	Mesh::Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<unsigned int>& indices)
 	{
-		this->positions = positions;
-		this->texCoords = uv;
-		this->indices = indices;
+		this->m_Positions = positions;
+		this->m_TexCoords = uv;
+		this->m_Indices = indices;
 	}
 
 	Mesh::Mesh(std::vector<glm::vec3>& positions, std::vector<glm::vec2>& uv, std::vector<glm::vec3>& normals, std::vector<unsigned int>& indices)
 	{
-		this->positions = positions;
-		this->texCoords = uv;
-		this->normals = normals;
-		this->indices = indices;
+		this->m_Positions = positions;
+		this->m_TexCoords = uv;
+		this->m_Normals = normals;
+		this->m_Indices = indices;
 	}
 
 	void Mesh::InitMesh()
@@ -67,22 +67,22 @@ namespace pine {
 		glGenBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[POSITION_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(positions[0]) * positions.size(), &positions[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_Positions[0]) * m_Positions.size(), &m_Positions[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[TEXCOORD_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords[0]) * texCoords.size(), &texCoords[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_TexCoords[0]) * m_TexCoords.size(), &m_TexCoords[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[NORMAL_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(normals[0]) * normals.size(), &normals[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_Normals[0]) * m_Normals.size(), &m_Normals[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDEX_VB]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices[0]) * m_Indices.size(), &m_Indices[0], GL_STATIC_DRAW);
 
 		glBindVertexArray(0);
 

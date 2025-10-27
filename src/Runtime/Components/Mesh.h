@@ -7,7 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "Material.h"
+
 #define NUM_BUFFERS 4
+#define INVALID_MATERIAL 0xFFFFFFFF
 
 namespace pine {
 
@@ -41,13 +44,30 @@ namespace pine {
 
 	class OpenGLRenderer;
 
+	struct BasicMesh
+	{
+		BasicMesh()
+		{
+			NumIndices = 0;
+			BaseVertex = 0;
+			BaseIndex = 0;
+			MaterialIndex = INVALID_MATERIAL;
+		}
+		unsigned int NumIndices;
+		unsigned int BaseVertex;
+		unsigned int BaseIndex;
+		unsigned int MaterialIndex;
+	};
+
 	class Mesh {
 		friend OpenGLRenderer;
 	public:
-		std::vector<glm::vec3>			positions;
-		std::vector<glm::vec2>			texCoords;
-		std::vector<glm::vec3>			normals;
-		std::vector<unsigned int>		indices;
+		std::vector<BasicMesh>			m_Meshes;
+		std::vector<glm::vec3>			m_Positions;
+		std::vector<glm::vec2>			m_TexCoords;
+		std::vector<glm::vec3>			m_Normals;
+		std::vector<unsigned int>		m_Indices;
+		std::vector<Material>			m_Materials;
 
 		Mesh();
 		//Mesh(const std::string& fileName);

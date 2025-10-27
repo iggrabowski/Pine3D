@@ -5,7 +5,7 @@ namespace pine {
 
 	Cube::Cube()
 	{
-		positions = std::vector<glm::vec3> {
+		m_Positions = std::vector<glm::vec3> {
 			glm::vec3(-1, -1, -1),
 			glm::vec3(-1, 1, -1),
 			glm::vec3(1, 1, -1),
@@ -37,7 +37,7 @@ namespace pine {
 			glm::vec3(1, 1, -1)
 		};
 
-		texCoords = std::vector<glm::vec2>{
+		m_TexCoords = std::vector<glm::vec2>{
 			glm::vec2(1, 0),
 			glm::vec2(0, 0),
 			glm::vec2(0, 1),
@@ -69,7 +69,7 @@ namespace pine {
 			glm::vec2(0, 1)
 		};
 
-		normals = std::vector<glm::vec3>{
+		m_Normals = std::vector<glm::vec3>{
 			glm::vec3(0, 0, -1),
 			glm::vec3(0, 0, -1),
 			glm::vec3(0, 0, -1),
@@ -102,7 +102,7 @@ namespace pine {
 		};
 	
 
-		indices = std::vector<unsigned int> { 
+		m_Indices = std::vector<unsigned int> { 
 			0, 1, 2,
 			0, 2, 3,
 

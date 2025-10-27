@@ -25,47 +25,47 @@ namespace pine {
 		if (shader.GetAttributeLocation("position", loc)) {
 			glEnableVertexAttribArray(loc);
 			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh.positions.size() * sizeof(float) * 3;
+			offset += mesh.m_Positions.size() * sizeof(float) * 3;
 
-			for (unsigned int i = 0; i < mesh.positions.size(); i++)
+			for (unsigned int i = 0; i < mesh.m_Positions.size(); i++)
 			{
-				data.push_back(mesh.positions[i].x);
-				data.push_back(mesh.positions[i].y);
-				data.push_back(mesh.positions[i].z);
+				data.push_back(mesh.m_Positions[i].x);
+				data.push_back(mesh.m_Positions[i].y);
+				data.push_back(mesh.m_Positions[i].z);
 			}
 		}
-		if (mesh.texCoords.size() > 0 && shader.GetAttributeLocation("texCoord", loc))
+		if (mesh.m_TexCoords.size() > 0 && shader.GetAttributeLocation("texCoord", loc))
 		{
 			glEnableVertexAttribArray(loc);
 			glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh.texCoords.size() * sizeof(float) * 2;
+			offset += mesh.m_TexCoords.size() * sizeof(float) * 2;
 
-			for (unsigned int i = 0; i < mesh.texCoords.size(); i++)
+			for (unsigned int i = 0; i < mesh.m_TexCoords.size(); i++)
 			{
-				data.push_back(mesh.texCoords[i].x);
-				data.push_back(mesh.texCoords[i].y);
+				data.push_back(mesh.m_TexCoords[i].x);
+				data.push_back(mesh.m_TexCoords[i].y);
 			}
 		}
-		if (mesh.normals.size() > 0 && shader.GetAttributeLocation("normal", loc))
+		if (mesh.m_Normals.size() > 0 && shader.GetAttributeLocation("normal", loc))
 		{
 			glEnableVertexAttribArray(loc);
 			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh.normals.size() * sizeof(float) * 3;
+			offset += mesh.m_Normals.size() * sizeof(float) * 3;
 
-			for (unsigned int i = 0; i < mesh.normals.size(); i++)
+			for (unsigned int i = 0; i < mesh.m_Normals.size(); i++)
 			{
-				data.push_back(mesh.normals[i].x);
-				data.push_back(mesh.normals[i].y);
-				data.push_back(mesh.normals[i].z);
+				data.push_back(mesh.m_Normals[i].x);
+				data.push_back(mesh.m_Normals[i].y);
+				data.push_back(mesh.m_Normals[i].z);
 			}
 		}
 		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
 
 		// only fill the index buffer if the index array is non-empty.
-		if (mesh.indices.size() > 0)
+		if (mesh.m_Indices.size() > 0)
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh._EB);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0], GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.m_Indices.size() * sizeof(unsigned int), &mesh.m_Indices[0], GL_STATIC_DRAW);
 		}
 
 		glBindVertexArray(0);
@@ -116,10 +116,10 @@ namespace pine {
 
 		glBindVertexArray(mesh._VA);
 
-		if (mesh.indices.size() > 0)
-			glDrawElementsBaseVertex(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, 0);
+		if (mesh.m_Indices.size() > 0)
+			glDrawElementsBaseVertex(GL_TRIANGLES, mesh.m_Indices.size(), GL_UNSIGNED_INT, 0, 0);
 		else
-			glDrawArrays(GL_TRIANGLES, 0, mesh.positions.size());
+			glDrawArrays(GL_TRIANGLES, 0, mesh.m_Positions.size());
 
 		glBindVertexArray(0);
 	}
