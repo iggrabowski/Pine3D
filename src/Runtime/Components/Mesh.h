@@ -67,7 +67,7 @@ namespace pine {
 		std::vector<glm::vec2>			m_TexCoords;
 		std::vector<glm::vec3>			m_Normals;
 		std::vector<unsigned int>		m_Indices;
-		std::vector<Material>			m_Materials;
+		std::vector<Material*>			m_Materials;
 
 		Mesh();
 		//Mesh(const std::string& fileName);

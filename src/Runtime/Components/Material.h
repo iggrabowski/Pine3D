@@ -12,8 +12,10 @@ namespace pine {
 
 		void OnUpdate();
 
-		Shader* m_Shader;
-		Texture* m_Texture;
+		Shader* m_Shader = nullptr;
+		Texture* m_Texture = nullptr;
+		// See texture types in Texture.h
+		Texture* m_Textures[6] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 	};
 
 }

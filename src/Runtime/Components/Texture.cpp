@@ -10,6 +10,14 @@ namespace pine {
 
 	}
 
+	Texture::Texture(GLenum textureTarget) {
+		p_textureTarget = textureTarget;
+	}
+
+	Texture::Texture(GLenum textureTarget, std::string filePath) {
+		p_textureTarget = textureTarget;
+		_filePath = filePath;
+	}
   //  Texture::Texture(const std::string& fileName)
   //  {
   //      //int width, height, numComponents;

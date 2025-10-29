@@ -4,6 +4,7 @@
 #include <assimp/postprocess.h>
 #include <algorithm>
 
+
 namespace pine {
 
     std::string GetDirectory(const std::string& path)
@@ -11,6 +12,45 @@ namespace pine {
         size_t pos = path.find_last_of("/\\");
         if (pos == std::string::npos) return "";
         return path.substr(0, pos + 1);
+    }
+
+    void LoadDiffuseTextureFromFile(const std::string& Dir, const aiString& Path, int MaterialIndex, Material* targetMaterial)
+    {
+        std::string p(Path.data);
+
+        if(p.substr(0,2) == ".\\")
+			p = p.substr(2, p.size() - 2);
+
+		std::string fullPath = Dir + "/" + p;
+        targetMaterial->m_Textures[TEX_TYPE_BASE] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
+        Image* image = new Image();
+
+        if (!image->Create(fullPath.c_str())) {
+            printf("Error loading diffuse texture '%s'\n", fullPath.c_str());
+        }
+        else {
+
+            targetMaterial->m_Textures[TEX_TYPE_BASE]->LoadFromImage(*image);
+            printf("Loaded diffuse texture '%s' at index %d\n", fullPath.c_str(), MaterialIndex);
+        }
+    }
+
+    void LoadDiffuseTexture(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Mesh& outMesh, Material* targetMaterial)
+    {
+        if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+            aiString Path;
+
+            if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
+                const aiTexture* paiTexture = scene->GetEmbeddedTexture(Path.C_Str());
+
+                if (paiTexture) {
+                    //LoadDiffuseTextureEmbedded(paiTexture, MaterialIndex, outMesh);
+                }
+                else {
+                    LoadDiffuseTextureFromFile(Dir, Path, MaterialIndex, targetMaterial);
+                }
+            }
+        }
     }
 
     // Flatten all meshes into a single Mesh
@@ -59,7 +99,6 @@ namespace pine {
         outMesh.m_Normals.reserve(vertexOffset);
 		outMesh.m_TexCoords.reserve(vertexOffset);
         outMesh.m_Indices.reserve(indexOffset);
-        // (Optional) You can also collect material/texture info here if needed
 
         for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
 
@@ -84,6 +123,22 @@ namespace pine {
             }
         }
 
-        return true;
+		// Extract the directory part from the file path
+        std::string Dir = GetDirectory(filePath);
+
+        bool Ret = true;
+
+        printf("Num materials: %d\n", scene->mNumMaterials);
+
+        // Initialize the materials
+        // TODO: more texture types
+        for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
+            const aiMaterial* pMaterial = scene->mMaterials[i];
+            Material* currentMat = &Application::materials.emplace_back();
+
+            LoadDiffuseTexture(scene, Dir, pMaterial, i, outMesh, currentMat);
+        }
+
+        return Ret;
     }
 } // namespace pine

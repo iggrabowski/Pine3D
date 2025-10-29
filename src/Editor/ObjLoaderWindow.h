@@ -6,8 +6,9 @@
 #include <filesystem>
 
 namespace pine {
-    struct ObjLoaderWindow
+    class ObjLoaderWindow
     {
+    public:
         // Callback invoked when user selects a file and presses Load (or double-clicks)
         // Provide a handler that actually loads the .obj (e.g. via Assimp or your loader).
         std::function<void(const std::string& path)> OnLoad;

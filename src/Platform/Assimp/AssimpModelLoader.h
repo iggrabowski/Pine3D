@@ -2,6 +2,7 @@
 #include "Runtime/Components/Mesh.h"
 #include <string>
 #include <vector>
+#include <Core/Application.h>
 
 namespace pine {
     //struct Vertex
@@ -17,11 +18,5 @@ namespace pine {
     //    std::vector<unsigned int> indices;
     //    std::string diffuseTexturePath; // empty if none
     //};
-
-    struct Model
-    {
-        std::vector<Mesh> meshes;
-    };
-
-    bool LoadModelWithAssimp(const std::string& filePath, Model& outModel);
+    bool LoadModelWithAssimp(const std::string& filePath, Mesh& mesh);
 }//namespace pine

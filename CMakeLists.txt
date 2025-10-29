@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 project(Pine3D VERSION 0.1.0)
 
@@ -100,6 +100,8 @@ set(PINE3D-EDITOR
 	${SRC_ROOT}/Editor/EditorGUI.h
 	${SRC_ROOT}/Editor/Editor.cpp
 	${SRC_ROOT}/Editor/Editor.h
+	${SRC_ROOT}/Editor/ObjLoaderWindow.cpp
+	${SRC_ROOT}/Editor/ObjLoaderWindow.h
 	)
 	
 source_group("Source Files/Editor" FILES ${PINE3D-EDITOR})
