@@ -23,14 +23,6 @@ namespace pine {
 	//	}
 	//	return 0;
 	//}
-
-	Application::~Application()
-	{	
-		for (const auto& sceneObject : scene_objects)
-		{
-			delete sceneObject;
-		}
-	}
 	int Application::Run()
 	{
 		//MAIN LOOP

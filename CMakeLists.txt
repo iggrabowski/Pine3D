@@ -123,8 +123,8 @@ set(PINE3D-RUNTIME-COMPONENTS
 	${SRC_ROOT}/Runtime/Components/InputListener.h
 	${SRC_ROOT}/Runtime/Components/Material.cpp
 	${SRC_ROOT}/Runtime/Components/Material.h
-	${SRC_ROOT}/Runtime/Components/Mesh.cpp
-	${SRC_ROOT}/Runtime/Components/Mesh.h
+	${SRC_ROOT}/Runtime/Components/MeshData.cpp
+	${SRC_ROOT}/Runtime/Components/MeshData.h
 	${SRC_ROOT}/Runtime/Components/MeshRenderer.cpp
 	${SRC_ROOT}/Runtime/Components/MeshRenderer.h
 	${SRC_ROOT}/Runtime/Components/Polygon.cpp

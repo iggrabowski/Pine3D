@@ -29,6 +29,7 @@ namespace pine {
 
 		inline void UpdateModel() {
 
+			// TODO: only update when something changes
 			glm::mat4 posMat = glm::translate(_pos);
 			glm::mat4 scaleMat = glm::scale(_scale);
 			glm::mat4 rotX = glm::rotate(_rot.x, glm::vec3(1.0, 0.0, 0.0));

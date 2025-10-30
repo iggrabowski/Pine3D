@@ -15,7 +15,6 @@ namespace pine {
 
 	 public:
 		 Application() = default;
-		 ~Application();
 		 static int Run();
 		 static void Update_Frame();
 		 static void Init();
@@ -25,7 +24,7 @@ namespace pine {
 		 static inline std::unique_ptr<GlfwWindow> window = nullptr; //for now only GLFW window implementation
 		 static inline std::unique_ptr<Renderer> renderer = nullptr;
 		 static inline std::unique_ptr<InputHandler> input_handler = nullptr;
-		 static inline std::vector<SceneObject*> scene_objects;
+		 static inline std::vector<std::unique_ptr<SceneObject>> scene_objects;
 		 static inline std::vector<Material> materials;
 		 static inline std::vector<Image> images;
 		 static inline std::vector<Texture> textures;

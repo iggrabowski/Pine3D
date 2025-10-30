@@ -1,10 +1,10 @@
 #pragma once
-#include "Runtime/Components/Mesh.h"
+#include "Runtime/Components/MeshData.h"
 
 namespace pine
 {
 
-    class Cube : public Mesh
+    class Cube : public MeshData
     {
     public:
         Cube();

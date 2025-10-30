@@ -9,7 +9,7 @@ namespace pine {
 
 	}
 
-	void OpenGLRenderer::BufferMesh(Mesh& mesh, Shader& shader)
+	void OpenGLRenderer::BufferMesh(MeshData& mesh, Shader& shader)
 	{
 		glGenVertexArrays(1, &mesh._VA);
 		glBindVertexArray(mesh._VA);
@@ -103,7 +103,7 @@ namespace pine {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRenderer::Draw(Mesh& mesh, Material& mat)
+	void OpenGLRenderer::Draw(MeshData& mesh, Material& mat)
 	{
 		if (!mesh._buffered) {
 			BufferMesh(mesh, *mat.m_Shader);

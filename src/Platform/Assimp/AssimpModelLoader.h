@@ -18,5 +18,6 @@ namespace pine {
     //    std::vector<unsigned int> indices;
     //    std::string diffuseTexturePath; // empty if none
     //};
-    bool LoadModelWithAssimp(const std::string& filePath, Mesh& mesh);
+	void LoadModel(const std::string& filePath);
+    bool LoadModelWithAssimp(const std::string& filePath, MeshData& mesh);
 }//namespace pine

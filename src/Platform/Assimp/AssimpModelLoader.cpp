@@ -35,7 +35,7 @@ namespace pine {
         }
     }
 
-    void LoadDiffuseTexture(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Mesh& outMesh, Material* targetMaterial)
+    void LoadDiffuseTexture(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, MeshData& outMesh, Material* targetMaterial)
     {
         if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString Path;
@@ -54,7 +54,7 @@ namespace pine {
     }
 
     // Flatten all meshes into a single Mesh
-    bool LoadModelWithAssimp(const std::string& filePath, Mesh& outMesh)
+    bool LoadModelWithAssimp(const std::string& filePath, MeshData& outMesh)
     {
         outMesh.m_Positions.clear();
 		outMesh.m_TexCoords.clear();
@@ -141,4 +141,13 @@ namespace pine {
 
         return Ret;
     }
+
+    void LoadModel(const std::string& filePath)
+    {
+		// initiate a new MeshRenderer
+        Application::scene_objects.emplace_back(new MeshRenderer);
+        // create mesh if load true
+		LoadModelWithAssimp(filePath, );
+    }
+
 } // namespace pine

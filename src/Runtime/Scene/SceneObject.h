@@ -10,7 +10,7 @@ namespace pine {
 
 		virtual void OnUpdate() = 0;
 	protected:
-		Transform* _transform = nullptr;
+		std::unique_ptr<Transform> _transform = nullptr;
 		//MeshRenderer m_MeshRenderer;
 	};
 

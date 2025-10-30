@@ -9,38 +9,36 @@ namespace pine {
 
 	MeshRenderer::MeshRenderer()
 	{
-		_transform = new Transform();
-		_mesh = new Cube();
-		_material = new Material();
+		_transform = std::make_unique<Transform>();
+		//_mesh = new Cube();
+		//_material = new Material();
 	}
 
 	MeshRenderer::~MeshRenderer() {
-		delete _material;
-		delete _transform;
-		delete _mesh;
 	}
 
 	void MeshRenderer::OnUpdate()
 	{
 		_transform->UpdateModel();
 
-		_material->OnUpdate();
+		for (auto& material : _model->materials) {
+			material->OnUpdate();
 
-		//m_Mesh->Draw();
+			// shader binding
 
-		_transform->UpdateModel();
+			material->m_Shader->Bind();
+			glm::mat4 model = _transform->GetModel();
+			material->m_Shader->SetUniform("Model", model);
 
-		_material->m_Shader->Bind();
-		glm::mat4 model = _transform->GetModel();
-		_material->m_Shader->SetUniform("Model", model);
+			glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * model;
+			material->m_Shader->SetUniform("MVP", mvp);
 
-		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * model;
-		_material->m_Shader->SetUniform("MVP", mvp);
+			glm::vec3 light_dir(0.5, 0.5, 1.0);
+			material->m_Shader->SetUniform("lightDirection", light_dir);
 
-		glm::vec3 light_dir(0.5, 0.5, 1.0);
-		_material->m_Shader->SetUniform("lightDirection", light_dir);
-
-		Application::renderer->Draw(*_mesh, *_material);
+			// draw call
+			Application::renderer->Draw(*_mesh, *material);
+		}
 	}
 
 }
