@@ -11,6 +11,7 @@ namespace pine {
 
 	void OpenGLRenderer::BufferMesh(MeshData& mesh, Shader& shader)
 	{
+		// TODO: check if this works correctly with different shaders _VA conflicts with method in InitMesh()
 		glGenVertexArrays(1, &mesh._VA);
 		glBindVertexArray(mesh._VA);
 
@@ -103,23 +104,52 @@ namespace pine {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRenderer::Draw(MeshData& mesh, Material& mat)
+	void OpenGLRenderer::Draw(Model& model)
 	{
-		if (!mesh._buffered) {
-			BufferMesh(mesh, *mat.m_Shader);
+		if (!model.mesh._buffered) {
+			// TODO: this is wrong, needs seperate mesh/shader
+			// BufferMesh(model.mesh, *mat.m_Shader);
 		}
+		
+		// bind VAO once for the mesh data
+		glBindVertexArray(model.mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
 
-		mat.m_Shader->Bind();
-
-		// here enable texturing unit
-		mat.m_Texture->Bind();
-
-		glBindVertexArray(mesh._VA);
-
-		if (mesh.m_Indices.size() > 0)
-			glDrawElementsBaseVertex(GL_TRIANGLES, mesh.m_Indices.size(), GL_UNSIGNED_INT, 0, 0);
+		// If model defines BasicMesh ranges, draw each range separately.
+		if (!model.b_meshes.empty())
+		{
+			for (const BasicMesh& bm : model.b_meshes)
+			{
+				// TODO: check if shader/texture are exist
+				// bind shader/texture (existing code assumes 'mat' is set up)
+				model.materials[bm.materialIndex]->m_Shader->Bind();
+				model.materials[bm.materialIndex]->m_Textures[0]->Bind(); // TODO: for now only Diffuse
+				
+				// If the mesh has an index buffer, use glDrawElementsBaseVertex with the BaseIndex offset.
+				if (!model.mesh.m_Indices.empty())
+				{
+					glDrawElementsBaseVertex(GL_TRIANGLES,
+						static_cast<GLsizei>(bm.numIndices),
+						GL_UNSIGNED_INT,
+						(void*)(sizeof(unsigned int) * bm.baseIndex),
+						static_cast<GLint>(bm.baseVertex));
+				}
+				else
+				{
+					// No index buffer: draw arrays starting at BaseVertex for NumIndices vertices.
+					glDrawArrays(GL_TRIANGLES,
+						static_cast<GLint>(bm.baseVertex),
+						static_cast<GLsizei>(bm.numIndices));
+				}
+			}
+		}
 		else
-			glDrawArrays(GL_TRIANGLES, 0, mesh.m_Positions.size());
+		{
+			// Fallback: draw entire mesh if no BasicMesh info available.
+			if (!model.mesh.m_Indices.empty())
+				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(model.mesh.m_Indices.size()), GL_UNSIGNED_INT, 0);
+			else
+				glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model.mesh.m_Positions.size()));
+		}
 
 		glBindVertexArray(0);
 	}

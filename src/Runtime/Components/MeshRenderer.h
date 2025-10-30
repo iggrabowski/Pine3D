@@ -10,20 +10,20 @@ namespace pine {
 	{
 		BasicMesh()
 		{
-			NumIndices = 0;
-			BaseVertex = 0;
-			BaseIndex = 0;
-			MaterialIndex = INVALID_MATERIAL;
+			numIndices = 0;
+			baseVertex = 0;
+			baseIndex = 0;
+			materialIndex = INVALID_MATERIAL;
 		}
-		unsigned int NumIndices;
-		unsigned int BaseVertex;
-		unsigned int BaseIndex;
-		unsigned int MaterialIndex;
+		unsigned int numIndices;
+		unsigned int baseVertex;
+		unsigned int baseIndex;
+		unsigned int materialIndex;
 	};
 
 	struct Model {
-		MeshData							mesh;
-		std::vector<BasicMesh>	b_meshes;
+		MeshData					mesh;
+		std::vector<BasicMesh>		b_meshes;
 		std::vector<Material*>		materials;
 	};
 
@@ -31,6 +31,7 @@ namespace pine {
 	public:
 		MeshRenderer();
 		~MeshRenderer();
+		Model* GetModel() { return _model; }
 
 		void OnUpdate() override;
 	private:

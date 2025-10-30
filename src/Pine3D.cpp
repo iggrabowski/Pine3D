@@ -10,9 +10,9 @@ int main(void)
 	// until then, no mesh rendering
 
 	/* ADD DEFAULT MESH RENDERER TO THE SCENE */
-	pine::MeshRenderer mr;
+	//pine::MeshRenderer mr;
 	// Add default Mesh renderer to the scene
-	pine::Application::scene_objects.emplace_back(&mr);
+	//pine::Application::scene_objects.emplace_back(&mr);
 
 	///* ADD POLYGON TO THE SCENE */
 	//std::vector<Pine::glm::vec2> vs;

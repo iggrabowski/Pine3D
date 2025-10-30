@@ -1,5 +1,5 @@
 #pragma once
-#include "Runtime/Components/Mesh.h"
+#include "Runtime/Components/MeshData.h"
 #include <string>
 #include <vector>
 #include <Core/Application.h>
@@ -19,5 +19,5 @@ namespace pine {
     //    std::string diffuseTexturePath; // empty if none
     //};
 	void LoadModel(const std::string& filePath);
-    bool LoadModelWithAssimp(const std::string& filePath, MeshData& mesh);
+    bool LoadModelWithAssimp(const std::string& filePath, Model& outModel);
 }//namespace pine

@@ -10,6 +10,7 @@ namespace pine {
 	MeshRenderer::MeshRenderer()
 	{
 		_transform = std::make_unique<Transform>();
+		_model = new Model();
 		//_mesh = new Cube();
 		//_material = new Material();
 	}
@@ -21,23 +22,24 @@ namespace pine {
 	{
 		_transform->UpdateModel();
 
-		for (auto& material : _model->materials) {
-			material->OnUpdate();
+		glm::mat4 model = _transform->GetModel();
+		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * model;
+
+		for (auto& basic_mesh : _model->b_meshes) {
+			Material* material = _model->materials[basic_mesh.materialIndex];
+			//_model->materials[basic_mesh.MaterialIndex]->OnUpdate();
 
 			// shader binding
 
 			material->m_Shader->Bind();
-			glm::mat4 model = _transform->GetModel();
 			material->m_Shader->SetUniform("Model", model);
-
-			glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * model;
 			material->m_Shader->SetUniform("MVP", mvp);
 
-			glm::vec3 light_dir(0.5, 0.5, 1.0);
-			material->m_Shader->SetUniform("lightDirection", light_dir);
+			//glm::vec3 light_dir(0.5, 0.5, 1.0);
+			//material->m_Shader->SetUniform("lightDirection", light_dir);
 
 			// draw call
-			Application::renderer->Draw(*_mesh, *material);
+			Application::renderer->Draw(*_model);
 		}
 	}
 

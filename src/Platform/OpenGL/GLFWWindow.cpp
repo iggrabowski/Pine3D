@@ -3,6 +3,7 @@
 #include "Core/Application.h"
 #include "Utils/Logger.h"
 #include "Editor/ObjLoaderWindow.h"
+#include "Platform/Assimp/AssimpModelLoader.h"
 
 
 namespace pine {
@@ -563,8 +564,9 @@ void GlfwWindow::OnUpdate()
         if (_show_demo_window)
             ImGui::ShowDemoWindow(&_show_demo_window);
 
-        static ObjLoaderWindow window;
-        window.Show(true);
+        static ObjLoaderWindow OLwindow;
+        OLwindow.Show(true);
+        OLwindow.OnLoad = LoadModel;
 
   //  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
   //  {

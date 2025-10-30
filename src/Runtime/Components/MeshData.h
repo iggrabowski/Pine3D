@@ -11,6 +11,9 @@
 
 #define NUM_BUFFERS 4
 #define INVALID_MATERIAL 0xFFFFFFFF
+#define POSITION_LOCATION 0
+#define TEX_COORD_LOCATION 1
+#define NORMAL_LOCATION 2
 
 namespace pine {
 
@@ -78,9 +81,9 @@ namespace pine {
 
 	private:
 		bool _buffered = false;
-		unsigned int	_VA;	//unused for now
-		unsigned int	_VB;	//unused for now
-		unsigned int	_EB;	//unused for now
+		unsigned int	_VA;
+		unsigned int	_VB;
+		unsigned int	_EB;
 
 		//static const unsigned int NUM_BUFFERS = 4;
 		//void operator=(const Mesh& mesh) {}

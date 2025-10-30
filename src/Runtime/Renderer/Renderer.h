@@ -19,7 +19,7 @@ namespace pine {
 		static UniquePtr<Renderer> Init(GRAPHICS_API API);
 			
 		virtual void DrawIndexed(/*const IndexedModel& model*/) = 0;
-		virtual void Draw(MeshData& mesh, Material& mat) = 0;
+		virtual void Draw(Model& model) = 0;
 
 		//static Renderer* s_Instance;
 		GRAPHICS_API m_rendererAPI = GRAPHICS_API::UNDEFINED_API;
