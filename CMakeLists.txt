@@ -67,8 +67,6 @@ set(PINE3D-PLATFORM-OPENGL
 source_group("Source Files/Platform/OpenGL" FILES ${PINE3D-PLATFORM-OPENGL})
 
 set(PINE3D-PLATFORM-IMGUI
-	${SRC_ROOT}/Platform/ImGui/EditorImGui.cpp
-	${SRC_ROOT}/Platform/ImGui/EditorImGui.h
 	include/imgui/backends/imgui_impl_glfw.h
 	include/imgui/backends/imgui_impl_opengl3.h	
 	include/imgui/backends/imgui_impl_glfw.cpp
@@ -96,8 +94,6 @@ set(PINE3D-PLATFORM-ASSIMP
 source_group("Source Files/Platform/Assimp" FILES ${PINE3D-PLATFORM-ASSIMP})
 
 set(PINE3D-EDITOR
-	${SRC_ROOT}/Editor/EditorGUI.cpp
-	${SRC_ROOT}/Editor/EditorGUI.h
 	${SRC_ROOT}/Editor/Editor.cpp
 	${SRC_ROOT}/Editor/Editor.h
 	${SRC_ROOT}/Editor/ObjLoaderWindow.cpp

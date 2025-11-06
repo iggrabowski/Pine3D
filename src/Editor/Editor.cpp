@@ -4,8 +4,11 @@
 namespace pine {
 	Editor::Editor()
 	{
-		_mainCamera = new Camera();
-		_editorGui = new EditorImGui();
+		// create three editor cameras with slightly different start positions
+		_cameras.emplace_back(std::make_unique<Camera>(glm::vec3(2.0f, 2.0f, -5.0f)));
+		_cameras.emplace_back(std::make_unique<Camera>(glm::vec3(0.0f, 2.5f, -6.0f)));
+		_cameras.emplace_back(std::make_unique<Camera>(glm::vec3(0.0f, 5.0f, -10.0f)));
+		_activeCameraIndex = 0;
 	}
 
 	std::unique_ptr<Editor> Editor::Init()
@@ -36,7 +39,7 @@ namespace pine {
 				{
 					MoveCameraX(value);
 					return true;
-				} 
+				}
 			});
 
 		Application::input_handler->MapInputToAction(KeyCode::Q, {
@@ -54,7 +57,7 @@ namespace pine {
 				{
 					MoveCameraY(value);
 					return true;
-				} 
+				}
 			});
 
 		Application::input_handler->MapInputToAction(KeyCode::S, {
@@ -72,7 +75,7 @@ namespace pine {
 				{
 					MoveCameraZ(value);
 					return true;
-				} 
+				}
 			});
 
 		Application::input_handler->MapInputToAction(KeyCode::MB_BUTTON_RIGHT, {
@@ -99,14 +102,76 @@ namespace pine {
 					Application::window->SetCursorDisabled(value);
 					Application::input_handler->UpdateMousePosition(0, mousePos.first, mousePos.second);
 					return true;
-				} 
+				}
 			});
 
+		// --- Camera switching controls ---
+		// Cycle cameras with 'C'
+		Application::input_handler->MapInputToAction(KeyCode::C, {
+			.name = "editor_camera_cycle",
+			.type = pine::KEY_ON_PRESS,
+			.scale = 1.0f });
+		Application::input_handler->AddActionCallback("editor_camera_cycle",
+			pine::InputHandler::ActionCallback {
+				.ref = "editor_camera_cycle",
+				.func = [this](int sourceIndex, float value)
+				{
+					CycleCamera();
+					return true;
+				}
+			});
+
+		// Direct select F1/F2/F3
+		Application::input_handler->MapInputToAction(KeyCode::F1, {
+			.name = "editor_camera_select_0",
+			.type = pine::KEY_ON_PRESS,
+			.scale = 1.0f });
+		Application::input_handler->AddActionCallback("editor_camera_select_0",
+			pine::InputHandler::ActionCallback {
+				.ref = "editor_camera_select_0",
+				.func = [this](int sourceIndex, float value)
+				{
+					SetActiveCamera(0);
+					return true;
+				}
+			});
+
+		Application::input_handler->MapInputToAction(KeyCode::F2, {
+			.name = "editor_camera_select_1",
+			.type = pine::KEY_ON_PRESS,
+			.scale = 1.0f });
+		Application::input_handler->AddActionCallback("editor_camera_select_1",
+			pine::InputHandler::ActionCallback {
+				.ref = "editor_camera_select_1",
+				.func = [this](int sourceIndex, float value)
+				{
+					SetActiveCamera(1);
+					return true;
+				}
+			});
+
+		Application::input_handler->MapInputToAction(KeyCode::F3, {
+			.name = "editor_camera_select_2",
+			.type = pine::KEY_ON_PRESS,
+			.scale = 1.0f });
+		Application::input_handler->AddActionCallback("editor_camera_select_2",
+			pine::InputHandler::ActionCallback {
+				.ref = "editor_camera_select_2",
+				.func = [this](int sourceIndex, float value)
+				{
+					SetActiveCamera(2);
+					return true;
+				}
+			});
 	}
 
 	void Editor::SetAspectRatio(float aspectRatio) const
 	{
-		_mainCamera->UpdateAspectRatio(aspectRatio);
+		// update every camera's projection
+		for (const auto& cam : _cameras)
+		{
+			if (cam) cam->UpdateAspectRatio(aspectRatio);
+		}
 	}
 
 	void Editor::HandleEventlessInput() const
@@ -150,6 +215,22 @@ namespace pine {
 		glm::vec3 pos = camera.GetPos();
 
 		camera.SetPos(pos + direction * _moveSpeed);
+	}
+
+	// Cycle to next camera (wraps)
+	void Editor::CycleCamera()
+	{
+		_activeCameraIndex = (_activeCameraIndex + 1) % static_cast<int>(_cameras.size());
+		// inform renderer about the new active camera
+		if (Application::renderer) Application::renderer->SetRenderCamera(GetCamera());
+	}
+
+	// Select a specific camera index [0..2]
+	void Editor::SetActiveCamera(int index)
+	{
+		if (index < 0 || index >= static_cast<int>(_cameras.size())) return;
+		_activeCameraIndex = index;
+		if (Application::renderer) Application::renderer->SetRenderCamera(GetCamera());
 	}
 
 }

@@ -11,6 +11,11 @@ namespace pine {
 		return *_camera;
 	}
 
+	void Renderer::SetRenderCamera(Camera* cam)
+	{
+		_camera = cam;
+	}
+
 	UniquePtr<Renderer> Renderer::Init(GRAPHICS_API API)
 	{
 		if (API == GRAPHICS_API::OPENGL_API) {

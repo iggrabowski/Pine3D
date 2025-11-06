@@ -25,6 +25,9 @@ namespace pine {
 		GRAPHICS_API m_rendererAPI = GRAPHICS_API::UNDEFINED_API;
 		Camera& GetRenderCamera() const;
 
+		// Setter so external code (Editor) can switch which Camera is used for rendering
+		void SetRenderCamera(Camera* cam);
+
 		virtual void Clear() = 0;
 	protected:
 		Camera* _camera;

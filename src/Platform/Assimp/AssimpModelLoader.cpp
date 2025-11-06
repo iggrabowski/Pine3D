@@ -7,6 +7,7 @@
 
 namespace pine {
 
+	// TODO: change printf to logger
     std::string GetDirectory(const std::string& path)
     {
         size_t pos = path.find_last_of("/\\");
