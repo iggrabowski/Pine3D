@@ -59,7 +59,7 @@ namespace pine {
             p_open = &open;
         }
 
-        if (!ImGui::Begin("Load OBJ", &p_open, false))
+        if (!ImGui::Begin("Load OBJ", &p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
             ImGui::End();
             return;
@@ -83,7 +83,7 @@ namespace pine {
             RefreshDirectory();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Refresh"))
+        if (ImGui::Button("Refresh") || _initialLoad)
         {
             RefreshDirectory();
         }
@@ -95,7 +95,9 @@ namespace pine {
         ImGui::Separator();
 
         // Directory / files list
-        ImGui::BeginChild("FileList", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() * 2));
+
+        //TODO: fix magic numbers
+        ImGui::BeginChild("FileList", ImVec2(0, 200));
 
         const float spacing = ImGui::GetStyle().ItemSpacing.y;
         for (const auto& entry : Entries)
@@ -149,18 +151,15 @@ namespace pine {
         ImGui::SameLine();
         ImGui::TextWrapped("%s", SelectedPath.empty() ? "<none>" : SelectedPath.c_str());
 
+        ImGui::Separator();
         ImGui::SameLine(ImGui::GetWindowWidth() - 220);
-        if (ImGui::Button("Load", ImVec2(100, 0)))
+        if (ImGui::Button("Load", ImVec2(200, 0)))
         {
             if (!SelectedPath.empty() && OnLoad)
                 OnLoad(SelectedPath);
         }
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(100, 0)))
-        {
-            p_open = false;
-        }
 
         ImGui::End();
+		_initialLoad = false;
     }
 } //namespace

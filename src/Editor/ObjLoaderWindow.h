@@ -31,5 +31,6 @@ namespace pine {
         std::vector<std::filesystem::directory_entry> Entries;
         std::string SelectedPath;
         char PathEditBuf[1024];
+        bool _initialLoad = true;
     };
 } //namespace

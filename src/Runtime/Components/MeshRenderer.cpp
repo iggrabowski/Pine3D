@@ -32,7 +32,7 @@ namespace pine {
 			// shader binding
 
 			material->m_Shader->Bind();
-			material->m_Shader->SetUniform("Model", model);
+			//material->m_Shader->SetUniform("Model", model);
 			material->m_Shader->SetUniform("MVP", mvp);
 
 			//glm::vec3 light_dir(0.5, 0.5, 1.0);

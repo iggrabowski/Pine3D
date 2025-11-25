@@ -1,7 +1,7 @@
 #pragma once
 #include "Runtime/RenderCore/Shader.h"
 #include "Runtime/Renderer/Renderer.h"
-
+#include "Utils/Logger.h"
 #include <iostream>
 #include <fstream>
 
@@ -78,6 +78,7 @@ namespace pine {
         int loc = GetUniformLocation(name);
         if (loc >= 0) {
             glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
+			Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
     }
 
