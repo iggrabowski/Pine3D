@@ -53,9 +53,8 @@ namespace pine {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		GLsizei texWidth, texHeight;
-		texWidth = image.GetWidth();
-		texHeight = image.GetHeight();
+		GLsizei texWidth = image.GetWidth();
+		GLsizei texHeight = image.GetHeight();
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight,
 			0, GL_RGB, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
@@ -66,12 +65,12 @@ namespace pine {
         glDeleteTextures(1, &_texture);
     }
 
-    void Texture::Bind()
-    {
-        glBindTexture(GL_TEXTURE_2D, _texture);
-    }
-
-    //void Texture::Update(int offsetX, int offsetY, sf::Image img_data)
+	void Texture::Bind(unsigned int unit) const
+	{
+		// Guard: clamp unit to reasonable range if desired
+		glActiveTexture(GL_TEXTURE0 + unit);
+		glBindTexture(GL_TEXTURE_2D, _texture);
+	}    //void Texture::Update(int offsetX, int offsetY, sf::Image img_data)
     //{
     //    tex = img_data;
     //    sf::Vector2u texSize = img_data.getSize();

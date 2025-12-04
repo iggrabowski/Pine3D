@@ -9,7 +9,7 @@ namespace pine {
 		OpenGLRenderer();
 
 		void Clear() override;
-		void Draw(Model& model) override final;
+		void Draw(MeshRenderer* mr) override final;
 		//void Init() override;
 	private:
 		void DrawIndexed(/*const IndexedModel& model*/);

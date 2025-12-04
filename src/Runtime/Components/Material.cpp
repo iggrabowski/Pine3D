@@ -8,7 +8,7 @@ namespace pine {
 		// Load default texture files from file
 		Image img("../res/textures/default.jpg");
 		// Load default shaders
-		m_Shader = Shader::LoadShaders("../res/shaders/basicShader");
+		m_Shader = Shader::LoadShaders("../res/shaders/PBR");
 
 		m_Texture = new Texture();
 		m_Texture->LoadFromImage(img);

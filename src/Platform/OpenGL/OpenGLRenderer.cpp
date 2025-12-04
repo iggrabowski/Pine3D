@@ -104,28 +104,58 @@ namespace pine {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRenderer::Draw(Model& model)
+	void OpenGLRenderer::Draw(MeshRenderer* mr)
 	{
-		if (!model.mesh._buffered) {
+		Model* model = mr->GetModel();
+		if (!model->mesh._buffered) {
 			// TODO: this is wrong, needs seperate mesh/shader
 			// BufferMesh(model.mesh, *mat.m_Shader);
 		}
 		
 		// bind VAO once for the mesh data
-		glBindVertexArray(model.mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
+		glBindVertexArray(model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
+
+		glm::mat4 umodel = mr->GetTransform().GetModel();
+		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
+		glm::vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
+		glm::vec3 lightDir = glm::normalize(glm::vec3(0.5f, 1.0f, -0.5f)); // hard coded for now TODO: add light objects
+		glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		// If model defines BasicMesh ranges, draw each range separately.
-		if (!model.b_meshes.empty())
+		if (!model->b_meshes.empty())
 		{
-			for (const BasicMesh& bm : model.b_meshes)
+			for (const BasicMesh& bm : model->b_meshes)
 			{
-				// TODO: check if shader/texture are exist
+				// TODO: check if shader/texture exists
 				// bind shader/texture (existing code assumes 'mat' is set up)
-				model.materials[bm.materialIndex]->m_Shader->Bind();
-				model.materials[bm.materialIndex]->m_Textures[0]->Bind(); // TODO: for now only Diffuse
-				
+				Shader* shader = model->materials[bm.materialIndex]->m_Shader;
+				shader->Bind();
+				//material->m_Shader->SetUniform("Model", model);
+				shader->SetUniform("MVP", mvp); // TODO: build on uniform system to find needed uniforms from shader
+				shader->SetUniform("Model", umodel);
+				shader->SetUniform("u_cameraPosition", camPos);
+				shader->SetUniform("u_lightDir", camPos);
+				shader->SetUniform("u_lightColor", lightColor);
+				shader->SetUniform("u_roughness", model->materials[bm.materialIndex]->m_roughness);
+
+				// Bind albedo (base) to texture unit 0
+				auto* albedoTex = model->materials[bm.materialIndex]->m_Textures[TEX_TYPE_BASE];
+				if (albedoTex) {
+					albedoTex->Bind(0);
+					shader->SetUniformTextureSampler2D("u_albedoMap", 0);
+				}
+
+				// Bind normal map to texture unit 1
+				auto* normalTex = model->materials[bm.materialIndex]->m_Textures[TEX_TYPE_NORMAL];
+				if (normalTex) {
+					normalTex->Bind(1);
+					shader->SetUniformTextureSampler2D("u_normalMap", 1);
+				}
+
+				// TODO: bind other textures (metallic, roughness, ao, etc.)
+
 				// If the mesh has an index buffer, use glDrawElementsBaseVertex with the BaseIndex offset.
-				if (!model.mesh.m_Indices.empty())
+				if (!model->mesh.m_Indices.empty())
 				{
 					glDrawElementsBaseVertex(GL_TRIANGLES,
 						static_cast<GLsizei>(bm.numIndices),
@@ -145,10 +175,10 @@ namespace pine {
 		else
 		{
 			// Fallback: draw entire mesh if no BasicMesh info available.
-			if (!model.mesh.m_Indices.empty())
-				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(model.mesh.m_Indices.size()), GL_UNSIGNED_INT, 0);
+			if (!model->mesh.m_Indices.empty())
+				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(model->mesh.m_Indices.size()), GL_UNSIGNED_INT, 0);
 			else
-				glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model.mesh.m_Positions.size()));
+				glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model->mesh.m_Positions.size()));
 		}
 
 		glBindVertexArray(0);

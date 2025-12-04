@@ -15,41 +15,56 @@ namespace pine {
         return path.substr(0, pos + 1);
     }
 
-    void LoadDiffuseTextureFromFile(const std::string& Dir, const aiString& Path, int MaterialIndex, Material* targetMaterial, Model& outModel)
+    void LoadTextureFromFile(const std::string& Dir, const aiString& Path, TextureType texType, int MaterialIndex, Material* targetMaterial, Model& outModel)
     {
         std::string p(Path.data);
 
-        if(p.substr(0,2) == ".\\")
-			p = p.substr(2, p.size() - 2);
+        if (p.substr(0, 2) == ".\\")
+            p = p.substr(2, p.size() - 2);
 
-		std::string fullPath = Dir + "/" + p;
-        targetMaterial->m_Textures[TEX_TYPE_BASE] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
+        std::string fullPath = Dir + "/" + p;
+        targetMaterial->m_Textures[texType] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
         Image* image = new Image();
 
         if (!image->Create(fullPath.c_str())) {
-            printf("Error loading diffuse texture '%s'\n", fullPath.c_str());
+            printf("Error loading texture '%s'\n", fullPath.c_str());
         }
         else {
-
-            targetMaterial->m_Textures[TEX_TYPE_BASE]->LoadFromImage(*image);
+            targetMaterial->m_Textures[texType]->LoadFromImage(*image);
             outModel.materials[MaterialIndex] = targetMaterial;
-            printf("Loaded diffuse texture '%s' at index %d\n", fullPath.c_str(), MaterialIndex);
+            printf("Loaded texture '%s' (type %d) at index %d\n", fullPath.c_str(), texType, MaterialIndex);
         }
     }
 
-    void LoadDiffuseTexture(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Material* targetMaterial, Model& outModel)
+    void LoadAllMaterialTextures(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Material* targetMaterial, Model& outModel)
     {
-        if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-            aiString Path;
+        struct TexTypeInfo {
+            aiTextureType assimpType;
+            TextureType pineType;
+        };
 
-            if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-                const aiTexture* paiTexture = scene->GetEmbeddedTexture(Path.C_Str());
+        // List of texture types to load
+        const TexTypeInfo texTypes[] = {
+            { aiTextureType_DIFFUSE,      TEX_TYPE_BASE },
+            { aiTextureType_NORMALS,      TEX_TYPE_NORMAL },
+            { aiTextureType_METALNESS,    TEX_TYPE_METALLIC },
+            { aiTextureType_DIFFUSE_ROUGHNESS, TEX_TYPE_ROUGHNESS },
+            { aiTextureType_AMBIENT_OCCLUSION, TEX_TYPE_AO },
+            { aiTextureType_HEIGHT,       TEX_TYPE_HEIGHT },
+            { aiTextureType_EMISSIVE,     TEX_TYPE_EMISSIVE }
+        };
 
-                if (paiTexture) {
-                    //LoadDiffuseTextureEmbedded(paiTexture, MaterialIndex, outMesh);
-                }
-                else {
-                    LoadDiffuseTextureFromFile(Dir, Path, MaterialIndex, targetMaterial, outModel);
+        for (const auto& texInfo : texTypes) {
+            if (pMaterial->GetTextureCount(texInfo.assimpType) > 0) {
+                aiString Path;
+                if (pMaterial->GetTexture(texInfo.assimpType, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
+                    const aiTexture* paiTexture = scene->GetEmbeddedTexture(Path.C_Str());
+                    if (paiTexture) {
+                        // TODO: handle embedded textures if needed
+                    }
+                    else {
+                        LoadTextureFromFile(Dir, Path, texInfo.pineType, MaterialIndex, targetMaterial, outModel);
+                    }
                 }
             }
         }
@@ -137,7 +152,7 @@ namespace pine {
             Material* currentMat = &Application::materials.emplace_back();
 
 			outModel.materials.emplace_back(nullptr);
-            LoadDiffuseTexture(scene, Dir, pMaterial, i, currentMat, outModel);
+            LoadAllMaterialTextures(scene, Dir, pMaterial, i, currentMat, outModel);
         }
 
         return Ret;

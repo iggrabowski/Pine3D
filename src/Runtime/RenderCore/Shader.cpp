@@ -4,6 +4,7 @@
 #include "Utils/Logger.h"
 #include <iostream>
 #include <fstream>
+#include <utility>
 
 namespace pine {
 
@@ -73,37 +74,52 @@ namespace pine {
         glDeleteProgram(_program);
     }
 
-    void Shader::SetUniform(std::string name, glm::mat4& val)
+    void Shader::SetUniform(const std::string& name, glm::mat4& val)
     {
-        int loc = GetUniformLocation(name);
-        if (loc >= 0) {
+	    if (int loc = GetUniformLocation(name); loc >= 0) {
             glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
 			Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
     }
 
-    void Shader::SetUniform(std::string name, glm::vec3& val)
+    void Shader::SetUniform(const std::string& name, glm::vec3& val)
     {
-        int loc = GetUniformLocation(name);
-        if (loc >= 0) {
+	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
             glUniform3fv(loc, 1, &val[0]);
+		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
     }
 
-    bool Shader::GetAttributeLocation(std::string name, unsigned int& outLoc)
+    void Shader::SetUniform(const std::string& name, float val)
     {
-        for (unsigned int i = 0; i < _attributes.size(); ++i)
+	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+            glUniform1f(loc,  val);
+		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
+        }
+    }
+
+    void Shader::SetUniformTextureSampler2D(const std::string& name, const int textureUnit)
+    {
+	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+            glUniform1i(loc, textureUnit);
+		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
+        }
+	}
+
+    bool Shader::GetAttributeLocation(const std::string& name, unsigned int& outLoc) const
+    {
+        for (const auto& attribute : _attributes)
         {
-            if (_attributes[i].name == name) {
-                outLoc =  _attributes[i].loc;
+            if (attribute.name == name) {
+                outLoc = attribute.loc;
                 return true;
             }
         }
-        std::cout << "ERROR: Attribute: \"" << name << "\" not found in the program " << _program << std::endl;
+        std::cout << "ERROR: Attribute: \"" << name << "\" not found in the program " << _program << '\n';
         return false;
     }
 
-    void Shader::Bind()
+    void Shader::Bind() const
     {
         glUseProgram(_program);
     }
@@ -113,10 +129,10 @@ namespace pine {
         std::string vsCode;
         std::string fsCode;
 
-        std::string vsFileName = fileName + ".vs";
+        std::string vsFileName = fileName + ".vert";
         ReadShader(vsFileName, vsCode);
 
-        std::string fsFileName = fileName + ".fs";
+        std::string fsFileName = fileName + ".frag";
         ReadShader(fsFileName, fsCode);
         
         return new Shader(fileName, vsCode, fsCode);

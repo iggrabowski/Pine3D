@@ -12,6 +12,7 @@ namespace pine {
 		TEX_TYPE_METALLIC,
 		TEX_TYPE_ROUGHNESS,
 		TEX_TYPE_AO,
+		TEX_TYPE_HEIGHT,
 		TEX_TYPE_EMISSIVE,
 	};
 
@@ -25,7 +26,10 @@ namespace pine {
 
 		void LoadFromImage(Image& image);
 
-		void Bind();
+		// Bind to texture unit 0 by default
+		void Bind() const { Bind(0); }
+		// Bind to specific texture unit (0..GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS-1)
+		void Bind(unsigned int unit) const;
 
 		// TODO: fix for GLFW
 		//void Update(int offsetX, int offsetY, sf::Image img_data);
@@ -35,7 +39,7 @@ namespace pine {
 		TextureType m_TextureType = TEX_TYPE_BASE;
 		GLenum p_textureTarget = 0; // TODO: use
 	private:
-		void operator=(const Texture& texture) {}
+		void operator=(const Texture& texture) const {}
 		std::string _filePath;
 
 		//TODO: make the texture more abstract, this relies on openGL standard

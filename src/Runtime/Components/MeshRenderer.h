@@ -31,11 +31,12 @@ namespace pine {
 	public:
 		MeshRenderer();
 		~MeshRenderer();
-		Model* GetModel() { return _model; }
+		Model* GetModel() const { return _model; }
+		Transform GetTransform() const { return *_transform; }
 
 		void OnUpdate() override;
 	private:
-		Model*		_model;
+		Model*		_model; //TODO: confusion with model matrix
 		//Material*	_material;
 	};
 

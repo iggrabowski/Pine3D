@@ -28,13 +28,16 @@ namespace pine {
 		Shader(std::string name, std::string vsCode, std::string fsCode);
 		~Shader();
 
-		void Bind();
+		void Bind() const;
 
-		void SetUniform(std::string name, glm::vec3& val);
-		void SetUniform(std::string name, glm::mat4& val);
-		bool GetAttributeLocation(std::string name, unsigned int& outLoc);
+		void SetUniform(const std::string& name, glm::vec3& val);
+		void SetUniform(const std::string& name, glm::mat4& val);
+		void SetUniform(const std::string& name, float val);
+		void SetUniformTextureSampler2D(const std::string& name, int textureUnit);
+		bool GetAttributeLocation(const std::string& name, unsigned int& outLoc) const;
 
 		static Shader* LoadShaders(const std::string& fileName);
+		int GetUniformLocation(std::string name);
 	protected:
 	private:
 		std::vector<ShaderVariable>	_uniforms;
@@ -44,7 +47,6 @@ namespace pine {
 
 		void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage);
 
-		int GetUniformLocation(std::string name);
 
 		GLuint _program;
 		GLuint _shaders[NUM_OF_SHADERS];
