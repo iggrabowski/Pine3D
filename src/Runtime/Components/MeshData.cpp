@@ -55,6 +55,73 @@ namespace pine {
 		this->m_Indices = indices;
 	}
 
+	void MeshData::ComputeTangents()
+	{
+		// Need positions, uvs and indices
+		if (m_Positions.empty() || m_TexCoords.empty() || m_Indices.empty()) {
+			m_Tangents.clear();
+			return;
+		}
+
+		const size_t vCount = m_Positions.size();
+		m_Tangents.assign(vCount, glm::vec4(0.0f));
+
+		std::vector<glm::vec3> tan1(vCount, glm::vec3(0.0f));
+		std::vector<glm::vec3> tan2(vCount, glm::vec3(0.0f));
+
+		const size_t triCount = m_Indices.size() / 3;
+		for (size_t a = 0; a < triCount; ++a) {
+			unsigned int i0 = m_Indices[3 * a + 0];
+			unsigned int i1 = m_Indices[3 * a + 1];
+			unsigned int i2 = m_Indices[3 * a + 2];
+
+			const glm::vec3& v0 = m_Positions[i0];
+			const glm::vec3& v1 = m_Positions[i1];
+			const glm::vec3& v2 = m_Positions[i2];
+
+			const glm::vec2& w0 = m_TexCoords[i0];
+			const glm::vec2& w1 = m_TexCoords[i1];
+			const glm::vec2& w2 = m_TexCoords[i2];
+
+			glm::vec3 edge1 = v1 - v0;
+			glm::vec3 edge2 = v2 - v0;
+			float s1 = w1.x - w0.x;
+			float s2 = w2.x - w0.x;
+			float t1 = w1.y - w0.y;
+			float t2 = w2.y - w0.y;
+
+			float denom = (s1 * t2 - s2 * t1);
+			float r = denom == 0.0f ? 1.0f : 1.0f / denom;
+
+			glm::vec3 sdir = (t2 * edge1 - t1 * edge2) * r;
+			glm::vec3 tdir = (s1 * edge2 - s2 * edge1) * r;
+
+			tan1[i0] += sdir; tan1[i1] += sdir; tan1[i2] += sdir;
+			tan2[i0] += tdir; tan2[i1] += tdir; tan2[i2] += tdir;
+		}
+
+		// Orthonormalize and compute handedness
+		for (size_t i = 0; i < vCount; ++i) {
+			glm::vec3 n = (i < m_Normals.size()) ? m_Normals[i] : glm::vec3(0.0f, 0.0f, 1.0f);
+			glm::vec3 t = tan1[i];
+
+			// Gram-Schmidt orthogonalize
+			if (glm::length(t) > 0.0f) {
+				t = glm::normalize(t - n * glm::dot(n, t));
+			}
+			else {
+				// fallback: build arbitrary tangent
+				glm::vec3 up = fabs(n.z) < 0.999f ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(1.0f, 0.0f, 0.0f);
+				t = glm::normalize(glm::cross(up, n));
+			}
+
+			// handedness
+			float w = (glm::dot(glm::cross(n, t), tan2[i]) < 0.0f) ? -1.0f : 1.0f;
+
+			m_Tangents[i] = glm::vec4(t, w);
+		}
+	}
+
 	void MeshData::InitMesh()
 	{
 		// maybe delegate to different object?

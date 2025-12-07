@@ -53,13 +53,19 @@ namespace pine {
 
     void ObjLoaderWindow::Show(bool p_open)
     {
-        if (!p_open)
+        // Position the ImGui window at the top-left of the main viewport and make it fixed (not movable).
+        // Use WorkPos to respect platform menu/toolbar if any.
+        ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+        if (main_viewport)
         {
-            bool open = true;
-            p_open = &open;
+            ImGui::SetNextWindowPos(main_viewport->WorkPos, ImGuiCond_Always);
+            //ImGui::SetNextWindowViewport(main_viewport->ID);
         }
 
-        if (!ImGui::Begin("Load OBJ", &p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
+        // Add NoMove so user cannot drag it; keep AlwaysAutoResize and NoScrollbar as before.
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove;
+
+        if (!ImGui::Begin("Load OBJ", nullptr, windowFlags))
         {
             ImGui::End();
             return;

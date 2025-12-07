@@ -52,7 +52,7 @@ namespace pine {
 		 // Our ImGUI state
 		bool _show_demo_window = true;
 		bool _show_another_window = false;
-		ImVec4 _clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		ImVec4 _clear_color = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 
 		void HandleEvents();
 		void AddGlfwCallbacks();

@@ -44,7 +44,7 @@ namespace pine {
   //          0, GL_RGBA, GL_UNSIGNED_BYTE, tex.getPixelsPtr());*/
   //  }
 
-	void Texture::LoadFromImage(Image & image)
+	void Texture::LoadFromImage(Image & image) // TODO: why is this not abstract
 	{
 		glGenTextures(1, &_texture);
 		glActiveTexture(GL_TEXTURE0);

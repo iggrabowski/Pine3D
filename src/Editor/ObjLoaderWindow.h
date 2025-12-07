@@ -23,7 +23,7 @@ namespace pine {
         void Show(bool p_open);
 
         // Optional: set to true to only show .obj files (default true)
-        bool FilterObjFiles = true;
+        bool FilterObjFiles = false;
 
     private:
         void RefreshDirectory();

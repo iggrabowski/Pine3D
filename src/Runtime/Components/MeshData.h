@@ -9,7 +9,7 @@
 
 #include "Material.h"
 
-#define NUM_BUFFERS 4
+#define NUM_BUFFERS 5
 #define INVALID_MATERIAL 0xFFFFFFFF
 #define POSITION_LOCATION 0
 #define TEX_COORD_LOCATION 1
@@ -42,7 +42,8 @@ namespace pine {
 		POSITION_VB,
 		TEXCOORD_VB,
 		NORMAL_VB,
-		INDEX_VB
+		INDEX_VB,
+		TANGENT_VB
 	};
 
 	class OpenGLRenderer;
@@ -55,6 +56,9 @@ namespace pine {
 		std::vector<glm::vec2>			m_TexCoords;
 		std::vector<glm::vec3>			m_Normals;
 		std::vector<unsigned int>		m_Indices;
+
+		// Tangents for normal mapping
+		std::vector<glm::vec4>			m_Tangents;
 
 		MeshData();
 		//Mesh(const std::string& fileName);
@@ -80,6 +84,8 @@ namespace pine {
 	protected:
 
 	private:
+		void ComputeTangents();
+
 		bool _buffered = false;
 		unsigned int	_VA;
 		unsigned int	_VB;

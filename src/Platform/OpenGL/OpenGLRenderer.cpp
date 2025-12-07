@@ -100,7 +100,7 @@ namespace pine {
 
 	void OpenGLRenderer::Clear()
 	{
-		glClearColor(0.0f, 0.0f, 0.4f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -118,9 +118,10 @@ namespace pine {
 		glm::mat4 umodel = mr->GetTransform().GetModel();
 		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
 		glm::vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
-		glm::vec3 lightDir = glm::normalize(glm::vec3(0.5f, 1.0f, -0.5f)); // hard coded for now TODO: add light objects
+		glm::vec3 lightDir = glm::vec3(-0.5f, -1.0f, -0.5f); // hard coded for now TODO: add light objects
 		glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
+		// TODO : check if window open cause of crashes
 		// If model defines BasicMesh ranges, draw each range separately.
 		if (!model->b_meshes.empty())
 		{
@@ -134,7 +135,7 @@ namespace pine {
 				shader->SetUniform("MVP", mvp); // TODO: build on uniform system to find needed uniforms from shader
 				shader->SetUniform("Model", umodel);
 				shader->SetUniform("u_cameraPosition", camPos);
-				shader->SetUniform("u_lightDir", camPos);
+				shader->SetUniform("u_lightDir", lightDir);
 				shader->SetUniform("u_lightColor", lightColor);
 				shader->SetUniform("u_roughness", model->materials[bm.materialIndex]->m_roughness);
 

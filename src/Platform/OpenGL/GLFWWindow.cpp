@@ -565,7 +565,7 @@ void GlfwWindow::OnUpdate()
             ImGui::ShowDemoWindow(&_show_demo_window);
 
         static ObjLoaderWindow OLwindow;
-        OLwindow.Show(true);
+        OLwindow.Show(NULL);
         OLwindow.OnLoad = LoadModel;
 
   //  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
