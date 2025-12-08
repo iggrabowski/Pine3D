@@ -15,7 +15,7 @@ namespace pine {
         return path.substr(0, pos + 1);
     }
 
-    void LoadTextureFromFile(const std::string& Dir, const aiString& Path, TextureType texType, int MaterialIndex, Material* targetMaterial, Model& outModel)
+    void LoadTextureFromFile(const std::string& Dir, const aiString& Path, TextureType texType, int MaterialIndex, Material* targetMaterial, Model3d& outModel)
     {
         std::string p(Path.data);
 
@@ -36,7 +36,7 @@ namespace pine {
         }
     }
 
-    void LoadAllMaterialTextures(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Material* targetMaterial, Model& outModel)
+    void LoadAllMaterialTextures(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Material* targetMaterial, Model3d& outModel)
     {
         struct TexTypeInfo {
             aiTextureType assimpType;
@@ -45,13 +45,13 @@ namespace pine {
 
         // List of texture types to load
         const TexTypeInfo texTypes[] = {
-            { aiTextureType_DIFFUSE,      TEX_TYPE_BASE },
-            { aiTextureType_NORMALS,      TEX_TYPE_NORMAL },
-            { aiTextureType_METALNESS,    TEX_TYPE_METALLIC },
-            { aiTextureType_DIFFUSE_ROUGHNESS, TEX_TYPE_ROUGHNESS },
-            { aiTextureType_AMBIENT_OCCLUSION, TEX_TYPE_AO },
-            { aiTextureType_HEIGHT,       TEX_TYPE_HEIGHT },
-            { aiTextureType_EMISSIVE,     TEX_TYPE_EMISSIVE }
+            { aiTextureType_DIFFUSE,            TEX_TYPE_BASE },
+            { aiTextureType_NORMALS,            TEX_TYPE_NORMAL },
+            { aiTextureType_METALNESS,          TEX_TYPE_METALLIC },
+            { aiTextureType_DIFFUSE_ROUGHNESS,  TEX_TYPE_ROUGHNESS },
+            { aiTextureType_AMBIENT_OCCLUSION,  TEX_TYPE_AO },
+            { aiTextureType_HEIGHT,             TEX_TYPE_NORMAL }, // for now height will be normal
+            { aiTextureType_EMISSIVE,           TEX_TYPE_EMISSIVE }
         };
 
         for (const auto& texInfo : texTypes) {
@@ -71,7 +71,7 @@ namespace pine {
     }
 
     // Flatten all meshes into a single Mesh
-    bool LoadModelWithAssimp(const std::string& filePath, Model& outModel)
+    bool LoadModelWithAssimp(const std::string& filePath, Model3d& outModel)
     {
         Assimp::Importer importer;
         const unsigned int flags = aiProcess_Triangulate
@@ -108,6 +108,8 @@ namespace pine {
         outModel.mesh.m_Positions.reserve(vertexOffset);
         outModel.mesh.m_Normals.reserve(vertexOffset);
 		outModel.mesh.m_TexCoords.reserve(vertexOffset);
+        outModel.mesh.m_Tangents.reserve(vertexOffset);
+		outModel.mesh.m_Bitangents.reserve(vertexOffset);
         outModel.mesh.m_Indices.reserve(indexOffset);
 
         for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
@@ -120,9 +122,13 @@ namespace pine {
                 const aiVector3D& p_pos = mesh->mVertices[j];
                 const aiVector3D& p_normal = mesh->mNormals[j];
                 const aiVector3D& p_tex_coord = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][j] : Zero3D;
+				const aiVector3D& p_tangent = mesh->HasTangentsAndBitangents() ? mesh->mTangents[j] : Zero3D;
+				const aiVector3D& p_bitangent = mesh->HasTangentsAndBitangents() ? mesh->mBitangents[j] : Zero3D;
                 outModel.mesh.m_Positions.emplace_back(p_pos.x, p_pos.y, p_pos.z);
                 outModel.mesh.m_Normals.emplace_back(p_normal.x, p_normal.y, p_normal.z);
                 outModel.mesh.m_TexCoords.emplace_back(p_tex_coord.x, p_tex_coord.y);
+				outModel.mesh.m_Tangents.emplace_back(p_tangent.x, p_tangent.y, p_tangent.z);
+				outModel.mesh.m_Bitangents.emplace_back(p_bitangent.x, p_bitangent.y, p_bitangent.z);
             }
             // Populate the index buffer
             for (unsigned int j = 0; j < mesh->mNumFaces; j++) {
@@ -166,7 +172,7 @@ namespace pine {
         // create mesh if load true
 		LoadModelWithAssimp(filePath, *meshRenderer->GetModel());
 
-		//TODO: probably do that somewhere else
+		// TODO: probably do that somewhere else
 		meshRenderer->GetModel()->mesh.InitMesh();
     }
 

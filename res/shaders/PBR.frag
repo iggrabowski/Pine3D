@@ -1,6 +1,6 @@
 // Fragment Shader
 // Physically Based Rendering (PBR)
-#version 130
+#version 330
 
 // shader flags
 // uniform int shaderFlags; // TODO: will implement later
@@ -8,16 +8,17 @@
 // uniforms
 uniform sampler2D u_albedoMap;
 uniform sampler2D u_normalMap;
-uniform vec3 u_cameraPosition;
-uniform vec3 u_lightDir; // for now just 1 light directional
 uniform vec3 u_lightColor;
 // uniform vec3 u_lightIntensity;
 uniform float u_roughness;
 
 in vec2 texCoord0;
 in vec3 normal0;
-//in mat3 TBN; // Tangent-Bitangent-Normal matrix
-in vec3 worldPos0;
+//in vec3 worldPos0;
+in vec3 tangentWorldPos;
+in vec3 tangentCameraPos;
+in vec3 tangentLightDir;
+in vec3 tangentNormal;
 
 out vec4 fragColor;
 
@@ -61,9 +62,9 @@ vec3 F(vec3 f0, vec3 v, vec3 h) {
 }
 
 vec3 CalcPBRLighting() {
-	vec3 l = normalize(-u_lightDir);
-	vec3 n = normalize(normal0);
-	vec3 v = normalize(u_cameraPosition - worldPos0);
+	vec3 l = normalize(-tangentLightDir);
+	vec3 n = normalize(texture(u_normalMap, texCoord0).rgb * 2.0 - vec3(1.0));
+	vec3 v = normalize(tangentCameraPos - tangentWorldPos);
 	vec3 h = normalize(v + l);
 	float alpha = u_roughness * u_roughness; 
 	vec3 Ks = F(vec3(0.04), v, h); // reflectivity 0.04

@@ -10,7 +10,7 @@ namespace pine {
 	MeshRenderer::MeshRenderer()
 	{
 		_transform = std::make_unique<Transform>();
-		_model = new Model();
+		_model = new Model3d();
 		//_mesh = new Cube();
 		//_material = new Material();
 	}

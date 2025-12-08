@@ -21,7 +21,7 @@ namespace pine {
 		unsigned int materialIndex;
 	};
 
-	struct Model {
+	struct Model3d {
 		MeshData					mesh;
 		std::vector<BasicMesh>		b_meshes;
 		std::vector<Material*>		materials;
@@ -31,12 +31,12 @@ namespace pine {
 	public:
 		MeshRenderer();
 		~MeshRenderer();
-		Model* GetModel() const { return _model; }
+		Model3d* GetModel() const { return _model; }
 		Transform GetTransform() const { return *_transform; }
 
 		void OnUpdate() override;
 	private:
-		Model*		_model; //TODO: confusion with model matrix
+		Model3d*		_model; //TODO: confusion with model matrix
 		//Material*	_material;
 	};
 

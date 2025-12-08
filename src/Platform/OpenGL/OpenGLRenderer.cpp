@@ -106,7 +106,7 @@ namespace pine {
 
 	void OpenGLRenderer::Draw(MeshRenderer* mr)
 	{
-		Model* model = mr->GetModel();
+		Model3d* model = mr->GetModel();
 		if (!model->mesh._buffered) {
 			// TODO: this is wrong, needs seperate mesh/shader
 			// BufferMesh(model.mesh, *mat.m_Shader);
@@ -134,7 +134,7 @@ namespace pine {
 				//material->m_Shader->SetUniform("Model", model);
 				shader->SetUniform("MVP", mvp); // TODO: build on uniform system to find needed uniforms from shader
 				shader->SetUniform("Model", umodel);
-				shader->SetUniform("u_cameraPosition", camPos);
+				shader->SetUniform("u_cameraPos", camPos);
 				shader->SetUniform("u_lightDir", lightDir);
 				shader->SetUniform("u_lightColor", lightColor);
 				shader->SetUniform("u_roughness", model->materials[bm.materialIndex]->m_roughness);
