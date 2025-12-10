@@ -4,6 +4,8 @@
 #include <assimp/postprocess.h>
 #include <algorithm>
 
+#include "assimp/pbrmaterial.h"
+
 
 namespace pine {
 
@@ -15,7 +17,7 @@ namespace pine {
         return path.substr(0, pos + 1);
     }
 
-    void LoadTextureFromFile(const std::string& Dir, const aiString& Path, TextureType texType, int MaterialIndex, Material* targetMaterial, Model3d& outModel)
+    void LoadTextureFromFile(const std::string& Dir, const aiString& Path, TextureType texType, int MaterialIndex, Material* targetMaterial, Model3D& outModel)
     {
         std::string p(Path.data);
 
@@ -23,20 +25,20 @@ namespace pine {
             p = p.substr(2, p.size() - 2);
 
         std::string fullPath = Dir + "/" + p;
-        targetMaterial->m_Textures[texType] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
+        targetMaterial->m_textures[texType] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
         Image* image = new Image();
 
         if (!image->Create(fullPath.c_str())) {
             printf("Error loading texture '%s'\n", fullPath.c_str());
         }
         else {
-            targetMaterial->m_Textures[texType]->LoadFromImage(*image);
+            targetMaterial->m_textures[texType]->LoadFromImage(*image);
             outModel.materials[MaterialIndex] = targetMaterial;
             printf("Loaded texture '%s' (type %d) at index %d\n", fullPath.c_str(), texType, MaterialIndex);
         }
     }
 
-    void LoadAllMaterialTextures(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Material* targetMaterial, Model3d& outModel)
+    void LoadAllMaterialTextures(const aiScene* scene, const std::string& Dir, const aiMaterial* pMaterial, int MaterialIndex, Material* targetMaterial, Model3D& outModel)
     {
         struct TexTypeInfo {
             aiTextureType assimpType;
@@ -71,7 +73,7 @@ namespace pine {
     }
 
     // Flatten all meshes into a single Mesh
-    bool LoadModelWithAssimp(const std::string& filePath, Model3d& outModel)
+    bool LoadModelWithAssimp(const std::string& filePath, Model3D& outModel)
     {
         Assimp::Importer importer;
         const unsigned int flags = aiProcess_Triangulate
@@ -86,15 +88,17 @@ namespace pine {
 
         std::string modelDir = GetDirectory(filePath);
 
-        outModel.b_meshes.reserve(scene->mNumMeshes);
-		outModel.materials.reserve(scene->mNumMaterials);
+		outModel.num_meshes = scene->mNumMeshes;
+		outModel.num_materials = scene->mNumMaterials;
+        outModel.b_meshes.reserve(outModel.num_meshes );
+		outModel.materials.reserve(outModel.num_materials);
 
         unsigned int vertexOffset = 0;
         unsigned int indexOffset = 0;
         for (unsigned int meshIdx = 0; meshIdx < scene->mNumMeshes; ++meshIdx)
         {
             aiMesh* mesh = scene->mMeshes[meshIdx];
-            outModel.b_meshes.emplace_back();
+        	outModel.b_meshes.emplace_back();
             outModel.b_meshes[meshIdx].numIndices = mesh->mNumFaces * 3;
             outModel.b_meshes[meshIdx].baseVertex = vertexOffset;
             outModel.b_meshes[meshIdx].baseIndex = indexOffset;
@@ -152,10 +156,10 @@ namespace pine {
         printf("Num materials: %d\n", scene->mNumMaterials);
 
         // Initialize the materials
-        // TODO: more texture types
         for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
             const aiMaterial* pMaterial = scene->mMaterials[i];
             Material* currentMat = &Application::materials.emplace_back();
+			pMaterial->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, currentMat->m_roughness);
 
 			outModel.materials.emplace_back(nullptr);
             LoadAllMaterialTextures(scene, Dir, pMaterial, i, currentMat, outModel);
@@ -173,7 +177,7 @@ namespace pine {
 		LoadModelWithAssimp(filePath, *meshRenderer->GetModel());
 
 		// TODO: probably do that somewhere else
-		meshRenderer->GetModel()->mesh.InitMesh();
+        meshRenderer->InitModel();
     }
 
 } // namespace pine

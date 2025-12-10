@@ -106,12 +106,14 @@ namespace pine {
 
 	void OpenGLRenderer::Draw(MeshRenderer* mr)
 	{
-		Model3d* model = mr->GetModel();
+		Model3D* model = mr->GetModel();
 		if (!model->mesh._buffered) {
 			// TODO: this is wrong, needs seperate mesh/shader
 			// BufferMesh(model.mesh, *mat.m_Shader);
 		}
-		
+
+		UpdateRenderFlags(mr); // TODO: OPT does not need to be here every draw call
+
 		// bind VAO once for the mesh data
 		glBindVertexArray(model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
 
@@ -129,7 +131,7 @@ namespace pine {
 			{
 				// TODO: check if shader/texture exists
 				// bind shader/texture (existing code assumes 'mat' is set up)
-				Shader* shader = model->materials[bm.materialIndex]->m_Shader;
+				Shader* shader = model->materials[bm.materialIndex]->m_shader;
 				shader->Bind();
 				//material->m_Shader->SetUniform("Model", model);
 				shader->SetUniform("MVP", mvp); // TODO: build on uniform system to find needed uniforms from shader
@@ -138,20 +140,28 @@ namespace pine {
 				shader->SetUniform("u_lightDir", lightDir);
 				shader->SetUniform("u_lightColor", lightColor);
 				shader->SetUniform("u_roughness", model->materials[bm.materialIndex]->m_roughness);
+				shader->SetUniform("renderFlags", mr->m_render_flags[bm.materialIndex]);
 
 				// Bind albedo (base) to texture unit 0
-				auto* albedoTex = model->materials[bm.materialIndex]->m_Textures[TEX_TYPE_BASE];
-				if (albedoTex) {
+				auto* albedoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
+				if (albedoTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::BASE_TEXTURE)) {
 					albedoTex->Bind(0);
 					shader->SetUniformTextureSampler2D("u_albedoMap", 0);
 				}
 
 				// Bind normal map to texture unit 1
-				auto* normalTex = model->materials[bm.materialIndex]->m_Textures[TEX_TYPE_NORMAL];
-				if (normalTex) {
+				auto* normalTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
+				if (normalTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::NORMAL_MAPS)) {
 					normalTex->Bind(1);
 					shader->SetUniformTextureSampler2D("u_normalMap", 1);
 				}
+
+				auto* roughnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
+				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS)) {
+					normalTex->Bind(2);
+					shader->SetUniformTextureSampler2D("u_roughnessMap", 1);
+				}
+
 
 				// TODO: bind other textures (metallic, roughness, ao, etc.)
 

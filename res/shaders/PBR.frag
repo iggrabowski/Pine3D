@@ -8,9 +8,11 @@
 // uniforms
 uniform sampler2D u_albedoMap;
 uniform sampler2D u_normalMap;
+uniform sampler2D u_roughnessMap;
 uniform vec3 u_lightColor;
 // uniform vec3 u_lightIntensity;
 uniform float u_roughness;
+uniform uint renderFlags;
 
 in vec2 texCoord0;
 in vec3 normal0;

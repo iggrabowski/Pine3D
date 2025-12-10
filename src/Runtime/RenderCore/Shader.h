@@ -33,6 +33,7 @@ namespace pine {
 		void SetUniform(const std::string& name, glm::vec3& val);
 		void SetUniform(const std::string& name, glm::mat4& val);
 		void SetUniform(const std::string& name, float val);
+		void SetUniform(const std::string& name, unsigned int val);
 		void SetUniformTextureSampler2D(const std::string& name, int textureUnit);
 		bool GetAttributeLocation(const std::string& name, unsigned int& outLoc) const;
 

@@ -8,21 +8,21 @@ namespace pine {
 		// Load default texture files from file
 		Image img("../res/textures/default.jpg");
 		// Load default shaders
-		m_Shader = Shader::LoadShaders("../res/shaders/PBR");
+		m_shader = Shader::LoadShaders("../res/shaders/PBR");
 
-		m_Texture = new Texture();
-		m_Texture->LoadFromImage(img);
+		m_texture = new Texture();
+		m_texture->LoadFromImage(img);
 	}
 
-	Material::Material(Shader* shader): m_Texture(nullptr)
+	Material::Material(Shader* shader): m_texture(nullptr)
 	{
-		m_Shader = shader;
+		m_shader = shader;
 	}
 
 	Material::Material(Shader* shader, Texture* texture)
 	{
-		m_Shader = shader;
-		m_Texture = texture;
+		m_shader = shader;
+		m_texture = texture;
 	}
 
 	void Material::OnUpdate()

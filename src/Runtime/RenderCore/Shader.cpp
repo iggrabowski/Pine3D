@@ -74,6 +74,7 @@ namespace pine {
         glDeleteProgram(_program);
     }
 
+	// float matrix4
     void Shader::SetUniform(const std::string& name, glm::mat4& val)
     {
 	    if (int loc = GetUniformLocation(name); loc >= 0) {
@@ -82,6 +83,7 @@ namespace pine {
         }
     }
 
+	// float vector3
     void Shader::SetUniform(const std::string& name, glm::vec3& val)
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
@@ -90,6 +92,7 @@ namespace pine {
         }
     }
 
+    // float
     void Shader::SetUniform(const std::string& name, float val)
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
@@ -98,6 +101,16 @@ namespace pine {
         }
     }
 
+    // unsigned int
+    void Shader::SetUniform(const std::string& name, unsigned int val)
+    {
+	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+            glUniform1ui(loc,  val);
+		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
+        }
+    }
+
+	// texture sampler2D
     void Shader::SetUniformTextureSampler2D(const std::string& name, const int textureUnit)
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {

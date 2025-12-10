@@ -21,22 +21,26 @@ namespace pine {
 		unsigned int materialIndex;
 	};
 
-	struct Model3d {
-		MeshData					mesh;
-		std::vector<BasicMesh>		b_meshes;
+	struct Model3D {
+		MeshData							mesh;
+		std::vector<BasicMesh>	b_meshes;
 		std::vector<Material*>		materials;
+		unsigned int						num_meshes = 0;
+		unsigned int						num_materials = 0;
 	};
 
 	class MeshRenderer : public SceneObject {
 	public:
 		MeshRenderer();
 		~MeshRenderer();
-		Model3d* GetModel() const { return _model; }
+		Model3D* GetModel() const { return _model3D; }
 		Transform GetTransform() const { return *_transform; }
 
 		void OnUpdate() override;
+		bool InitModel();
+		std::vector<unsigned int> m_render_flags;
 	private:
-		Model3d*		_model; //TODO: confusion with model matrix
+		Model3D*		_model3D; //TODO: confusion with model matrix
 		//Material*	_material;
 	};
 

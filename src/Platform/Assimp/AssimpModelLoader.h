@@ -19,5 +19,5 @@ namespace pine {
     //    std::string diffuseTexturePath; // empty if none
     //};
 	void LoadModel(const std::string& filePath);
-    bool LoadModelWithAssimp(const std::string& filePath, Model3d& outModel);
+    bool LoadModelWithAssimp(const std::string& filePath, Model3D& outModel);
 }//namespace pine

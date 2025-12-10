@@ -12,6 +12,13 @@ namespace pine {
 		OPENGL_API
 	};
 
+	enum class RENDER_FLAGS
+	{
+		BASE_TEXTURE = 0x1,
+		NORMAL_MAPS = 0x2,
+		ROUGHNESS_MAPS = 0x4
+	};
+
 	//main rendering object
 	class Renderer {
 
@@ -31,6 +38,7 @@ namespace pine {
 		virtual void Clear() = 0;
 	protected:
 		Camera* _camera;
+		void UpdateRenderFlags(MeshRenderer* mr);
 	};
 
 }

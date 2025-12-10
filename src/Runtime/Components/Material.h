@@ -7,18 +7,18 @@ namespace pine {
 	class Material {
 	public:
 		Material();
-		~Material() { delete m_Shader;  };
+		~Material() { delete m_shader;  };
 		explicit Material(Shader* shader);
 		Material(Shader* shader, Texture* texture);
 
 		void OnUpdate();
 
-		Shader* m_Shader = nullptr;
-		Texture* m_Texture = nullptr;
+		Shader* m_shader = nullptr;
+		Texture* m_texture = nullptr;
 		// See texture types in Texture.h
 
 		// TODO: use sharepointer?? the textures should be kept in main app and be reusable
-		Texture* m_Textures[7] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+		Texture* m_textures[7] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 
 		float m_roughness = 0.2f;
 	};

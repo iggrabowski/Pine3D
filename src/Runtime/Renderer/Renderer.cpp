@@ -11,6 +11,10 @@ namespace pine {
 		return *_camera;
 	}
 
+	void Renderer::UpdateRenderFlags(MeshRenderer* mr)
+	{
+	}
+
 	void Renderer::SetRenderCamera(Camera* cam)
 	{
 		_camera = cam;
