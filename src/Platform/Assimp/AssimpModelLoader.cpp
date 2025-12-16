@@ -161,7 +161,7 @@ namespace pine {
             Material* currentMat = &Application::materials.emplace_back();
 			pMaterial->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, currentMat->m_roughness);
 
-			outModel.materials.emplace_back(nullptr);
+			outModel.materials.emplace_back(currentMat);
             LoadAllMaterialTextures(scene, Dir, pMaterial, i, currentMat, outModel);
         }
 

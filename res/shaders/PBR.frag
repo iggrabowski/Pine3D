@@ -24,6 +24,13 @@ in vec3 tangentNormal;
 
 out vec4 fragColor;
 
+
+// shader flag constants
+const uint BASE_TEXTURE = 1u;
+const uint NORMAL_MAP = 2u;
+const uint ROUGHNESS_MAP = 4u;
+
+
 // GGX/Trowbridge-Reitz normal distribution function
 float D(float alpha, vec3 n, vec3 h) {
 	float alpha2 = alpha * alpha;
@@ -65,7 +72,12 @@ vec3 F(vec3 f0, vec3 v, vec3 h) {
 
 vec3 CalcPBRLighting() {
 	vec3 l = normalize(-tangentLightDir);
-	vec3 n = normalize(texture(u_normalMap, texCoord0).rgb * 2.0 - vec3(1.0));
+	vec3 n;
+	if ((renderFlags & NORMAL_MAP) != 0u){
+		n = normalize(texture(u_normalMap, texCoord0).rgb * 2.0 - vec3(1.0));
+	} else {
+		n = normalize(tangentNormal);
+	}
 	vec3 v = normalize(tangentCameraPos - tangentWorldPos);
 	vec3 h = normalize(v + l);
 	float alpha = u_roughness * u_roughness; 
