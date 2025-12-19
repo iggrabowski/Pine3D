@@ -33,6 +33,7 @@ namespace pine {
         }
         else {
             targetMaterial->m_textures[texType]->LoadFromImage(*image);
+            example::color_editor.AddImageNode(targetMaterial->m_textures[texType], ImVec2(1,1));
             outModel.materials[MaterialIndex] = targetMaterial;
             printf("Loaded texture '%s' (type %d) at index %d\n", fullPath.c_str(), texType, MaterialIndex);
         }
@@ -161,7 +162,7 @@ namespace pine {
             Material* currentMat = &Application::materials.emplace_back();
 			pMaterial->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, currentMat->m_roughness);
 
-			outModel.materials.emplace_back(nullptr);
+			outModel.materials.emplace_back(currentMat);
             LoadAllMaterialTextures(scene, Dir, pMaterial, i, currentMat, outModel);
         }
 

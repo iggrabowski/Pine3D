@@ -83,8 +83,20 @@ set(PINE3D-PLATFORM-IMGUI
 	include/imgui/imstb_textedit.h
 	include/imgui/imstb_truetype.h
 	)
+
 	
 source_group("Source Files/Platform/ImGui" FILES ${PINE3D-PLATFORM-IMGUI})
+
+	set(PINE3D-PLATFORM-IMNODES
+	${SRC_ROOT}/Platform/imnodes/imnodes.h
+	${SRC_ROOT}/Platform/imnodes/imnodes.cpp
+	${SRC_ROOT}/Platform/imnodes/imnodes_internal.h
+	${SRC_ROOT}/Platform/imnodes/color_node_editor.cpp
+	${SRC_ROOT}/Platform/imnodes/graph.h
+	${SRC_ROOT}/Platform/imnodes/node_editor.h
+	)
+
+source_group("Source Files/Platform/ImNodes" FILES ${PINE3D-PLATFORM-IMNODES})
 
 set(PINE3D-PLATFORM-ASSIMP
 	${SRC_ROOT}/Platform/Assimp/AssimpModelLoader.cpp
@@ -98,6 +110,8 @@ set(PINE3D-EDITOR
 	${SRC_ROOT}/Editor/Editor.h
 	${SRC_ROOT}/Editor/ObjLoaderWindow.cpp
 	${SRC_ROOT}/Editor/ObjLoaderWindow.h
+	${SRC_ROOT}/Editor/NodeEditorWindow.h
+	${SRC_ROOT}/Editor/NodeEditorWindow.cpp
 	)
 	
 source_group("Source Files/Editor" FILES ${PINE3D-EDITOR})
@@ -167,6 +181,7 @@ add_executable(${PROJECT_NAME} WIN32
 	${PINE3D-CORE-INPUT}
 	${PINE3D-EDITOR}
 	${PINE3D-PLATFORM-IMGUI}
+	${PINE3D-PLATFORM-IMNODES}
 	${PINE3D-PLATFORM-OPENGL}
 	${PINE3D-PLATFORM-ASSIMP}
 	${PINE3D-RUNTIME-CAMERA}

@@ -4,7 +4,9 @@
 #include "Utils/Logger.h"
 #include "Editor/ObjLoaderWindow.h"
 #include "Platform/Assimp/AssimpModelLoader.h"
-
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+//#include "Editor/NodeEditorWindow.h"
 
 namespace pine {
 
@@ -560,6 +562,7 @@ void GlfwWindow::OnUpdate()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+	// Add your own ImGui windows here
     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (_show_demo_window)
             ImGui::ShowDemoWindow(&_show_demo_window);
@@ -567,6 +570,9 @@ void GlfwWindow::OnUpdate()
         static ObjLoaderWindow OLwindow;
         OLwindow.Show(NULL);
         OLwindow.OnLoad = LoadModel;
+
+		static NodeEditorWindow NEwindow;
+		NEwindow.Show(NULL, OLwindow.GetHeight());
 
   //  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
   //  {

@@ -25,6 +25,7 @@ namespace pine {
         // Optional: set to true to only show .obj files (default true)
         bool FilterObjFiles = false;
 
+        float GetHeight();
     private:
         void RefreshDirectory();
         std::filesystem::path CurrentDir;
@@ -32,5 +33,6 @@ namespace pine {
         std::string SelectedPath;
         char PathEditBuf[1024];
         bool _initialLoad = true;
+        float height = 0;
     };
 } //namespace

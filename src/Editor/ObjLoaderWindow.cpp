@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iostream>
 
+//#define IMGUI_DISABLE_DEBUG_TOOLS
+
 namespace pine {
 
     ObjLoaderWindow::ObjLoaderWindow(const std::string& startDir)
@@ -24,6 +26,11 @@ namespace pine {
 
 		Logger::Instance().Info("ObjLoaderWindow: Opening directory " + CurrentDir.string());
         RefreshDirectory();
+    }
+
+float ObjLoaderWindow::GetHeight()
+    {
+		return height;
     }
 
     void ObjLoaderWindow::RefreshDirectory()
@@ -135,9 +142,11 @@ namespace pine {
                 }
 
                 const bool selected = (SelectedPath == p.string());
-                if (ImGui::Selectable(filename.c_str(), selected))
-                {
-                    SelectedPath = p.string();
+                if (filename != "") {
+                    if (ImGui::Selectable(filename.c_str(), selected))
+                    {
+                        SelectedPath = p.string();
+                    }
                 }
 
                 // double-click to load quickly
@@ -155,7 +164,7 @@ namespace pine {
         ImGui::Separator();
         ImGui::TextUnformatted("Selected: ");
         ImGui::SameLine();
-        ImGui::TextWrapped("%s", SelectedPath.empty() ? "<none>" : SelectedPath.c_str());
+        //ImGui::TextWrapped("%s", SelectedPath.empty() ? "<none>" : SelectedPath.c_str());
 
         ImGui::Separator();
         ImGui::SameLine(ImGui::GetWindowWidth() - 220);
@@ -164,7 +173,7 @@ namespace pine {
             if (!SelectedPath.empty() && OnLoad)
                 OnLoad(SelectedPath);
         }
-
+        height = ImGui::GetWindowPos().y + ImGui::GetWindowSize().y;
         ImGui::End();
 		_initialLoad = false;
     }

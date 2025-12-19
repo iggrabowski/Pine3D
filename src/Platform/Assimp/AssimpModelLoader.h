@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <Core/Application.h>
+#include <Editor/NodeEditorWindow.h>
 
 namespace pine {
     //struct Vertex

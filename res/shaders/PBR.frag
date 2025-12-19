@@ -65,7 +65,8 @@ vec3 F(vec3 f0, vec3 v, vec3 h) {
 
 vec3 CalcPBRLighting() {
 	vec3 l = normalize(-tangentLightDir);
-	vec3 n = normalize(texture(u_normalMap, texCoord0).rgb * 2.0 - vec3(1.0));
+	//vec3 n = normalize(texture(u_normalMap, texCoord0).rgb * 2.0 - vec3(1.0));
+	vec3 n = normalize(tangentNormal);
 	vec3 v = normalize(tangentCameraPos - tangentWorldPos);
 	vec3 h = normalize(v + l);
 	float alpha = u_roughness * u_roughness; 

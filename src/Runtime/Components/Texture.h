@@ -1,6 +1,7 @@
 #pragma once
 #include <Runtime/Components/Image.h>
 #include <string>
+//#include <GL/glew.h> // for GLuint
 
 // Has to be sufficient for now
 #include <Utils/Utils.h>
@@ -31,6 +32,9 @@ namespace pine {
 		// Bind to specific texture unit (0..GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS-1)
 		void Bind(unsigned int unit) const;
 
+		 // Return underlying GL texture handle
+		unsigned int GetGLHandle() const { return _texture; }
+
 		// TODO: fix for GLFW
 		//void Update(int offsetX, int offsetY, sf::Image img_data);
 
@@ -43,6 +47,6 @@ namespace pine {
 		std::string _filePath;
 
 		//TODO: make the texture more abstract, this relies on openGL standard
-		unsigned int _texture;
+		unsigned int _texture = 0;
 	};
 }
