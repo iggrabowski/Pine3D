@@ -1,5 +1,5 @@
 #pragma once
-#include "Runtime/Components/Texture.h"
+#include "Runtime/Components/Material.h"
 #include <imgui.h>
 #include "Platform/imnodes/imnodes.h"
 #include "graph.h"
@@ -57,23 +57,51 @@ public:
     //            This object will be deleted when the node is removed.
     // - path: optional file path to record on the node (informational).
     // - pos: optional screen-space position; if pos.x < 0 the current mouse position is used.
-    void AddImageNode(pine::Texture* texture,  ImVec2 pos = ImVec2(-1.0f, -1.0f))
+    void AddMaterialNodes(pine::Material* material,  ImVec2 pos = ImVec2(-1.0f, -1.0f))
     {
+        //ImNodes::BeginNodeEditor();
         // depending on texture type the node will be placed accordingly, after that they all connect to a material node
         // create mat node first
-        UiNode ui_node;
-        test = true;
-        ui_node.type = UiNodeType::image;
-        ui_node.imageTexturePath = "";
-        ui_node.texture = texture;
-        ui_node.id = graph_.insert_node(Node(NodeType::value));
-
+        const Node value(NodeType::value, 0.f);
+		const Node out(NodeType::output);
+				
+		UiNode ui_node;
+		ui_node.type = UiNodeType::material;
+		ui_node.ui.material.input1 = graph_.insert_node(value);
+		ui_node.ui.material.input2 = graph_.insert_node(value);
+		ui_node.ui.material.input3 = graph_.insert_node(value);
+		ui_node.id = graph_.insert_node(out);
+				
+		graph_.insert_edge(ui_node.id, ui_node.ui.material.input1);
+		graph_.insert_edge(ui_node.id, ui_node.ui.material.input2);
+		graph_.insert_edge(ui_node.id, ui_node.ui.material.input3);
+				
         nodes_.push_back(ui_node);
-        ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(171,541));
+		ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(371,541));
+		root_node_id_ = ui_node.id;
+		// then create base texture node
+        UiNode base_tex_node;
+        test = true;
+        base_tex_node.type = UiNodeType::image;
+        base_tex_node.imageTexturePath = "";
+        base_tex_node.texture = material->m_textures[pine::TEX_TYPE_BASE];
+        base_tex_node.id = graph_.insert_node(Node(NodeType::value));
+
+        nodes_.push_back(base_tex_node);
+        ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(171,541));
+
+		// then create normal texture node
+        UiNode normal_tex_node;
+        test = true;
+        normal_tex_node.type = UiNodeType::image;
+        normal_tex_node.imageTexturePath = "";
+        normal_tex_node.texture = material->m_textures[pine::TEX_TYPE_NORMAL];
+        normal_tex_node.id = graph_.insert_node(Node(NodeType::value));
+
+        nodes_.push_back(normal_tex_node);
+        ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,341));
         //UiNode ui_node;
         //ui_node.type = UiNodeType::image;
-        ////ui_node.imageTexturePath = path;
-        //ui_node.texture = texture; // takes ownership
         //ui_node.id = graph_.insert_node(Node(NodeType::value)); // lightweight anchor in graph
 
         //// push into UI list and set position
@@ -81,6 +109,7 @@ public:
 
         //ImVec2 p = pos.x < 0.0f ? ImGui::GetMousePos() : pos;
         //ImNodes::SetNodeScreenSpacePos(ui_node.id, p);
+        //ImNodes::EndNodeEditor();
     }
 
     void show()

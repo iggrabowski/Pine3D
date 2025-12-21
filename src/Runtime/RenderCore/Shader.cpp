@@ -79,7 +79,7 @@ namespace pine {
     {
 	    if (int loc = GetUniformLocation(name); loc >= 0) {
             glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
-			Logger::Instance().Info("SHADER: Added value to uniform" + name);
+			//Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
     }
 
@@ -88,7 +88,7 @@ namespace pine {
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
             glUniform3fv(loc, 1, &val[0]);
-		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
+		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
     }
 
@@ -97,7 +97,7 @@ namespace pine {
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
             glUniform1f(loc,  val);
-		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
+		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
     }
 
@@ -106,7 +106,7 @@ namespace pine {
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
             glUniform1ui(loc,  val);
-		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
+		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
     }
 
@@ -115,7 +115,7 @@ namespace pine {
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
             glUniform1i(loc, textureUnit);
-		    Logger::Instance().Info("SHADER: Added value to uniform" + name);
+		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
         }
 	}
 

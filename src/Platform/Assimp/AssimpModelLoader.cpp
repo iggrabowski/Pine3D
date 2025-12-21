@@ -33,7 +33,6 @@ namespace pine {
         }
         else {
             targetMaterial->m_textures[texType]->LoadFromImage(*image);
-            example::color_editor.AddImageNode(targetMaterial->m_textures[texType], ImVec2(1,1));
             outModel.materials[MaterialIndex] = targetMaterial;
             printf("Loaded texture '%s' (type %d) at index %d\n", fullPath.c_str(), texType, MaterialIndex);
         }
@@ -164,6 +163,7 @@ namespace pine {
 
 			outModel.materials.emplace_back(currentMat);
             LoadAllMaterialTextures(scene, Dir, pMaterial, i, currentMat, outModel);
+            example::color_editor.AddMaterialNodes(currentMat, ImVec2(1,1));
         }
 
         return Ret;
