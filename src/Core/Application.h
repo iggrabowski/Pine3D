@@ -9,6 +9,8 @@
 #include "Editor/Editor.h"
 #include "Utils/Logger.h"
 
+#define SINGLE_MESH_MODE
+
 namespace pine {
 
 	 class Application {
@@ -29,6 +31,9 @@ namespace pine {
 		 static inline std::vector<Image> images;
 		 static inline std::vector<Texture> textures;
 		 //static inline std::unique_ptr<Logger> logger = nullptr;
+
+		 // The single mesh version of the app
+		 static inline MeshRenderer mr;
 	};
 
 }

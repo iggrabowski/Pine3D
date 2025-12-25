@@ -36,11 +36,12 @@ namespace pine {
 		Model3D* GetModel() const { return _model3D; }
 		Transform GetTransform() const { return *_transform; }
 
+		void ResetModel3D();
 		void OnUpdate() override;
 		bool InitModel();
 		std::vector<unsigned int> m_render_flags;
 	private:
-		Model3D*		_model3D; //TODO: confusion with model matrix
+		Model3D*		_model3D = nullptr;
 		//Material*	_material;
 	};
 

@@ -18,6 +18,12 @@ namespace pine {
 	MeshRenderer::~MeshRenderer() {
 	}
 
+	void MeshRenderer::ResetModel3D()
+	{
+		delete _model3D;
+		_model3D = new Model3D();
+	}
+
 	void MeshRenderer::OnUpdate()
 	{
 		_transform->UpdateModel();

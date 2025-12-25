@@ -163,6 +163,7 @@ namespace pine {
 
 			outModel.materials.emplace_back(currentMat);
             LoadAllMaterialTextures(scene, Dir, pMaterial, i, currentMat, outModel);
+
             example::color_editor.AddMaterialNodes(currentMat, ImVec2(1,1));
         }
 
@@ -171,14 +172,21 @@ namespace pine {
 
     void LoadModel(const std::string& filePath)
     {
-		// initiate a new MeshRenderer and add to scene
-        Application::scene_objects.emplace_back(new MeshRenderer);
-		MeshRenderer* meshRenderer = static_cast<MeshRenderer*>(Application::scene_objects.back().get());
-        // create mesh if load true
-		LoadModelWithAssimp(filePath, *meshRenderer->GetModel());
+#ifdef SINGLE_MESH_MODE
+			Application::mr.ResetModel3D();
+            LoadModelWithAssimp(filePath, *Application::mr.GetModel());
 
 		// TODO: probably do that somewhere else
-        meshRenderer->InitModel();
+			Application::mr.InitModel();
+#else 
+		// initiate a new MeshRenderer and add to scene
+        // multiple meshes version 
+            Application::scene_objects.emplace_back(new MeshRenderer);
+            MeshRenderer* meshRenderer = static_cast<MeshRenderer*>(Application::scene_objects.back().get());
+            // create mesh if load true
+            LoadModelWithAssimp(filePath, *meshRenderer->GetModel());
+			meshRenderer->InitModel();
+#endif
     }
 
 } // namespace pine

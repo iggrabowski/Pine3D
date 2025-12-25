@@ -31,6 +31,7 @@ enum class NodeType
     sine,
     time,
     value,
+    image,    // added: differentiate image-node graph ids from value nodes
     material
 };
 
@@ -51,7 +52,18 @@ public:
           minimap_location_(ImNodesMiniMapLocation_BottomRight)
     {
     }
-    bool test = false;
+    bool GetFirstOutgoingNodeValue(int nodeId, float &outValue) const
+   {
+        for (const auto &edge : graph_.edges())
+        {
+            if (edge.from == nodeId)
+            {
+                outValue = graph_.node(edge.to).value;
+                return true;
+            }
+        }
+        return false;
+    }
     // Adds a new image node and takes ownership of the provided texture pointer.
     // - texture: pointer to a pine::Texture already created (may be nullptr).
     //            This object will be deleted when the node is removed.
@@ -59,7 +71,14 @@ public:
     // - pos: optional screen-space position; if pos.x < 0 the current mouse position is used.
     void AddMaterialNodes(pine::Material* material,  ImVec2 pos = ImVec2(-1.0f, -1.0f))
     {
-        //ImNodes::BeginNodeEditor();
+		// check if there are textures in the material
+		pine::Texture* pointer = nullptr;
+        for (auto texture : material->m_textures)
+        {
+            if (texture != nullptr) pointer = texture;
+        }
+        if (pointer == nullptr) return;
+
         // depending on texture type the node will be placed accordingly, after that they all connect to a material node
         // create mat node first
         const Node value(NodeType::value, 0.f);
@@ -81,35 +100,28 @@ public:
 		root_node_id_ = ui_node.id;
 		// then create base texture node
         UiNode base_tex_node;
-        test = true;
         base_tex_node.type = UiNodeType::image;
         base_tex_node.imageTexturePath = "";
         base_tex_node.texture = material->m_textures[pine::TEX_TYPE_BASE];
-        base_tex_node.id = graph_.insert_node(Node(NodeType::value));
+        // create graph id for image node as NodeType::image so its type is different from plain value nodes
+        base_tex_node.id = graph_.insert_node(Node(NodeType::image, base_tex_node.texture->GetGLHandle()));
 
         nodes_.push_back(base_tex_node);
-        ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(171,541));
+        ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(171,341));
 
 		// then create normal texture node
         UiNode normal_tex_node;
-        test = true;
+        // use an image node type for the graph id also
         normal_tex_node.type = UiNodeType::image;
         normal_tex_node.imageTexturePath = "";
         normal_tex_node.texture = material->m_textures[pine::TEX_TYPE_NORMAL];
-        normal_tex_node.id = graph_.insert_node(Node(NodeType::value));
+        normal_tex_node.id = graph_.insert_node(Node(NodeType::image,  normal_tex_node.texture->GetGLHandle()));
 
         nodes_.push_back(normal_tex_node);
-        ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,341));
-        //UiNode ui_node;
-        //ui_node.type = UiNodeType::image;
-        //ui_node.id = graph_.insert_node(Node(NodeType::value)); // lightweight anchor in graph
-
-        //// push into UI list and set position
-        //nodes_.push_back(ui_node);
-
-        //ImVec2 p = pos.x < 0.0f ? ImGui::GetMousePos() : pos;
-        //ImNodes::SetNodeScreenSpacePos(ui_node.id, p);
-        //ImNodes::EndNodeEditor();
+        ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,541));
+		
+		graph_.insert_edge( ui_node.ui.material.input1, base_tex_node.id);
+		graph_.insert_edge( ui_node.ui.material.input2, normal_tex_node.id);
     }
 
     void show()
@@ -291,7 +303,8 @@ public:
                     ui_node.type = UiNodeType::image;
                     ui_node.imageTexturePath = "";
                     ui_node.texture = nullptr;
-                    ui_node.id = graph_.insert_node(Node(NodeType::value));
+                    // create graph id with NodeType::image so linking logic treats output port type different from plain value nodes
+                    ui_node.id = graph_.insert_node(Node(NodeType::image));
 
                     nodes_.push_back(ui_node);
                     ImNodes::SetNodeScreenSpacePos(ui_node.id, click_pos);
@@ -536,7 +549,6 @@ public:
             break;
             case UiNodeType::image:
             {
-                if (test);
                 const float node_width = 250.0f;
                 ImNodes::BeginNode(node.id);
 
@@ -559,21 +571,21 @@ public:
                     ImGui::SameLine();
                     if (ImGui::Button(("Load##img" + std::to_string(node.id)).c_str()))
                     {
-                        if (!node.imageTexturePath.empty())
-                        {
-                            pine::Image img;
-                            if (img.Create(node.imageTexturePath.c_str()))
-                            {
-                                // free previous texture if any
-                                if (node.texture)
-                                {
-                                    delete node.texture;
-                                    node.texture = nullptr;
-                                }
-                                node.texture = new pine::Texture(GL_TEXTURE_2D);
-                                node.texture->LoadFromImage(img);
-                            }
-                        }
+                        //if (!node.imageTexturePath.empty())
+                        //{
+                        //    pine::Image img;
+                        //    if (img.Create(node.imageTexturePath.c_str()))
+                        //    {
+                        //        // free previous texture if any
+                        //        if (node.texture)
+                        //        {
+                        //            delete node.texture;
+                        //            node.texture = nullptr;
+                        //        }
+                        //        node.texture = new pine::Texture(GL_TEXTURE_2D);
+                        //        node.texture->LoadFromImage(img);
+                        //    }
+                        //}
                     }
                 }
 
@@ -614,6 +626,10 @@ public:
             break;
             case UiNodeType::material:
             {
+				float out = 0.f;
+                GetFirstOutgoingNodeValue(node.ui.material.input1, out);
+                GetFirstOutgoingNodeValue(node.ui.material.input2, out);
+                GetFirstOutgoingNodeValue(node.ui.material.input3, out);
                 const float node_width = 100.0f;
                 ImNodes::PushColorStyle(ImNodesCol_TitleBar, IM_COL32(11, 109, 191, 255));
                 ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, IM_COL32(45, 126, 194, 255));
@@ -627,8 +643,9 @@ public:
                 ImGui::Dummy(ImVec2(node_width, 0.f));
                 {
                     ImNodes::BeginInputAttribute(node.ui.material.input1);
-                    const float label_width = ImGui::CalcTextSize("input1").x;
-                    ImGui::TextUnformatted("input1");
+                    const float label_width = ImGui::CalcTextSize("Base Color").x;
+                    ImGui::TextUnformatted("Base Color");
+
                     if (graph_.num_edges_from_node(node.ui.material.input1) == 0ull)
                     {
                         ImGui::SameLine();
@@ -644,14 +661,14 @@ public:
 
                 {
                     ImNodes::BeginInputAttribute(node.ui.material.input2);
-                    const float label_width = ImGui::CalcTextSize("input2").x;
-                    ImGui::TextUnformatted("input2");
+                    const float label_width = ImGui::CalcTextSize("Normal Map").x;
+                    ImGui::TextUnformatted("Normal Map");
                     if (graph_.num_edges_from_node(node.ui.material.input2) == 0ull)
                     {
                         ImGui::SameLine();
                         ImGui::PushItemWidth(node_width - label_width);
                         ImGui::DragFloat(
-                            "##hidelabel", &graph_.node(node.ui.material.input2).value, 0.01f, 0.f, 1.f);
+                            "##hidelabel", &graph_.node(node.ui.material.input2).value, 0.01f, 0.f, 1.0f);
                         ImGui::PopItemWidth();
                     }
                     ImNodes::EndInputAttribute();
@@ -661,8 +678,8 @@ public:
 
                 {
                     ImNodes::BeginInputAttribute(node.ui.material.input3);
-                    const float label_width = ImGui::CalcTextSize("input3").x;
-                    ImGui::TextUnformatted("input3");
+                    const float label_width = ImGui::CalcTextSize("Metalness Map").x;
+                    ImGui::TextUnformatted("Metalness Map");
                     if (graph_.num_edges_from_node(node.ui.material.input3) == 0ull)
                     {
                         ImGui::SameLine();
@@ -687,7 +704,7 @@ public:
             // If edge doesn't start at value, then it's an internal edge, i.e.
             // an edge which links a node's operation to its input. We don't
             // want to render node internals with visible links.
-            if (graph_.node(edge.from).type != NodeType::value)
+			if (graph_.node(edge.from).type != NodeType::value && graph_.node(edge.from).type != NodeType::image)
                 continue;
 
             ImNodes::Link(edge.id, edge.from, edge.to);
@@ -697,7 +714,7 @@ public:
         ImNodes::EndNodeEditor();
 
         // Handle new links
-        // These are driven by Imnodes, so we place the code after EndNodeEditor().
+        // These are driven by Imnodes, so we place this code after EndNodeEditor().
 
         {
             int start_attr, end_attr;
@@ -871,6 +888,7 @@ private:
 };
 
 extern ColorNodeEditor color_editor;
+
 void NodeEditorInitializeHello();
 void NodeEditorShowHello();
 void NodeEditorShutdownHello();

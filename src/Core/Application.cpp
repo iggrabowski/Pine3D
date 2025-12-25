@@ -51,6 +51,8 @@ namespace pine {
 		{
 			sceneObject->OnUpdate();
 		}
+
+		mr.OnUpdate();
 		window->OnUpdate();
 		//window->Display();
 		//window->Sleep(0.02f);
