@@ -94,34 +94,36 @@ public:
 		graph_.insert_edge(ui_node.id, ui_node.ui.material.input1);
 		graph_.insert_edge(ui_node.id, ui_node.ui.material.input2);
 		graph_.insert_edge(ui_node.id, ui_node.ui.material.input3);
-				
         nodes_.push_back(ui_node);
-		ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(371,541));
-		root_node_id_ = ui_node.id;
-		// then create base texture node
-        UiNode base_tex_node;
-        base_tex_node.type = UiNodeType::image;
-        base_tex_node.imageTexturePath = "";
-        base_tex_node.texture = material->m_textures[pine::TEX_TYPE_BASE];
-        // create graph id for image node as NodeType::image so its type is different from plain value nodes
-        base_tex_node.id = graph_.insert_node(Node(NodeType::image, base_tex_node.texture->GetGLHandle()));
+        ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(371, 541));
+        root_node_id_ = ui_node.id;
+        if (material->m_textures[pine::TEX_TYPE_BASE]) {
+            UiNode base_tex_node;
 
-        nodes_.push_back(base_tex_node);
-        ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(171,341));
+            base_tex_node.type = UiNodeType::image;
+            base_tex_node.imageTexturePath = "";
+            base_tex_node.texture = material->m_textures[pine::TEX_TYPE_BASE];
+            base_tex_node.id = graph_.insert_node(Node(NodeType::image, base_tex_node.texture->GetGLHandle()));
 
-		// then create normal texture node
-        UiNode normal_tex_node;
-        // use an image node type for the graph id also
-        normal_tex_node.type = UiNodeType::image;
-        normal_tex_node.imageTexturePath = "";
-        normal_tex_node.texture = material->m_textures[pine::TEX_TYPE_NORMAL];
-        normal_tex_node.id = graph_.insert_node(Node(NodeType::image,  normal_tex_node.texture->GetGLHandle()));
+            nodes_.push_back(base_tex_node);
+            ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(171, 341));
+            graph_.insert_edge(ui_node.ui.material.input1, base_tex_node.id);
+        }
 
-        nodes_.push_back(normal_tex_node);
-        ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,541));
+        if (material->m_textures[pine::TEX_TYPE_NORMAL])
+        {
+            UiNode normal_tex_node;
+
+            normal_tex_node.type = UiNodeType::image;
+            normal_tex_node.imageTexturePath = "";
+            normal_tex_node.texture = material->m_textures[pine::TEX_TYPE_NORMAL];
+            normal_tex_node.id = graph_.insert_node(Node(NodeType::image,  normal_tex_node.texture->GetGLHandle()));
+
+            nodes_.push_back(normal_tex_node);
+            ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,541));
 		
-		graph_.insert_edge( ui_node.ui.material.input1, base_tex_node.id);
-		graph_.insert_edge( ui_node.ui.material.input2, normal_tex_node.id);
+		    graph_.insert_edge( ui_node.ui.material.input2, normal_tex_node.id);
+        }
     }
 
     void show()

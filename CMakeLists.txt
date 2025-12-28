@@ -167,6 +167,14 @@ set(PINE3D-RUNTIME-SCENE
 
 source_group("Source Files/Runtime/Scene" FILES ${PINE3D-RUNTIME-SCENE})
 
+# Runtime Lighting
+set(PINE3D-RUNTIME-LIGHTING
+	${SRC_ROOT}/Runtime/Lighting/Light.cpp
+	${SRC_ROOT}/Runtime/Lighting/Light.h
+	)
+
+source_group("Source Files/Runtime/Lighting" FILES ${PINE3D-RUNTIME-LIGHTING})
+
 set(PINE3D-UTILS
     ${SRC_ROOT}/Utils/Logger.cpp
     ${SRC_ROOT}/Utils/Logger.h
@@ -189,6 +197,7 @@ add_executable(${PROJECT_NAME} WIN32
 	${PINE3D-RUNTIME-RENDERCORE}
 	${PINE3D-RUNTIME-RENDERER}
 	${PINE3D-RUNTIME-SCENE}
+	${PINE3D-RUNTIME-LIGHTING}
 	${PINE3D-UTILS}
 	)
 

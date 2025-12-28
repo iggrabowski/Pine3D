@@ -41,11 +41,12 @@ namespace pine {
 		//add default Mesh renderer to the scene
 		//sceneObjects.push_back(mr);
 		//---------------------------------------
+		
 		input_handler->OnUpdate();
 		renderer->Clear();
-		//controls.Update(transform, event);
 		input_handler->OnUpdate();
 		editor->OnUpdate();
+
 		// Run update function on every scene object.
 		for (const auto& sceneObject : scene_objects)
 		{

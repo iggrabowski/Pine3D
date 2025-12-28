@@ -21,6 +21,7 @@ namespace pine {
 		Texture* m_textures[7] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 
 		float m_roughness = 0.2f;
+		float m_metallic = 0.5f;
 	};
 
 }

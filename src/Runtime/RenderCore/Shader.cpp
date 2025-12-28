@@ -92,6 +92,16 @@ namespace pine {
         }
     }
 
+	void Shader::SetUniformArray(const std::string& name, const std::vector<glm::vec3>& vec, int maxSizeAllowed)
+    {
+		if (vec.empty()) return;
+
+	    if (int loc = GetUniformLocation(std::move(name + "[0]")); loc >= 0) {
+            GLsizei count = static_cast<GLsizei>(std::min<size_t>(vec.size(), static_cast<size_t>(maxSizeAllowed)));
+
+            glUniform3fv(loc, count, glm::value_ptr(vec[0]));
+        }
+    }
     // float
     void Shader::SetUniform(const std::string& name, float val)
     {

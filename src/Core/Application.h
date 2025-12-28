@@ -3,6 +3,7 @@
 #include "Runtime/Renderer/Renderer.h"
 #include "Runtime/Scene/SceneObject.h"
 #include "Input/InputHandler.h"
+#include "Runtime/Lighting/Light.h"
 //#include "Runtime/Components/MeshRenderer.h"
 //#include "Utils/Utils.h"
 #include "Runtime/Components/Polygon.h"
@@ -30,6 +31,7 @@ namespace pine {
 		 static inline std::vector<Material> materials;
 		 static inline std::vector<Image> images;
 		 static inline std::vector<Texture> textures;
+		 static inline std::vector<Light> lights;
 		 //static inline std::unique_ptr<Logger> logger = nullptr;
 
 		 // The single mesh version of the app

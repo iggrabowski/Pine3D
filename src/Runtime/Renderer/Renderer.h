@@ -16,7 +16,8 @@ namespace pine {
 	{
 		BASE_TEXTURE = 0x1,
 		NORMAL_MAPS = 0x2,
-		ROUGHNESS_MAPS = 0x4
+		ROUGHNESS_MAPS = 0x4,
+		METALNESS_MAPS = 0x8
 	};
 
 	//main rendering object

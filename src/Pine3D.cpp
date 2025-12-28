@@ -6,6 +6,14 @@ int main(void)
 	pine::Application::Init();
 	pine::Application::Startup();
 
+	pine::Application::lights.push_back( 
+		pine::Light(
+			pine::LIGHT_TYPE_DIRECTIONAL, 
+			glm::vec3(2.0f, 1.0f, 1.0f), 
+			glm::vec3(1.0f)
+		)
+	);
+
 	// TODO: fix loading textures after migrating from GLFW
 	// until then, no mesh rendering
 

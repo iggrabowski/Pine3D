@@ -5,6 +5,8 @@
 
 #include <string>
 
+#define MAX_LIGHTS 8
+
 namespace pine {
 
 	enum SHADER_TYPE
@@ -31,6 +33,7 @@ namespace pine {
 		void Bind() const;
 
 		void SetUniform(const std::string& name, glm::vec3& val);
+		void SetUniformArray(const std::string& name, const std::vector<glm::vec3>& vec, int maxSizeAllowed);
 		void SetUniform(const std::string& name, glm::mat4& val);
 		void SetUniform(const std::string& name, float val);
 		void SetUniform(const std::string& name, unsigned int val);

@@ -106,6 +106,7 @@ namespace pine {
 
 	void OpenGLRenderer::Draw(MeshRenderer* mr)
 	{
+		// TODO: Draw can be abstracted
 		Model3D* model = mr->GetModel();
 		if (!model->mesh._buffered) {
 			// TODO: this is wrong, needs seperate mesh/shader
@@ -120,8 +121,6 @@ namespace pine {
 		glm::mat4 umodel = mr->GetTransform().GetModel();
 		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
 		glm::vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
-		glm::vec3 lightDir = glm::vec3(-0.5f, -1.0f, -0.5f); // hard coded for now TODO: add light objects
-		glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		// TODO : check if window open cause of crashes
 		// If model defines BasicMesh ranges, draw each range separately.
@@ -137,10 +136,26 @@ namespace pine {
 				shader->SetUniform("MVP", mvp); // TODO: build on uniform system to find needed uniforms from shader
 				shader->SetUniform("Model", umodel);
 				shader->SetUniform("u_cameraPos", camPos);
-				shader->SetUniform("u_lightDir", lightDir);
-				shader->SetUniform("u_lightColor", lightColor);
+				//shader->SetUniform("u_lightDir", lightDir);
+				//shader->SetUniform("u_lightColor", lightColor);
 				shader->SetUniform("u_roughness", model->materials[bm.materialIndex]->m_roughness);
-				shader->SetUniform("renderFlags", mr->m_render_flags[bm.materialIndex]);
+				shader->SetUniform("u_metalness", model->materials[bm.materialIndex]->m_metallic);
+				shader->SetUniform("u_renderFlags", mr->m_render_flags[bm.materialIndex]);
+
+				// lights
+				unsigned int lightCount = static_cast<unsigned int>(Application::lights.size());
+				std::vector<glm::vec3> lightDirs;
+				std::vector<glm::vec3> lightColors;
+
+				for (unsigned int i = 0; i < lightCount; i++)
+				{
+					lightDirs.push_back(Application::lights[i].GetDirection());
+					lightColors.push_back(Application::lights[i].GetColor());
+				}
+
+				shader->SetUniform("u_nLights", lightCount);
+				shader->SetUniformArray("u_lightDirs", lightDirs, MAX_LIGHTS);
+				shader->SetUniformArray("u_lightDiffs", lightColors, MAX_LIGHTS);
 
 				// Bind albedo (base) to texture unit 0
 				auto* albedoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
@@ -159,9 +174,14 @@ namespace pine {
 				auto* roughnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
 				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS)) {
 					normalTex->Bind(2);
-					shader->SetUniformTextureSampler2D("u_roughnessMap", 1);
+					shader->SetUniformTextureSampler2D("u_roughnessMap", 2);
 				}
 
+				auto* metalness = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
+				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS)) {
+					normalTex->Bind(3);
+					shader->SetUniformTextureSampler2D("u_metalnessMap", 3);
+				}
 
 				// TODO: bind other textures (metallic, roughness, ao, etc.)
 
