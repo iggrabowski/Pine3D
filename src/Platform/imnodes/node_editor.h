@@ -90,6 +90,7 @@ public:
 		ui_node.ui.material.input2 = graph_.insert_node(value);
 		ui_node.ui.material.input3 = graph_.insert_node(value);
 		ui_node.ui.material.input4 = graph_.insert_node(value);
+		ui_node.material = material;
 		ui_node.id = graph_.insert_node(out);
 				
 		graph_.insert_edge(ui_node.id, ui_node.ui.material.input1);
@@ -216,12 +217,52 @@ public:
 
             ImGui::EndMenuBar();
         }
+        // slider section goes here
+        if (root_node_id_ != -1) {
+            UiNode* root_ui_node = nullptr;
+            for (auto& node : nodes_)
+            {
+                if (node.id == root_node_id_)
+                {
+                    root_ui_node = &node;
+                    break;
+                }
+            }
 
-        ImGui::TextUnformatted("Edit the color of the output color window using nodes.");
-        ImGui::Columns(2);
-        ImGui::TextUnformatted("A -- add node");
-        ImGui::TextUnformatted("X -- delete selected node or link");
-        ImGui::NextColumn();
+            if (root_ui_node->material != nullptr)
+            {
+
+                static bool enable_normal_map = true;
+                static bool enable_fixed_metalness = false;
+                //static float fixed_metalness = 0.5f;
+                static bool enable_fixed_roughness = false;
+                //static float fixed_roughness = 0.5f;
+
+                if (ImGui::CollapsingHeader("Material Properties (Mockup)", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    ImGui::Checkbox("Enable normal map", &enable_normal_map);
+					root_ui_node->material->m_enableNormalMap = enable_normal_map;
+                    ImGui::Checkbox("Enable fixed metalness", &enable_fixed_metalness);
+					root_ui_node->material->m_enableMetallicMap =! enable_fixed_metalness;
+                    ImGui::BeginDisabled(!enable_fixed_metalness);
+                    ImGui::SliderFloat("Metalness", &root_ui_node->material->m_metallic, 0.0f, 1.0f, "%.2f");
+                    ImGui::EndDisabled();
+
+                    ImGui::Separator();
+
+                    ImGui::Checkbox("Enable fixed roughness", &enable_fixed_roughness);
+					root_ui_node->material->m_enableRoughnessMap =! enable_fixed_roughness;
+                    ImGui::BeginDisabled(!enable_fixed_roughness);
+                    ImGui::SliderFloat("Roughness", &root_ui_node->material->m_roughness, 0.0f, 1.0f, "%.2f");
+                    ImGui::EndDisabled();
+                }
+            }
+        }
+        //ImGui::TextUnformatted("Edit the color of the output color window using nodes.");
+        //ImGui::Columns(2);
+        //ImGui::TextUnformatted("A -- add node");
+        //ImGui::TextUnformatted("X -- delete selected node or link");
+        //ImGui::NextColumn();
         //if (ImGui::Checkbox("emulate_three_button_mouse", &emulate_three_button_mouse))
         //{
         //    ImNodes::GetIO().EmulateThreeButtonMouse.Modifier =
@@ -934,6 +975,7 @@ private:
         // image node data (kept outside the union)
         std::string imageTexturePath;
         pine::Texture* texture = nullptr;
+		pine::Material* material = nullptr;
     };
 
     Graph<Node>            graph_;

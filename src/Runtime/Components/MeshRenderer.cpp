@@ -46,14 +46,24 @@ namespace pine {
 	{
 		GetModel()->mesh.InitMesh();
 		m_render_flags.reserve(_model3D->num_materials);
+
+		// init render flags based on available textures in materials
 		for (unsigned int i = 0; i < _model3D->num_materials; i++) {
 			m_render_flags.push_back(0);
 			if (_model3D->materials[i]->m_textures[TEX_TYPE_BASE] != nullptr)
 				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::BASE_TEXTURE);
-			if (_model3D->materials[i]->m_textures[TEX_TYPE_NORMAL] != nullptr) 
+			if (_model3D->materials[i]->m_textures[TEX_TYPE_NORMAL] != nullptr) {
 				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::NORMAL_MAPS);
-			if (_model3D->materials[i]->m_textures[TEX_TYPE_ROUGHNESS] != nullptr)
+				_model3D->materials[i]->m_enableNormalMap = true;
+			}
+			if (_model3D->materials[i]->m_textures[TEX_TYPE_ROUGHNESS] != nullptr) {
 				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS);
+				_model3D->materials[i]->m_enableRoughnessMap = true;
+			}
+			if (_model3D->materials[i]->m_textures[TEX_TYPE_METALLIC] != nullptr) {
+				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS);
+				_model3D->materials[i]->m_enableMetallicMap = true;
+			}
 		}
 		return true;
 	}

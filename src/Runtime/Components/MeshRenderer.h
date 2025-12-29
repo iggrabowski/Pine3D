@@ -39,7 +39,7 @@ namespace pine {
 		void ResetModel3D();
 		void OnUpdate() override;
 		bool InitModel();
-		std::vector<unsigned int> m_render_flags;
+		std::vector<unsigned int> m_render_flags; // per 3D model materials
 	private:
 		Model3D*		_model3D = nullptr;
 		//Material*	_material;

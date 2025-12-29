@@ -164,7 +164,7 @@ namespace pine {
 					shader->SetUniformTextureSampler2D("u_albedoMap", 0);
 				}
 
-				// Bind normal map to texture unit 1
+				 //Bind normal map to texture unit 1
 				auto* normalTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
 				if (normalTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::NORMAL_MAPS)) {
 					normalTex->Bind(1);
@@ -173,13 +173,13 @@ namespace pine {
 
 				auto* roughnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
 				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS)) {
-					normalTex->Bind(2);
+					roughnessTex->Bind(2);
 					shader->SetUniformTextureSampler2D("u_roughnessMap", 2);
 				}
 
-				auto* metalness = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
-				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS)) {
-					normalTex->Bind(3);
+				auto* metalnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
+				if (metalnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS)) {
+					metalnessTex->Bind(3);
 					shader->SetUniformTextureSampler2D("u_metalnessMap", 3);
 				}
 
