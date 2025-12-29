@@ -89,13 +89,15 @@ public:
 		ui_node.ui.material.input1 = graph_.insert_node(value);
 		ui_node.ui.material.input2 = graph_.insert_node(value);
 		ui_node.ui.material.input3 = graph_.insert_node(value);
+		ui_node.ui.material.input4 = graph_.insert_node(value);
 		ui_node.id = graph_.insert_node(out);
 				
 		graph_.insert_edge(ui_node.id, ui_node.ui.material.input1);
 		graph_.insert_edge(ui_node.id, ui_node.ui.material.input2);
 		graph_.insert_edge(ui_node.id, ui_node.ui.material.input3);
+		graph_.insert_edge(ui_node.id, ui_node.ui.material.input4);
         nodes_.push_back(ui_node);
-        ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(371, 541));
+        ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(471, 541));
         root_node_id_ = ui_node.id;
         if (material->m_textures[pine::TEX_TYPE_BASE]) {
             UiNode base_tex_node;
@@ -106,7 +108,7 @@ public:
             base_tex_node.id = graph_.insert_node(Node(NodeType::image, base_tex_node.texture->GetGLHandle()));
 
             nodes_.push_back(base_tex_node);
-            ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(171, 341));
+            ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(371, 341));
             graph_.insert_edge(ui_node.ui.material.input1, base_tex_node.id);
         }
 
@@ -120,9 +122,39 @@ public:
             normal_tex_node.id = graph_.insert_node(Node(NodeType::image,  normal_tex_node.texture->GetGLHandle()));
 
             nodes_.push_back(normal_tex_node);
-            ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,541));
+            ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,341));
 		
 		    graph_.insert_edge( ui_node.ui.material.input2, normal_tex_node.id);
+        }
+
+        if (material->m_textures[pine::TEX_TYPE_METALLIC])
+        {
+            UiNode metal_tex_node;
+
+            metal_tex_node.type = UiNodeType::image;
+            metal_tex_node.imageTexturePath = "";
+            metal_tex_node.texture = material->m_textures[pine::TEX_TYPE_METALLIC];
+            metal_tex_node.id = graph_.insert_node(Node(NodeType::image,  metal_tex_node.texture->GetGLHandle()));
+
+            nodes_.push_back(metal_tex_node);
+            ImNodes::SetNodeScreenSpacePos(metal_tex_node.id, ImVec2(171,541));
+		
+		    graph_.insert_edge( ui_node.ui.material.input3, metal_tex_node.id);
+        }
+
+        if (material->m_textures[pine::TEX_TYPE_ROUGHNESS])
+        {
+            UiNode node;
+
+            node.type = UiNodeType::image;
+            node.imageTexturePath = "";
+            node.texture = material->m_textures[pine::TEX_TYPE_ROUGHNESS];
+            node.id = graph_.insert_node(Node(NodeType::image,  node.texture->GetGLHandle()));
+
+            nodes_.push_back(node);
+            ImNodes::SetNodeScreenSpacePos(node.id, ImVec2(171,741));
+		
+		    graph_.insert_edge( ui_node.ui.material.input4, node.id);
         }
     }
 
@@ -321,11 +353,13 @@ public:
 				ui_node.ui.material.input1 = graph_.insert_node(value);
 				ui_node.ui.material.input2 = graph_.insert_node(value);
 				ui_node.ui.material.input3 = graph_.insert_node(value);
+				ui_node.ui.material.input4 = graph_.insert_node(value);
 				ui_node.id = graph_.insert_node(out);
 				
 				graph_.insert_edge(ui_node.id, ui_node.ui.material.input1);
 				graph_.insert_edge(ui_node.id, ui_node.ui.material.input2);
 				graph_.insert_edge(ui_node.id, ui_node.ui.material.input3);
+				graph_.insert_edge(ui_node.id, ui_node.ui.material.input4);
 				
 				nodes_.push_back(ui_node);
 				ImNodes::SetNodeScreenSpacePos(ui_node.id, click_pos);
@@ -632,6 +666,7 @@ public:
                 GetFirstOutgoingNodeValue(node.ui.material.input1, out);
                 GetFirstOutgoingNodeValue(node.ui.material.input2, out);
                 GetFirstOutgoingNodeValue(node.ui.material.input3, out);
+                GetFirstOutgoingNodeValue(node.ui.material.input4, out);
                 const float node_width = 100.0f;
                 ImNodes::PushColorStyle(ImNodesCol_TitleBar, IM_COL32(11, 109, 191, 255));
                 ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, IM_COL32(45, 126, 194, 255));
@@ -688,6 +723,23 @@ public:
                         ImGui::PushItemWidth(node_width - label_width);
                         ImGui::DragFloat(
                             "##hidelabel", &graph_.node(node.ui.material.input3).value, 0.01f, 0.f, 1.0f);
+                        ImGui::PopItemWidth();
+                    }
+                    ImNodes::EndInputAttribute();
+                }
+
+                ImGui::Spacing();
+
+                {
+                    ImNodes::BeginInputAttribute(node.ui.material.input4);
+                    const float label_width = ImGui::CalcTextSize("Roughness Map").x;
+                    ImGui::TextUnformatted("Roghness Map");
+                    if (graph_.num_edges_from_node(node.ui.material.input4) == 0ull)
+                    {
+                        ImGui::SameLine();
+                        ImGui::PushItemWidth(node_width - label_width);
+                        ImGui::DragFloat(
+                            "##hidelabel", &graph_.node(node.ui.material.input4).value, 0.01f, 0.f, 1.0f);
                         ImGui::PopItemWidth();
                     }
                     ImNodes::EndInputAttribute();
@@ -809,6 +861,7 @@ public:
                         graph_.erase_node(iter->ui.material.input1);
                         graph_.erase_node(iter->ui.material.input2);
                         graph_.erase_node(iter->ui.material.input3);
+                        graph_.erase_node(iter->ui.material.input4);
                         root_node_id_ = -1;
                         break;
                     default:
@@ -875,7 +928,7 @@ private:
 
             struct
             {
-                int input1, input2, input3;
+                int input1, input2, input3, input4;
             } material;
         } ui;
         // image node data (kept outside the union)

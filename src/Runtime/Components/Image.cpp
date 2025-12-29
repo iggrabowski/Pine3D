@@ -9,14 +9,31 @@
 pine::Image::Image()
 = default;
 
+pine::Image::~Image()
+{
+	if (_bytes) {
+		stbi_image_free(_bytes);
+		_bytes = nullptr;
+	}
+	if (_modifiedBytes) {
+		delete[] _modifiedBytes;
+		_modifiedBytes = nullptr;
+	}
+}
+
 pine::Image::Image(const char * path)
 {
 	this->Create(path);
 }
 
-const void * pine::Image::GetPixelsPtr() const
+const void* pine::Image::GetPixelsPtr() const
 {
 	return _bytes;
+}
+
+const void* pine::Image::GetModifiedPtr() const
+{
+	return _modifiedBytes;
 }
 
 bool pine::Image::Create(const char * path)

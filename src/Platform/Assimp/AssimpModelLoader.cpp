@@ -26,13 +26,13 @@ namespace pine {
 
         std::string fullPath = Dir + "/" + p;
         targetMaterial->m_textures[texType] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
-        Image* image = new Image();
+        Image image;
 
-        if (!image->Create(fullPath.c_str())) {
+        if (!image.Create(fullPath.c_str())) {
             printf("Error loading texture '%s'\n", fullPath.c_str());
         }
         else {
-            targetMaterial->m_textures[texType]->LoadFromImage(*image);
+            targetMaterial->m_textures[texType]->LoadFromImage(image);
             outModel.materials[MaterialIndex] = targetMaterial;
             printf("Loaded texture '%s' (type %d) at index %d\n", fullPath.c_str(), texType, MaterialIndex);
         }

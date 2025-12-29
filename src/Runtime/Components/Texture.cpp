@@ -56,8 +56,41 @@ namespace pine {
 		GLsizei texWidth = image.GetWidth();
 		GLsizei texHeight = image.GetHeight();
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight,
-			0, GL_RGB, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
+		GLint internal_format;
+		GLenum format;
+		if (image.GetNumColorCh() == 1) {
+			internal_format = GL_RGB8;
+			format = GL_RGB;
+			image._modifiedBytes = static_cast<unsigned char*>(malloc(texWidth * texHeight * 3 * sizeof(unsigned char)));
+			for (int i = 0; i < texWidth * texHeight; i++) {
+				const unsigned char v = image.GetBytes()[i];
+				image._modifiedBytes[i*3+0] = v;
+				image._modifiedBytes[i*3+1] = v;
+				image._modifiedBytes[i*3+2] = v;
+			}
+			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
+				0, format, GL_UNSIGNED_BYTE, image.GetModifiedPtr());
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else if (image.GetNumColorCh() == 3) {
+			internal_format = GL_RGB8;
+			format = GL_RGB;
+			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
+			0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else if (image.GetNumColorCh() == 4)
+		{
+			 internal_format = GL_RGBA8;
+			 format = GL_RGBA;
+			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
+			0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else {
+			std::cout << "ERROR: Unsupported number of color channels in texture image: " << image.GetNumColorCh() << "\n";
+			return;
+		}
 	}
 
     Texture::~Texture()
