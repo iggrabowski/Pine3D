@@ -4,10 +4,7 @@
 namespace pine {
 	Editor::Editor()
 	{
-		// create three editor cameras with slightly different start positions
-		_cameras.emplace_back(std::make_unique<Camera>(glm::vec3(2.0f, 2.0f, -5.0f)));
-		_cameras.emplace_back(std::make_unique<Camera>(glm::vec3(0.0f, 2.5f, -6.0f)));
-		_cameras.emplace_back(std::make_unique<Camera>(glm::vec3(0.0f, 5.0f, -10.0f)));
+		_camera = std::make_unique<Camera>(glm::vec3(2.0f, 2.0f, -5.0f));
 		_activeCameraIndex = 0;
 	}
 
@@ -24,41 +21,41 @@ namespace pine {
 
 	void Editor::SetKeyBinds()
 	{
-		Application::input_handler->MapInputToAction(KeyCode::A, {
-			.name = "editor_camera_strafe_x",
-			.type = pine::KEY_ON_HOLD,
-			.scale = -1.0f });
-		Application::input_handler->MapInputToAction(KeyCode::D, {
-			.name = "editor_camera_strafe_x",
-			.type = pine::KEY_ON_HOLD,
-			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_strafe_x",
-			pine::InputHandler::ActionCallback {
-				.ref = "editor_camera_strafe_x",
-				.func = [this](int sourceIndex, float value)
-				{
-					MoveCameraX(value);
-					return true;
-				}
-			});
+		//Application::input_handler->MapInputToAction(KeyCode::A, {
+		//	.name = "editor_camera_strafe_x",
+		//	.type = pine::KEY_ON_HOLD,
+		//	.scale = -1.0f });
+		//Application::input_handler->MapInputToAction(KeyCode::D, {
+		//	.name = "editor_camera_strafe_x",
+		//	.type = pine::KEY_ON_HOLD,
+		//	.scale = 1.0f });
+		//Application::input_handler->AddActionCallback("editor_camera_strafe_x",
+		//	pine::InputHandler::ActionCallback {
+		//		.ref = "editor_camera_strafe_x",
+		//		.func = [this](int sourceIndex, float value)
+		//		{
+		//			MoveCameraX(value);
+		//			return true;
+		//		}
+		//	});
 
-		Application::input_handler->MapInputToAction(KeyCode::Q, {
-			.name = "editor_camera_strafe_y",
-			.type = pine::KEY_ON_HOLD,
-			.scale = -1.0f });
-		Application::input_handler->MapInputToAction(KeyCode::E, {
-			.name = "editor_camera_strafe_y",
-			.type = pine::KEY_ON_HOLD,
-			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_strafe_y",
-			pine::InputHandler::ActionCallback {
-				.ref = "editor_camera_strafe_y",
-				.func = [this](int sourceIndex, float value)
-				{
-					MoveCameraY(value);
-					return true;
-				}
-			});
+		//Application::input_handler->MapInputToAction(KeyCode::Q, {
+		//	.name = "editor_camera_strafe_y",
+		//	.type = pine::KEY_ON_HOLD,
+		//	.scale = -1.0f });
+		//Application::input_handler->MapInputToAction(KeyCode::E, {
+		//	.name = "editor_camera_strafe_y",
+		//	.type = pine::KEY_ON_HOLD,
+		//	.scale = 1.0f });
+		//Application::input_handler->AddActionCallback("editor_camera_strafe_y",
+		//	pine::InputHandler::ActionCallback {
+		//		.ref = "editor_camera_strafe_y",
+		//		.func = [this](int sourceIndex, float value)
+		//		{
+		//			MoveCameraY(value);
+		//			return true;
+		//		}
+		//	});
 
 		Application::input_handler->MapInputToAction(KeyCode::S, {
 			.name = "editor_camera_strafe_z",
@@ -105,61 +102,61 @@ namespace pine {
 				}
 			});
 
-		// --- Camera switching controls ---
-		// Cycle cameras with 'C'
+		// --- Light preset switching controls ---
+		// Cycle light presets with 'C'
 		Application::input_handler->MapInputToAction(KeyCode::C, {
-			.name = "editor_camera_cycle",
+			.name = "editor_light_cycle",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_cycle",
+		Application::input_handler->AddActionCallback("editor_light_cycle",
 			pine::InputHandler::ActionCallback {
-				.ref = "editor_camera_cycle",
+				.ref = "editor_light_cycle",
 				.func = [this](int sourceIndex, float value)
 				{
-					CycleCamera();
+					CycleLightPreset();
 					return true;
 				}
 			});
 
-		// Direct select F1/F2/F3
+		// Direct select light presets with F1/F2/F3
 		Application::input_handler->MapInputToAction(KeyCode::F1, {
-			.name = "editor_camera_select_0",
+			.name = "editor_light_select_0",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_select_0",
+		Application::input_handler->AddActionCallback("editor_light_select_0",
 			pine::InputHandler::ActionCallback {
-				.ref = "editor_camera_select_0",
+				.ref = "editor_light_select_0",
 				.func = [this](int sourceIndex, float value)
 				{
-					SetActiveCamera(0);
+					SetActiveLightPreset(0);
 					return true;
 				}
 			});
 
 		Application::input_handler->MapInputToAction(KeyCode::F2, {
-			.name = "editor_camera_select_1",
+			.name = "editor_light_select_1",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_select_1",
+		Application::input_handler->AddActionCallback("editor_light_select_1",
 			pine::InputHandler::ActionCallback {
-				.ref = "editor_camera_select_1",
+				.ref = "editor_light_select_1",
 				.func = [this](int sourceIndex, float value)
 				{
-					SetActiveCamera(1);
+					SetActiveLightPreset(1);
 					return true;
 				}
 			});
 
 		Application::input_handler->MapInputToAction(KeyCode::F3, {
-			.name = "editor_camera_select_2",
+			.name = "editor_light_select_2",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_select_2",
+		Application::input_handler->AddActionCallback("editor_light_select_2",
 			pine::InputHandler::ActionCallback {
-				.ref = "editor_camera_select_2",
+				.ref = "editor_light_select_2",
 				.func = [this](int sourceIndex, float value)
 				{
-					SetActiveCamera(2);
+					SetActiveLightPreset(2);
 					return true;
 				}
 			});
@@ -168,10 +165,7 @@ namespace pine {
 	void Editor::SetAspectRatio(float aspectRatio) const
 	{
 		// update every camera's projection
-		for (const auto& cam : _cameras)
-		{
-			if (cam) cam->UpdateAspectRatio(aspectRatio);
-		}
+			if (_camera) _camera->UpdateAspectRatio(aspectRatio);
 	}
 
 	void Editor::HandleEventlessInput() const
@@ -217,20 +211,25 @@ namespace pine {
 		camera.SetPos(pos + direction * _moveSpeed);
 	}
 
-	// Cycle to next camera (wraps)
-	void Editor::CycleCamera()
+	// Cycle to next light preset (wraps). Editor keeps the logic, active index is stored in Application.
+	void Editor::CycleLightPreset()
 	{
-		_activeCameraIndex = (_activeCameraIndex + 1) % static_cast<int>(_cameras.size());
-		// inform renderer about the new active camera
-		if (Application::renderer) Application::renderer->SetRenderCamera(GetCamera());
+		if (Application::light_presets.empty())
+			return;
+
+		Application::activeLightPresetIndex = (Application::activeLightPresetIndex + 1) % static_cast<int>(Application::light_presets.size());
+
+		// apply the chosen preset to the active lights list
+		Application::lights = Application::light_presets[Application::activeLightPresetIndex];
 	}
 
-	// Select a specific camera index [0..2]
-	void Editor::SetActiveCamera(int index)
+	// Select a specific light preset index
+	void Editor::SetActiveLightPreset(int index)
 	{
-		if (index < 0 || index >= static_cast<int>(_cameras.size())) return;
-		_activeCameraIndex = index;
-		if (Application::renderer) Application::renderer->SetRenderCamera(GetCamera());
-	}
+		if (index < 0 || index >= static_cast<int>(Application::light_presets.size()))
+			return;
 
+		Application::activeLightPresetIndex = index;
+		Application::lights = Application::light_presets[Application::activeLightPresetIndex];
+	}
 }

@@ -693,7 +693,6 @@ void GlfwWindow::AddGlfwCallbacks()
     });
 
 	// TODO:
-	// set mouse position callback
 	// set gamepad callbacks
 
 	// Set other callbacks

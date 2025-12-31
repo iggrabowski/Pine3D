@@ -15,9 +15,9 @@ pine::Image::~Image()
 		stbi_image_free(_bytes);
 		_bytes = nullptr;
 	}
-	if (_modifiedBytes) {
-		delete[] _modifiedBytes;
-		_modifiedBytes = nullptr;
+	if (m_modifiedBytes) {
+		delete[] m_modifiedBytes;
+		m_modifiedBytes = nullptr;
 	}
 }
 
@@ -33,11 +33,12 @@ const void* pine::Image::GetPixelsPtr() const
 
 const void* pine::Image::GetModifiedPtr() const
 {
-	return _modifiedBytes;
+	return m_modifiedBytes;
 }
 
 bool pine::Image::Create(const char * path)
 {
+	m_path = path;
 	// TODO: figure out how to return false if file not loaded
 	_bytes = stbi_load(path, &_width, &_height, &_numColorCh, 0);
 	return true;

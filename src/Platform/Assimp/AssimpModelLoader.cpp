@@ -155,6 +155,8 @@ namespace pine {
 
         printf("Num materials: %d\n", scene->mNumMaterials);
 
+         Application::materials.reserve(Application::materials.size() + scene->mNumMaterials);
+
         // Initialize the materials
         for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
             const aiMaterial* pMaterial = scene->mMaterials[i];

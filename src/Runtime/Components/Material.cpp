@@ -14,6 +14,10 @@ namespace pine {
 		m_texture->LoadFromImage(img);
 	}
 
+	Material::~Material()
+	{
+	}
+
 	Material::Material(Shader* shader): m_texture(nullptr)
 	{
 		m_shader = shader;

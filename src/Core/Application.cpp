@@ -25,9 +25,69 @@ namespace pine {
 	//}
 	int Application::Run()
 	{
+		light_presets.resize(3); // three light presets
+		// light preset 1
+
+		light_presets[0].emplace_back(
+			LIGHT_TYPE_DIRECTIONAL,
+			glm::vec3(2.0f, 1.0f, 1.0f),
+			glm::vec3(0.0f, 0.9f, 0.0f) // green light
+		);
+
+		light_presets[0].emplace_back(
+			LIGHT_TYPE_DIRECTIONAL,
+			glm::vec3(-2.0f, 1.0f, -2.0f),
+			glm::vec3(0.95f, 0.1f, 0.1f) // red light
+		);
+
+		light_presets[0].emplace_back(
+			LIGHT_TYPE_DIRECTIONAL,
+			glm::vec3(0.0f, -1.0f, 0.0f),
+			glm::vec3(0.12f, 0.1f, 0.917f) // blue light
+		);
+
+		// light preset 2  //blue
+		light_presets[1].emplace_back(
+			LIGHT_TYPE_DIRECTIONAL,
+			glm::vec3(2.0f, 1.0f, 1.0f),
+			glm::vec3(0.34f, 0.74f, 0.998f)
+		);
+
+		light_presets[1].emplace_back(
+			LIGHT_TYPE_DIRECTIONAL,
+			glm::vec3(-2.0f, 1.0f, -2.0f),
+			glm::vec3(0.339f, 0.898f, 0.979f	)
+		);
+
+		light_presets[1].emplace_back(
+			LIGHT_TYPE_DIRECTIONAL,
+			glm::vec3(0.0f, -1.0f, 0.0f),  // white light
+			glm::vec3(0.339f, 0.398f,0.998f)
+		);
+
+		// light preset 3
+
+		//light_presets[2].emplace_back(
+		//	LIGHT_TYPE_DIRECTIONAL,
+		//	glm::vec3(2.0f, 1.0f, 1.0f),
+		//	glm::vec3(0.52f, 0.8f, 0.917f) // blue sky light
+		//);
+
+		light_presets[2].emplace_back(
+			LIGHT_TYPE_DIRECTIONAL,
+			glm::vec3(-2.0f, 1.0f, -2.0f),
+			glm::vec3(1.0f) // white light
+		);
+
+		//light_presets[2].emplace_back(
+		//	LIGHT_TYPE_DIRECTIONAL,
+		//	glm::vec3(0.0f, -1.0f, 0.0f),
+		//	glm::vec3(0.95f, 0.4f, 0.2f) // orange light
+		//);
+
 		//MAIN LOOP
 		while (window->IsOpen()) {
-		Update_Frame();
+			Update_Frame();
 		}
 		return 0;
 	}
@@ -41,7 +101,7 @@ namespace pine {
 		//add default Mesh renderer to the scene
 		//sceneObjects.push_back(mr);
 		//---------------------------------------
-		
+
 		input_handler->OnUpdate();
 		renderer->Clear();
 		input_handler->OnUpdate();

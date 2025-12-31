@@ -44,7 +44,12 @@ namespace pine {
 	{
         glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
 
-		_direction = glm::vec3(rotation * glm::vec4(_direction, 0.0f));
+        glm::vec4 newPos4 = rotation * glm::vec4(_pos, 1.0f);
+        _pos = glm::vec3(newPos4);
+
+        up = glm::normalize(glm::vec3(rotation * glm::vec4(up, 0.0f)));
+
+        _direction = glm::normalize(glm::vec3(0.0f) - _pos);
 	}
 
 	void Camera::UpdateAspectRatio(float aspectRatio)

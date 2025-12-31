@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <algorithm>
+#include <cctype>
 
 namespace pine {
 
@@ -46,50 +48,80 @@ namespace pine {
 
 	void Texture::LoadFromImage(Image & image) // TODO: why is this not abstract
 	{
+		// Inspect file extension stored in image.m_path (line referenced)
+		std::string ext;
+		size_t dot = std::string::npos;
+		if (!image.m_path.empty())
+			dot = image.m_path.find_last_of('.');
+		if (dot != std::string::npos && dot + 1 < image.m_path.size())
+		{
+			ext = image.m_path.substr(dot + 1);
+			std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+		}
+		else
+		{
+			ext.clear();
+		}
+
 		glGenTextures(1, &_texture);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, _texture);
 			
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		GLsizei texWidth = image.GetWidth();
 		GLsizei texHeight = image.GetHeight();
 
 		GLint internal_format;
 		GLenum format;
-		if (image.GetNumColorCh() == 1) {
-			internal_format = GL_RGB8;
-			format = GL_RGB;
-			image._modifiedBytes = static_cast<unsigned char*>(malloc(texWidth * texHeight * 3 * sizeof(unsigned char)));
-			for (int i = 0; i < texWidth * texHeight; i++) {
-				const unsigned char v = image.GetBytes()[i];
-				image._modifiedBytes[i*3+0] = v;
-				image._modifiedBytes[i*3+1] = v;
-				image._modifiedBytes[i*3+2] = v;
-			}
-			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
-				0, format, GL_UNSIGNED_BYTE, image.GetModifiedPtr());
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		else if (image.GetNumColorCh() == 3) {
-			internal_format = GL_RGB8;
+
+		if (ext == "hdr") {
+			// HDR image
+			internal_format = GL_RGB16F;
 			format = GL_RGB;
 			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
-			0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
+				0, format, GL_FLOAT, image.GetPixelsPtr());
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
-		else if (image.GetNumColorCh() == 4)
+		else
 		{
-			 internal_format = GL_RGBA8;
-			 format = GL_RGBA;
-			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
-			0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		else {
-			std::cout << "ERROR: Unsupported number of color channels in texture image: " << image.GetNumColorCh() << "\n";
-			return;
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			if (image.GetNumColorCh() == 1) {
+				internal_format = GL_RGB8;
+				format = GL_RGB;
+				image.m_modifiedBytes = static_cast<unsigned char*>(malloc(texWidth * texHeight * 3 * sizeof(unsigned char)));
+				for (int i = 0; i < texWidth * texHeight; i++) {
+					const unsigned char v = image.GetBytes()[i];
+					image.m_modifiedBytes[i * 3 + 0] = v;
+					image.m_modifiedBytes[i * 3 + 1] = v;
+					image.m_modifiedBytes[i * 3 + 2] = v;
+				}
+				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
+					0, format, GL_UNSIGNED_BYTE, image.GetModifiedPtr());
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else if (image.GetNumColorCh() == 3) {
+				internal_format = GL_RGB8;
+				format = GL_RGB;
+				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
+					0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else if (image.GetNumColorCh() == 4)
+			{
+				internal_format = GL_RGBA8;
+				format = GL_RGBA;
+				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
+					0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else {
+				std::cout << "ERROR: Unsupported number of color channels in texture image: " << image.GetNumColorCh() << "\n";
+			}
 		}
 	}
 

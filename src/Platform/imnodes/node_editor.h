@@ -13,6 +13,7 @@
 #include <chrono>
 #include <cmath>
 #include <vector>
+#include <unordered_set>
 
 // TODO: can abstract this (gettime)
 //#include "GLFW/glfw3.h"
@@ -69,9 +70,57 @@ public:
     //            This object will be deleted when the node is removed.
     // - path: optional file path to record on the node (informational).
     // - pos: optional screen-space position; if pos.x < 0 the current mouse position is used.
-    void AddMaterialNodes(pine::Material* material,  ImVec2 pos = ImVec2(-1.0f, -1.0f))
+    void AddMaterialNodes(pine::Material* material, ImVec2 pos = ImVec2(-1.0f, -1.0f))
     {
-		// check if there are textures in the material
+        if (!nodes_.empty())
+        {
+            std::unordered_set<int> ids_to_erase;
+            for (const UiNode& n : nodes_)
+            {
+                ids_to_erase.insert(n.id);
+                switch (n.type)
+                {
+                case UiNodeType::add:
+                    ids_to_erase.insert(n.ui.add.lhs);
+                    ids_to_erase.insert(n.ui.add.rhs);
+                    break;
+                case UiNodeType::multiply:
+                    ids_to_erase.insert(n.ui.multiply.lhs);
+                    ids_to_erase.insert(n.ui.multiply.rhs);
+                    break;
+                case UiNodeType::output:
+                    ids_to_erase.insert(n.ui.output.r);
+                    ids_to_erase.insert(n.ui.output.g);
+                    ids_to_erase.insert(n.ui.output.b);
+                    break;
+                case UiNodeType::sine:
+                    ids_to_erase.insert(n.ui.sine.input);
+                    break;
+                case UiNodeType::material:
+                    ids_to_erase.insert(n.ui.material.input1);
+                    ids_to_erase.insert(n.ui.material.input2);
+                    ids_to_erase.insert(n.ui.material.input3);
+                    ids_to_erase.insert(n.ui.material.input4);
+                    break;
+                case UiNodeType::image:
+                    // image nodes have no internal child nodes in the graph (only the node id)
+                    break;
+                case UiNodeType::time:
+                    // time node has only the op node id
+                    break;
+                }
+            }
+
+            // Erase unique graph nodes
+            for (int id : ids_to_erase)
+            {
+                graph_.erase_node(id);
+            }
+            // Clear UI list and reset root
+            nodes_.clear();
+            root_node_id_ = -1;
+        }
+
 		pine::Texture* pointer = nullptr;
         for (auto texture : material->m_textures)
         {
@@ -258,11 +307,11 @@ public:
                 }
             }
         }
-        //ImGui::TextUnformatted("Edit the color of the output color window using nodes.");
-        //ImGui::Columns(2);
-        //ImGui::TextUnformatted("A -- add node");
-        //ImGui::TextUnformatted("X -- delete selected node or link");
-        //ImGui::NextColumn();
+        ImGui::Columns(2);
+        ImGui::TextUnformatted("Controls: ");
+        ImGui::NextColumn();
+        ImGui::TextUnformatted("W -- Zoom in");
+        ImGui::TextUnformatted("S -- Zoom out");
         //if (ImGui::Checkbox("emulate_three_button_mouse", &emulate_three_button_mouse))
         //{
         //    ImNodes::GetIO().EmulateThreeButtonMouse.Modifier =
@@ -275,8 +324,8 @@ public:
         // Handle new nodes
         // These are driven by the user, so we place this code before rendering the nodes
         {
-            const bool open_popup = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
-                                    ImNodes::IsEditorHovered() && ImGui::IsKeyReleased(ImGuiKey_A);
+            const bool open_popup = //ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
+                false;//ImNodes::IsEditorHovered() && ImGui::IsKeyReleased(ImGuiKey_A);
 
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.f, 8.f));
             if (!ImGui::IsAnyItemHovered() && open_popup)
@@ -645,25 +694,25 @@ public:
                     //{ /* intentionally commented: path editing via UI disabled */ }
                     ImGui::PopItemWidth();
 
-                    ImGui::SameLine();
-                    if (ImGui::Button(("Load##img" + std::to_string(node.id)).c_str()))
-                    {
-                        //if (!node.imageTexturePath.empty())
-                        //{
-                        //    pine::Image img;
-                        //    if (img.Create(node.imageTexturePath.c_str()))
-                        //    {
-                        //        // free previous texture if any
-                        //        if (node.texture)
-                        //        {
-                        //            delete node.texture;
-                        //            node.texture = nullptr;
-                        //        }
-                        //        node.texture = new pine::Texture(GL_TEXTURE_2D);
-                        //        node.texture->LoadFromImage(img);
-                        //    }
-                        //}
-                    }
+                    //ImGui::SameLine();
+                    //if (ImGui::Button(("Load##img" + std::to_string(node.id)).c_str()))
+                    //{
+                    //    //if (!node.imageTexturePath.empty())
+                    //    //{
+                    //    //    pine::Image img;
+                    //    //    if (img.Create(node.imageTexturePath.c_str()))
+                    //    //    {
+                    //    //        // free previous texture if any
+                    //    //        if (node.texture)
+                    //    //        {
+                    //    //            delete node.texture;
+                    //    //            node.texture = nullptr;
+                    //    //        }
+                    //    //        node.texture = new pine::Texture(GL_TEXTURE_2D);
+                    //    //        node.texture->LoadFromImage(img);
+                    //    //    }
+                    //    //}
+                    //}
                 }
 
                 ImGui::Spacing();
@@ -844,7 +893,7 @@ public:
 
         {
             const int num_selected = ImNodes::NumSelectedLinks();
-            if (num_selected > 0 && ImGui::IsKeyReleased(ImGuiKey_X))
+            if (false/*num_selected > 0 && ImGui::IsKeyReleased(ImGuiKey_X)*/)
             {
                 static std::vector<int> selected_links;
                 selected_links.resize(static_cast<size_t>(num_selected));
@@ -858,7 +907,7 @@ public:
 
         {
             const int num_selected = ImNodes::NumSelectedNodes();
-            if (num_selected > 0 && ImGui::IsKeyReleased(ImGuiKey_X))
+            if (false/*num_selected > 0 && ImGui::IsKeyReleased(ImGuiKey_X)*/)
             {
                 static std::vector<int> selected_nodes;
                 selected_nodes.resize(static_cast<size_t>(num_selected));

@@ -7,7 +7,7 @@ namespace pine {
 	class Material {
 	public:
 		Material();
-		~Material() { delete m_shader;  };
+		~Material(); // TODO: shaders memory leak
 		explicit Material(Shader* shader);
 		Material(Shader* shader, Texture* texture);
 

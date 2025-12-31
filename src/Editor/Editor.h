@@ -18,11 +18,11 @@ namespace pine {
 		void SetKeyBinds();
 		void SetAspectRatio(float aspectRatio) const;
 
-		[[nodiscard]] Camera* GetCamera() const { return _cameras[_activeCameraIndex].get(); }
+		[[nodiscard]] Camera* GetCamera() const { return _camera.get(); }
 
-		// Camera switching
-		void CycleCamera();
-		void SetActiveCamera(int index);
+		// Camera switching (kept for camera selection) -- replaced by light-preset cycling API
+		void CycleLightPreset();
+		void SetActiveLightPreset(int index);
 
 	private:
 		void MoveCameraX(float scale) const;
@@ -31,7 +31,8 @@ namespace pine {
 		float _moveSpeed = 0.05f;
 
 		// three editor cameras; the active one is returned by GetCamera()
-		std::vector<std::unique_ptr<Camera>> _cameras;
+		std::unique_ptr<Camera> _camera;
+		// local index used only for GetCamera() indexing; camera active index remains local to the editor cameras
 		int _activeCameraIndex = 0;
 
 		// Input handling methods (prob deprecated)
