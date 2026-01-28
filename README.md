@@ -28,19 +28,19 @@
 
 The folder structure should look as follows:
 
-MainFolder/
+	MainFolder/
 
-├─ Pine3D/
+	├─ Pine3D/
 
-│		└─ Pine3D.exe
+	│	└─ Pine3D.exe
 
-└─ res/
+	└─ res/
 
-	└─ shaders/
-
-			 ├─ PBR.vert
-       └─ PBR.frag
-
+		└─ shaders/
+	
+			├─ PBR.vert
+	       	└─ PBR.frag
+	
 
 
 Use "--recursive"" flag when cloning the project to get the submodules as well.
