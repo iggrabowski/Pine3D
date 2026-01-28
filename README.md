@@ -48,5 +48,5 @@ Use "--recursive"" flag when cloning the project to get the submodules as well.
 
 
 
-!\[Pine3D Screenshot](https://github.com/iggrabowski/docs/screenshot.png)
+!\[Pine3D Screenshot](https://github.com/iggrabowski/Pine3D/docs/screenshot.png)
 
