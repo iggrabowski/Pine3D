@@ -1,10 +1,10 @@
 # Pine3D
 
-###### Lightweight PBR model \& material preview tool
+### Lightweight PBR model \& material preview tool
 
 
 
-Features
+### Features
 
 \- ImGui UI.
 
@@ -24,21 +24,23 @@ Features
 
 
 
+
+
 The folder structure should look as follows:
 
 MainFolder/
 
 ├─ Pine3D/
 
-│  └─ Pine3D.exe
+│		└─ Pine3D.exe
 
 └─ res/
 
-&nbsp;  └─ shaders/
+&nbsp;	└─ shaders/
 
-&nbsp;     ├─ PBR.vert
+&nbsp;		├─ PBR.vert
 
-&nbsp;     └─ PBR.frag
+&nbsp;		└─ PBR.frag
 
 
 
@@ -46,5 +48,5 @@ Use "--recursive"" flag when cloning the project to get the submodules as well.
 
 
 
-!\[Pine3D Screenshot](./docs/screenshot.png)
+!\[Pine3D Screenshot](https://github.com/iggrabowski/docs/screenshot.png)
 
