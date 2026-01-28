@@ -38,9 +38,9 @@ MainFolder/
 
 &nbsp;	└─ shaders/
 
-&nbsp;		├─ PBR.vert
+&nbsp;			 ├─ PBR.vert
 
-&nbsp;		└─ PBR.frag
+&nbsp;			 └─ PBR.frag
 
 
 
@@ -48,5 +48,5 @@ Use "--recursive"" flag when cloning the project to get the submodules as well.
 
 
 
-!\[Pine3D Screenshot](https://github.com/iggrabowski/Pine3D/docs/screenshot.png)
+!\[Pine3D Screenshot](https://github.com/iggrabowski/Pine3D/blob/master/docs/screenshot.png)
 
