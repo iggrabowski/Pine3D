@@ -3,6 +3,7 @@
 #include "Runtime/Components/Material.h"
 #include "Runtime/Components/Transform.h"
 #include "Runtime/Scene/SceneObject.h"
+#include "Core/Application.h"
 
 namespace pine {
 
@@ -42,6 +43,12 @@ namespace pine {
 		std::vector<unsigned int> m_render_flags; // per 3D model materials
 	private:
 		Model3D*		_model3D = nullptr;
+		bool _dataIsBuffered = false;
+		bool _shadersValidated = false;
+		bool ValidateShaderAttributes();
+		std::unordered_map<unsigned int, const ShaderVariable*> loc_map;
+		std::unordered_map<std::string, const ShaderVariable*> name_map;
+
 		//Material*	_material;
 	};
 

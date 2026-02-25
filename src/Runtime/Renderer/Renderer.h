@@ -37,6 +37,7 @@ namespace pine {
 		void SetRenderCamera(Camera* cam);
 
 		virtual void Clear() = 0;
+		virtual void BufferModelMesh(Model3D* model) = 0;
 	protected:
 		Camera* _camera;
 		void UpdateRenderFlags(MeshRenderer* mr);

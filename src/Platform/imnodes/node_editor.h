@@ -307,11 +307,12 @@ public:
                 }
             }
         }
-        ImGui::Columns(2);
+        ImGui::Columns(1);
         ImGui::TextUnformatted("Controls: ");
-        ImGui::NextColumn();
+        //ImGui::NextColumn();
         ImGui::TextUnformatted("W -- Zoom in");
         ImGui::TextUnformatted("S -- Zoom out");
+        ImGui::TextUnformatted("F1,F2,F3 -- Lighting presets");
         //if (ImGui::Checkbox("emulate_three_button_mouse", &emulate_three_button_mouse))
         //{
         //    ImNodes::GetIO().EmulateThreeButtonMouse.Modifier =

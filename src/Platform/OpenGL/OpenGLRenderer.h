@@ -8,12 +8,12 @@ namespace pine {
 	public:
 		OpenGLRenderer();
 
-		void Clear() override;
-		void Draw(MeshRenderer* mr) override final;
+		void Clear() final;
+		void Draw(MeshRenderer* mr) final;
 		//void Init() override;
+		void BufferModelMesh(Model3D* model) final;
 	private:
 		void DrawIndexed(/*const IndexedModel& model*/);
-		void BufferMesh(MeshData& mesh, Shader& shader);
 	};
 
 }

@@ -19,7 +19,7 @@ namespace pine {
 	struct ShaderVariable
 	{
 		unsigned int	type;
-		std::string		name;
+		std::string	name;
 		int				size;
 		unsigned int	loc;
 	};
@@ -42,6 +42,16 @@ namespace pine {
 
 		static Shader* LoadShaders(const std::string& fileName);
 		int GetUniformLocation(std::string name);
+		unsigned int GetNumberOfAttributes() const {
+			return static_cast<unsigned int>(_attributes.size());
+		}
+		unsigned int GetNumberOfUniforms()	const {
+			return static_cast<unsigned int>(_uniforms.size());
+		}
+
+		// Expose const access to attributes so callers can validate/inspect them.
+		const std::vector<ShaderVariable>& GetAttributes() const { return _attributes; }
+
 	protected:
 	private:
 		std::vector<ShaderVariable>	_uniforms;

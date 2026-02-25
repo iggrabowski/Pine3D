@@ -626,7 +626,6 @@ glm::ivec2 GlfwWindow::GetMousePosition()
 	double x_pos, y_pos;
 	glfwGetCursorPos(_window, &x_pos, &y_pos);
 
-	// TODO: check if the values are correct
 	glm::ivec2 pos(x_pos, y_pos);
 	return pos;
 }
@@ -678,7 +677,6 @@ void GlfwWindow::AddGlfwCallbacks()
 			value = 0.0f; // key released
 		}
 		Application::input_handler->UpdateMouseState(0, GlfwToKeyCode(button, InputDeviceType::MOUSE), {
-			// TODO: does mouse raise GLFW_REPEAT on hold?
 			.value = value
 		}); 
 	});

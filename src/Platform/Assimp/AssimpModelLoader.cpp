@@ -178,8 +178,6 @@ namespace pine {
 			Application::mr.ResetModel3D();
             LoadModelWithAssimp(filePath, *Application::mr.GetModel());
 
-		// TODO: probably do that somewhere else
-			Application::mr.InitModel();
 #else 
 		// initiate a new MeshRenderer and add to scene
         // multiple meshes version 
