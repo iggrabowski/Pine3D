@@ -51,28 +51,43 @@ namespace pine {
 		if (!_shadersValidated)
 			if (!ValidateShaderAttributes()) return false;
 
-		Application::renderer->BufferModelMesh(GetModel());
+		Application::renderer->BufferModelMesh(this);
 		m_render_flags.reserve(_model3D->num_materials);
 
 		// init render flags based on available textures in materials
 		for (unsigned int i = 0; i < _model3D->num_materials; i++) {
 			m_render_flags.push_back(0);
 			if (_model3D->materials[i]->m_textures[TEX_TYPE_BASE] != nullptr)
-				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::BASE_TEXTURE);
+				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::BASE_TEXTURE);
 			if (_model3D->materials[i]->m_textures[TEX_TYPE_NORMAL] != nullptr) {
-				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::NORMAL_MAPS);
+				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::NORMAL_MAPS);
 				_model3D->materials[i]->m_enableNormalMap = true;
 			}
 			if (_model3D->materials[i]->m_textures[TEX_TYPE_ROUGHNESS] != nullptr) {
-				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS);
+				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS);
 				_model3D->materials[i]->m_enableRoughnessMap = true;
 			}
 			if (_model3D->materials[i]->m_textures[TEX_TYPE_METALLIC] != nullptr) {
-				m_render_flags[i] |= static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS);
+				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::METALNESS_MAPS);
 				_model3D->materials[i]->m_enableMetallicMap = true;
 			}
 		}
 		return true;
+	}
+
+	int MeshRenderer::GetAttributeLocation(const std::string& attName)
+	{
+		if (!_shadersValidated) {
+			Logger::Instance().Warning("MeshRenderer: Attempting to get attribute location before validation.");
+			return -1;
+		}
+
+		const auto& it = name_map.find(attName);
+		if (it != name_map.end()) {
+			return static_cast<int>(it->second->loc);
+		}
+		Logger::Instance().Warning("MeshRenderer: Attribute '" + attName + "' not found. [GetAttributeLocation()]");
+		return -1;
 	}
 
 	bool MeshRenderer::ValidateShaderAttributes()
@@ -91,6 +106,7 @@ namespace pine {
 				return false;
 			}
 
+			// TODO: fix names from slop ones
 			const auto& attrs = shader->GetAttributes();
 			for (const auto& attr : attrs) {
 				// Check by location: if another attribute already uses this location it must match name+type

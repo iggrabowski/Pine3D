@@ -116,6 +116,7 @@ namespace pine {
 
 	MeshData::~MeshData()
 	{
+		// TODO: delete all buffers
 		glDeleteBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
 		glDeleteVertexArrays(1, &m_vertexArrayObject);
 	}

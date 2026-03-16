@@ -9,76 +9,75 @@ namespace pine {
 
 	}
 
-	void OpenGLRenderer::BufferModelMesh(Model3D* model)
+	void OpenGLRenderer::BufferModelMesh(MeshRenderer* mr)
 	{
-		// TODO: check if this works correctly with different shaders _VA conflicts with method in InitMesh()
-		MeshData* mesh = &model->mesh;
-		glGenVertexArrays(1, &mesh->_VA);
-		glBindVertexArray(mesh->_VA);
+		MeshData& mesh = mr->GetModel()->mesh;
 
-		glGenBuffers(1, &mesh->_VB);
-		glGenBuffers(1, &mesh->_EB);
+		glGenVertexArrays(1, &mesh.m_vertexArrayObject);
+		glBindVertexArray(mesh.m_vertexArrayObject);
 
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->_VB);
+		glGenBuffers(NUM_BUFFERS, mesh.m_vertexArrayBuffers);
+
+		glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[POSITION_VB]);
 		size_t offset = 0;
 		std::vector<float> data;
 		unsigned int loc;
 
-		if (shader.GetAttributeLocation("position", loc)) {
+		// TODO: maybe list the attributes somewhere
+		if ((loc = mr->GetAttributeLocation("position"))) {
 			glEnableVertexAttribArray(loc);
-			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh->m_Positions.size() * sizeof(float) * 3;
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Positions[0]) * mesh.m_Positions.size(), &mesh.m_Positions[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(POSITION_LOCATION);
+			glVertexAttribPointer(POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-			for (unsigned int i = 0; i < mesh->m_Positions.size(); i++)
-			{
-				data.push_back(mesh->m_Positions[i].x);
-				data.push_back(mesh->m_Positions[i].y);
-				data.push_back(mesh->m_Positions[i].z);
-			}
 		}
-		if (mesh->m_TexCoords.size() > 0 && shader.GetAttributeLocation("texCoord", loc))
+		if (!mesh.m_TexCoords.empty() && (loc = mr->GetAttributeLocation("texCoord")))
 		{
-			glEnableVertexAttribArray(loc);
-			glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh->m_TexCoords.size() * sizeof(float) * 2;
-
-			for (unsigned int i = 0; i < mesh->m_TexCoords.size(); i++)
-			{
-				data.push_back(mesh->m_TexCoords[i].x);
-				data.push_back(mesh->m_TexCoords[i].y);
-			}
+			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[TEXCOORD_VB]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_TexCoords[0]) * mesh.m_TexCoords.size(), &mesh.m_TexCoords[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(TEX_COORD_LOCATION);
+			glVertexAttribPointer(TEX_COORD_LOCATION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		}
-		if (mesh->m_Normals.size() > 0 && shader.GetAttributeLocation("normal", loc))
+		if (!mesh.m_Normals.empty() && (loc = mr->GetAttributeLocation("normal")))
 		{
-			glEnableVertexAttribArray(loc);
-			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-			offset += mesh->m_Normals.size() * sizeof(float) * 3;
-
-			for (unsigned int i = 0; i < mesh->m_Normals.size(); i++)
-			{
-				data.push_back(mesh->m_Normals[i].x);
-				data.push_back(mesh->m_Normals[i].y);
-				data.push_back(mesh->m_Normals[i].z);
-			}
+			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[NORMAL_VB]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Normals[0]) * mesh.m_Normals.size(), &mesh.m_Normals[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(NORMAL_LOCATION);
+			glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		}
-		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+
+		if (!mesh.m_Tangents.empty() && (loc = mr->GetAttributeLocation("tangent")))
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[TANGENT_VB]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Tangents[0]) * mesh.m_Tangents.size(), &mesh.m_Tangents[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(TANGENT_LOCATION);
+			glVertexAttribPointer(TANGENT_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		}
+
+		if (!mesh.m_Bitangents.empty() && (loc = mr->GetAttributeLocation("bitangent")))
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[BITANGENT_VB]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Bitangents[0]) * mesh.m_Bitangents.size(), &mesh.m_Bitangents[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(BITANGENT_LOCATION);
+			glVertexAttribPointer(BITANGENT_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		}
 
 		// only fill the index buffer if the index array is non-empty.
-		if (mesh->m_Indices.size() > 0)
+		if (!mesh.m_Indices.empty() && (loc = mr->GetAttributeLocation("bitangent")))
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->_EB);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->m_Indices.size() * sizeof(unsigned int), &mesh->m_Indices[0], GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[INDEX_VB]);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.m_Indices[0]) * mesh.m_Indices.size(), &mesh.m_Indices[0], GL_STATIC_DRAW);
 		}
 
 		glBindVertexArray(0);
 
-		mesh->_buffered = true;
+		mesh._buffered = true;
 	}
 
 	OpenGLRenderer::OpenGLRenderer()
 	{
 		//s_Instance = this;
-		m_rendererAPI = GRAPHICS_API::OPENGL_API;
+		m_rendererAPI = GraphicsApi::OPENGL_API;
 
 		//if in editor
 		_camera = Application::editor->GetCamera();
@@ -120,8 +119,8 @@ namespace pine {
 		glBindVertexArray(model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
 
 		glm::mat4 umodel = mr->GetTransform().GetModel();
-		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
-		glm::vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
+		glm::mat4 mvp = Application::renderer.get()->GetRenderCamera().GetViewProjection() * umodel;
+		glm::vec3 camPos = Application::renderer.get()->GetRenderCamera().GetPos();
 
 		// TODO : check if window open cause of crashes
 		// If model defines BasicMesh ranges, draw each range separately.
@@ -129,11 +128,11 @@ namespace pine {
 		{
 			for (const BasicMesh& bm : model->b_meshes)
 			{
-				// TODO: check if shader/texture exists
 				// bind shader/texture (existing code assumes 'mat' is set up)
 				Shader* shader = model->materials[bm.materialIndex]->m_shader;
 				shader->Bind();
 				//material->m_Shader->SetUniform("Model", model);
+				// TODO: think if shader attributes should be selected from shader data
 				shader->SetUniform("MVP", mvp); // TODO: build on uniform system to find needed uniforms from shader
 				shader->SetUniform("Model", umodel);
 				shader->SetUniform("u_cameraPos", camPos);
@@ -159,27 +158,28 @@ namespace pine {
 				shader->SetUniformArray("u_lightDiffs", lightColors, MAX_LIGHTS);
 
 				// Bind albedo (base) to texture unit 0
+				// TODO: hardcoded texture unit indexes, also make functions for redundant uniform setting
 				auto* albedoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
-				if (albedoTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::BASE_TEXTURE)) {
+				if (albedoTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::BASE_TEXTURE)) {
 					albedoTex->Bind(0);
 					shader->SetUniformTextureSampler2D("u_albedoMap", 0);
 				}
 
 				 //Bind normal map to texture unit 1
 				auto* normalTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
-				if (normalTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::NORMAL_MAPS)) {
+				if (normalTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::NORMAL_MAPS)) {
 					normalTex->Bind(1);
 					shader->SetUniformTextureSampler2D("u_normalMap", 1);
 				}
 
 				auto* roughnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
-				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS)) {
+				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS)) {
 					roughnessTex->Bind(2);
 					shader->SetUniformTextureSampler2D("u_roughnessMap", 2);
 				}
 
 				auto* metalnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
-				if (metalnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS)) {
+				if (metalnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::METALNESS_MAPS)) {
 					metalnessTex->Bind(3);
 					shader->SetUniformTextureSampler2D("u_metalnessMap", 3);
 				}

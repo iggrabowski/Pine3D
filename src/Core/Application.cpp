@@ -128,7 +128,7 @@ namespace pine {
 		//If in editor
 		editor = Editor::Init();
 		// Default API is OpenGL due to the lack of other implementations obviously lol
-		renderer = Renderer::Init(GRAPHICS_API::OPENGL_API);
+		renderer = Renderer::Init(GraphicsApi::OPENGL_API);
 		Logger::Instance().Success("Pine3D: ...initiating objects complete.");
 	}
 

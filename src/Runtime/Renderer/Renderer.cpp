@@ -20,24 +20,24 @@ namespace pine {
 			auto mat = mr->GetModel()->materials[i];
 
 			if (mat->m_textures[TEX_TYPE_BASE] != nullptr)
-				*flags |= static_cast<uint32_t>(RENDER_FLAGS::BASE_TEXTURE);
+				*flags |= static_cast<uint32_t>(RenderFlags::BASE_TEXTURE);
 			if (mat->m_textures[TEX_TYPE_NORMAL] != nullptr) {
 				if (mat->m_enableNormalMap)
-					*flags |= static_cast<uint32_t>(RENDER_FLAGS::NORMAL_MAPS);
+					*flags |= static_cast<uint32_t>(RenderFlags::NORMAL_MAPS);
 				else
-					*flags -= *flags & static_cast<uint32_t>(RENDER_FLAGS::NORMAL_MAPS);
+					*flags -= *flags & static_cast<uint32_t>(RenderFlags::NORMAL_MAPS);
 			}
 			if (mat->m_textures[TEX_TYPE_ROUGHNESS] != nullptr) {
 				if (mat->m_enableRoughnessMap)
-					*flags |= static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS );
+					*flags |= static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS );
 				else
-					*flags -= *flags & static_cast<uint32_t>(RENDER_FLAGS::ROUGHNESS_MAPS);
+					*flags -= *flags & static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS);
 			}
 			if (mat->m_textures[TEX_TYPE_METALLIC] != nullptr && mat->m_enableMetallicMap) {
 				if (mat->m_enableMetallicMap)
-					*flags |= static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS);
+					*flags |= static_cast<uint32_t>(RenderFlags::METALNESS_MAPS);
 				else
-					*flags -= *flags & static_cast<uint32_t>(RENDER_FLAGS::METALNESS_MAPS);
+					*flags -= *flags & static_cast<uint32_t>(RenderFlags::METALNESS_MAPS);
 			}
 		}
 	}
@@ -47,9 +47,9 @@ namespace pine {
 		_camera = cam;
 	}
 
-	UniquePtr<Renderer> Renderer::Init(GRAPHICS_API API)
+	UniquePtr<Renderer> Renderer::Init(GraphicsApi API)
 	{
-		if (API == GRAPHICS_API::OPENGL_API) {
+		if (API == GraphicsApi::OPENGL_API) {
 			return MakeUnique<OpenGLRenderer>();
 		}
 	}
