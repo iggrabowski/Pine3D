@@ -46,7 +46,7 @@ namespace pine {
 		std::vector<unsigned int> m_render_flags; // per 3D model materials
 	private:
 		Model3D*		_model3D = nullptr;
-		bool _dataIsBuffered = false;
+		bool _modelDataInitiated = false;
 		bool _shadersValidated = false;
 		bool ValidateShaderAttributes();
 		// maps with all shader attributes by name and location

@@ -26,10 +26,10 @@ namespace pine {
 
 	void MeshRenderer::OnUpdate()
 	{
-		if (!_dataIsBuffered)
+		if (!_modelDataInitiated)
 		{
 			if (InitModel())
-				_dataIsBuffered = true;
+				_modelDataInitiated = true;
 		}
 		_transform->UpdateModel();
 
