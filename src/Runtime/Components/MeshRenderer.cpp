@@ -1,5 +1,7 @@
 #pragma once
 #include "MeshRenderer.h"
+#include "Core/Application.h"
+#include "Runtime/Components/Cube.h"
 
 //#include "Runtime/Renderer/Renderer.h"
 
@@ -26,8 +28,8 @@ namespace pine {
 	{
 		if (!_dataIsBuffered)
 		{
-			InitModel();
-			_dataIsBuffered = true;
+			if (InitModel())
+				_dataIsBuffered = true;
 		}
 		_transform->UpdateModel();
 
@@ -47,7 +49,6 @@ namespace pine {
 
 	bool MeshRenderer::InitModel()
 	{
-		//GetModel()->mesh.InitMesh();
 		if (!_shadersValidated)
 			if (!ValidateShaderAttributes()) return false;
 
@@ -57,6 +58,7 @@ namespace pine {
 		// init render flags based on available textures in materials
 		for (unsigned int i = 0; i < _model3D->num_materials; i++) {
 			m_render_flags.push_back(0);
+			// TODO: reduce redundancy
 			if (_model3D->materials[i]->m_textures[TEX_TYPE_BASE] != nullptr)
 				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::BASE_TEXTURE);
 			if (_model3D->materials[i]->m_textures[TEX_TYPE_NORMAL] != nullptr) {
@@ -137,8 +139,8 @@ namespace pine {
 					name_map[attr.name] = &attr;
 				}
 			}
-		}
 		_shadersValidated = true;
-		return true;
+		}
+		return _shadersValidated;
 	}
 }

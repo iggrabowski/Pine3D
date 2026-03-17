@@ -3,7 +3,7 @@
 #include "Runtime/Components/Material.h"
 #include "Runtime/Components/Transform.h"
 #include "Runtime/Scene/SceneObject.h"
-#include "Core/Application.h"
+//#include "Core/Application.h"
 #include <unordered_map>
 
 namespace pine {

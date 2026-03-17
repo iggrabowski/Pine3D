@@ -24,21 +24,21 @@ namespace pine {
 		unsigned int loc;
 
 		// TODO: maybe list the attributes somewhere
-		if ((loc = mr->GetAttributeLocation("position"))) {
+		if ((loc = mr->GetAttributeLocation("position") >= 0)) {
 			glEnableVertexAttribArray(loc);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Positions[0]) * mesh.m_Positions.size(), &mesh.m_Positions[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(POSITION_LOCATION);
 			glVertexAttribPointer(POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		}
-		if (!mesh.m_TexCoords.empty() && (loc = mr->GetAttributeLocation("texCoord")))
+		if (!mesh.m_TexCoords.empty() && (loc = mr->GetAttributeLocation("texCoord") >= 0))
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[TEXCOORD_VB]);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_TexCoords[0]) * mesh.m_TexCoords.size(), &mesh.m_TexCoords[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(TEX_COORD_LOCATION);
 			glVertexAttribPointer(TEX_COORD_LOCATION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		}
-		if (!mesh.m_Normals.empty() && (loc = mr->GetAttributeLocation("normal")))
+		if (!mesh.m_Normals.empty() && (loc = mr->GetAttributeLocation("normal") >= 0))
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[NORMAL_VB]);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Normals[0]) * mesh.m_Normals.size(), &mesh.m_Normals[0], GL_STATIC_DRAW);
@@ -46,7 +46,7 @@ namespace pine {
 			glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		}
 
-		if (!mesh.m_Tangents.empty() && (loc = mr->GetAttributeLocation("tangent")))
+		if (!mesh.m_Tangents.empty() && (loc = mr->GetAttributeLocation("tangent") >= 0))
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[TANGENT_VB]);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Tangents[0]) * mesh.m_Tangents.size(), &mesh.m_Tangents[0], GL_STATIC_DRAW);
@@ -54,7 +54,7 @@ namespace pine {
 			glVertexAttribPointer(TANGENT_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		}
 
-		if (!mesh.m_Bitangents.empty() && (loc = mr->GetAttributeLocation("bitangent")))
+		if (!mesh.m_Bitangents.empty() && (loc = mr->GetAttributeLocation("bitangent") >= 0))
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[BITANGENT_VB]);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Bitangents[0]) * mesh.m_Bitangents.size(), &mesh.m_Bitangents[0], GL_STATIC_DRAW);
@@ -63,7 +63,7 @@ namespace pine {
 		}
 
 		// only fill the index buffer if the index array is non-empty.
-		if (!mesh.m_Indices.empty() && (loc = mr->GetAttributeLocation("bitangent")))
+		if (!mesh.m_Indices.empty() && (loc = mr->GetAttributeLocation("bitangent") >= 0))
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[INDEX_VB]);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.m_Indices[0]) * mesh.m_Indices.size(), &mesh.m_Indices[0], GL_STATIC_DRAW);
