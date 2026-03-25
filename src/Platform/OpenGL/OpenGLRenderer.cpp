@@ -184,6 +184,12 @@ namespace pine {
 					shader->SetUniformTextureSampler2D("u_metalnessMap", 3);
 				}
 
+				auto* aoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_AO];
+				if (aoTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::AO_MAPS)) {
+					aoTex->Bind(4);
+					shader->SetUniformTextureSampler2D("u_aoMap", 4);
+				}
+
 				// TODO: bind other textures (metallic, roughness, ao, etc.)
 
 				// If the mesh has an index buffer, use glDrawElementsBaseVertex with the BaseIndex offset.

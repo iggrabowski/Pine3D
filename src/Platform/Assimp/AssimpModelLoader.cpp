@@ -45,7 +45,6 @@ namespace pine {
             TextureType pineType;
         };
 
-        // List of texture types to load
         const TexTypeInfo texTypes[] = {
             { aiTextureType_DIFFUSE,            TEX_TYPE_BASE },
             { aiTextureType_NORMALS,            TEX_TYPE_NORMAL },

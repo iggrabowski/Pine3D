@@ -12,6 +12,7 @@ uniform sampler2D u_albedoMap;
 uniform sampler2D u_normalMap;
 uniform sampler2D u_roughnessMap;
 uniform sampler2D u_metalnessMap;
+uniform sampler2D u_aoMap;
 uniform vec3 u_lightColor;
 uniform float u_roughness;
 uniform float u_metalness;
@@ -36,6 +37,7 @@ const uint BASE_TEXTURE = 1u;
 const uint NORMAL_MAP = 2u;
 const uint ROUGHNESS_MAP = 4u;
 const uint METALNESS_MAP = 8u;
+const uint AO_MAP = 16u;
 
 
 // GGX/Trowbridge-Reitz normal distribution function
@@ -87,25 +89,30 @@ vec3 F(vec3 f0, vec3 v, vec3 h) {
 
 vec3 CalcPBRLighting() {
 	vec3 albedo = texture(u_albedoMap, texCoord0).xyz;
-	vec3 n;
+	vec3 n, v;
+	float metallic, roughness, ao;
+
 	if ((u_renderFlags & NORMAL_MAP) != 0u){
 		n = normalize(texture(u_normalMap, texCoord0).rgb * 2.0 - vec3(1.0));
 	} else {
 		n = normalize(tangentNormal);
 	}
-	vec3 v = normalize(tangentCameraPos - tangentWorldPos);
-	float metallic;
+	v = normalize(tangentCameraPos - tangentWorldPos);
 	if ((u_renderFlags & METALNESS_MAP) != 0u){
 		metallic = normalize(texture(u_metalnessMap, texCoord0).r);
 	} else {
-	metallic = u_metalness;
+		metallic = u_metalness;
 	}
-	float roughness;
 	if ((u_renderFlags & ROUGHNESS_MAP) != 0u){
 		roughness = normalize(texture(u_roughnessMap, texCoord0).r);
 	} else {
-	roughness = u_roughness;
+		roughness = u_roughness;
 	}
+	if ((u_renderFlags & AO_MAP) != 0u){
+		ao = normalize(texture(u_aoMap, texCoord0).r);
+	} 
+	else ao = 1.0;
+
 	vec3 Lo = vec3(0.0);
 	for (uint i = 0u; i < u_nLights; i++){
 
@@ -136,10 +143,10 @@ vec3 CalcPBRLighting() {
 		vec3 specular = cookTorranceNumerator / cookTorranceDenominator;
 		Lo += (Kd * albedo /* <-- can be lambert maybe */ / 3.14159265 + specular) * radiance * nDotL; 
 	}
-	// vec3 ambient = vec3(0.03) * albedo * ao;
-    vec3 outLight =  Lo;
+	vec3 ambient = vec3(0.03) * albedo * ao;
+    vec3 outColor =  ambient + Lo;
 
-	return outLight;
+	return outColor;
 }
 
 void main()

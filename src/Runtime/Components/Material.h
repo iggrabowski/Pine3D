@@ -22,9 +22,11 @@ namespace pine {
 
 		float m_roughness = 0.2f;
 		float m_metallic = 0.5f;
+		// TODO: check if these are needed
 		bool m_enableNormalMap = false;
 		bool m_enableRoughnessMap = false;
 		bool m_enableMetallicMap = false;
+		bool m_enableAmbientOcclusionMap = false;
 	};
 
 }

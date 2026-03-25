@@ -73,6 +73,11 @@ namespace pine {
 				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::METALNESS_MAPS);
 				_model3D->materials[i]->m_enableMetallicMap = true;
 			}
+			if (_model3D->materials[i]->m_textures[TEX_TYPE_AO] != nullptr)
+			{
+				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::AO_MAPS);
+				_model3D->materials[i]->m_enableAmbientOcclusionMap = true;
+			}
 		}
 		return true;
 	}
