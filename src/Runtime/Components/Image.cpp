@@ -1,4 +1,6 @@
 #include "Image.h"
+#include <filesystem>
+#include "utils/Logger.h"
 
 // Include stb image library
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -23,7 +25,7 @@ pine::Image::~Image()
 
 pine::Image::Image(const char * path)
 {
-	this->Create(path);
+	this->Load(path);
 }
 
 const void* pine::Image::GetPixelsPtr() const
@@ -36,10 +38,14 @@ const void* pine::Image::GetModifiedPtr() const
 	return m_modifiedBytes;
 }
 
-bool pine::Image::Create(const char * path)
+bool pine::Image::Load(const char * path)
 {
 	m_path = path;
 	// TODO: figure out how to return false if file not loaded
+	if (!std::filesystem::exists(m_path)) {
+		Logger::Instance().Error("Image file does not exist at path: " + m_path);
+		return false;
+	}
 	_bytes = stbi_load(path, &_width, &_height, &_numColorCh, 0);
 	return true;
 }

@@ -28,7 +28,7 @@ namespace pine {
         targetMaterial->m_textures[texType] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
         Image image;
 
-        if (!image.Create(fullPath.c_str())) {
+        if (!image.Load(fullPath.c_str())) {
             printf("Error loading texture '%s'\n", fullPath.c_str());
         }
         else {

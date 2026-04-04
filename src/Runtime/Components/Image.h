@@ -15,7 +15,7 @@ namespace pine {
 		int GetNumColorCh() const { return _numColorCh; };
 		unsigned char* GetBytes() const { return _bytes; };
 
-		bool Create(const char* path);
+		bool Load(const char* path);
 		unsigned char* m_modifiedBytes = nullptr; // this is used for 8bit image data, TODO: for node editor purposes textures are all turned 24bit, migh want to dupe 
 		std::string m_path;
 	private:
@@ -23,5 +23,6 @@ namespace pine {
 		int _height;
 		int _numColorCh;
 
-		unsigned char* _bytes = nullptr; }; 
+		unsigned char* _bytes = nullptr; 
+	}; 
 }

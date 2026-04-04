@@ -143,6 +143,8 @@ set(PINE3D-RUNTIME-COMPONENTS
 	${SRC_ROOT}/Runtime/Components/Texture.h
 	${SRC_ROOT}/Runtime/Components/Transform.cpp
 	${SRC_ROOT}/Runtime/Components/Transform.h
+	${SRC_ROOT}/Runtime/Components/Skybox.cpp
+	${SRC_ROOT}/Runtime/Components/Skybox.h
 	)
 	
 source_group("Source Files/Runtime/Components" FILES ${PINE3D-RUNTIME-COMPONENTS})

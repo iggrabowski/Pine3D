@@ -6,6 +6,7 @@
 // Has to be sufficient for now
 #include <Utils/Utils.h>
 
+// TODO: make the texture more abstract
 namespace pine {
 	enum TextureType {
 		TEX_TYPE_BASE = 0,
@@ -17,6 +18,8 @@ namespace pine {
 		TEX_TYPE_EMISSIVE,
 	};
 
+	// Textures are loaded into GPU memory by default.
+	// TODO: if the app expands, dont load every texture into GPU.
 	class Texture
 	{
 	public:
@@ -35,13 +38,9 @@ namespace pine {
 		 // Return underlying GL texture handle
 		unsigned int GetGLHandle() const { return _texture; }
 
-		// TODO: fix for GLFW
-		//void Update(int offsetX, int offsetY, sf::Image img_data);
-
 		virtual ~Texture();
-		//sf::Image tex;
 		TextureType m_TextureType = TEX_TYPE_BASE;
-		GLenum p_textureTarget = 0; // TODO: use
+		GLenum m_textureTarget = 0; // TODO: use
 	private:
 		void operator=(const Texture& texture) const {}
 		std::string _filePath;

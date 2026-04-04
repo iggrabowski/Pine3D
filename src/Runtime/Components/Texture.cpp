@@ -13,11 +13,11 @@ namespace pine {
 	}
 
 	Texture::Texture(GLenum textureTarget) {
-		p_textureTarget = textureTarget;
+		m_textureTarget = textureTarget;
 	}
 
 	Texture::Texture(GLenum textureTarget, std::string filePath) {
-		p_textureTarget = textureTarget;
+		m_textureTarget = textureTarget;
 		_filePath = filePath;
 	}
   //  Texture::Texture(const std::string& fileName)
@@ -48,9 +48,11 @@ namespace pine {
 
 	void Texture::LoadFromImage(Image & image) // TODO: why is this not abstract
 	{
+		// TODO: generate gl texture somewhere else.
 		// Inspect file extension stored in image.m_path (line referenced)
 		std::string ext;
 		size_t dot = std::string::npos;
+		// TODO: get extension in image
 		if (!image.m_path.empty())
 			dot = image.m_path.find_last_of('.');
 		if (dot != std::string::npos && dot + 1 < image.m_path.size())
@@ -132,7 +134,7 @@ namespace pine {
 
 	void Texture::Bind(unsigned int unit) const
 	{
-		// Guard: clamp unit to reasonable range if desired
+		// TODO: move to Api 
 		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_2D, _texture);
 	}    //void Texture::Update(int offsetX, int offsetY, sf::Image img_data)
