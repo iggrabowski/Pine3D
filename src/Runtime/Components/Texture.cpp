@@ -20,68 +20,30 @@ namespace pine {
 		m_textureTarget = textureTarget;
 		_filePath = filePath;
 	}
-  //  Texture::Texture(const std::string& fileName)
-  //  {
-  //      //int width, height, numComponents;
-  //      //unsigned char* data = stbi_load((fileName).c    _str(), &width, &height, &numComponents, 4);
 
-  //      // load texture
-  //      //sf::Image img_data;
-  //      //tex.loadFromImage(img_data);    
-
-  //      /*glGenTextures(1, &m_texture);
-  //      glActiveTexture(GL_TEXTURE0);
-  //      glBindTexture(GL_TEXTURE_2D, m_texture);
-
-  //      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  //      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		//if (!glfwLoadTexture2D(fileName))
-		//{
-		//	std::cout << "ERROR: Texture failed to load!" << std::endl;
-		//}
-
-  //      sf::Vector2u texSize = tex.getSize();
-  //      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texSize.x, texSize.y,
-  //          0, GL_RGBA, GL_UNSIGNED_BYTE, tex.getPixelsPtr());*/
-  //  }
-
-	void Texture::LoadFromImage(Image & image) // TODO: why is this not abstract
+	void Texture::LoadFromImage(Image& image) // TODO: why is this not abstract
 	{
+		_image = &image;
 		// TODO: generate gl texture somewhere else.
-		// Inspect file extension stored in image.m_path (line referenced)
-		std::string ext;
-		size_t dot = std::string::npos;
-		// TODO: get extension in image
-		if (!image.m_path.empty())
-			dot = image.m_path.find_last_of('.');
-		if (dot != std::string::npos && dot + 1 < image.m_path.size())
-		{
-			ext = image.m_path.substr(dot + 1);
-			std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-		}
-		else
-		{
-			ext.clear();
-		}
-
+		
 		glGenTextures(1, &_texture);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, _texture);
 			
 
-		GLsizei texWidth = image.GetWidth();
-		GLsizei texHeight = image.GetHeight();
+		_texWidth = image.GetWidth();
+		_texHeight = image.GetHeight();
 
 		GLint internal_format;
 		GLenum format;
 
-		if (ext == "hdr") {
+		const std::string& ext = image.GetImageFileExtension();
+		if (image.GetPixelFormat() == PIXEL_FORMAT_R16F) {
 			// HDR image
 			internal_format = GL_RGB16F;
 			format = GL_RGB;
-			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
-				0, format, GL_FLOAT, image.GetPixelsPtr());
+			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, _texWidth, _texHeight,
+				0, format, GL_FLOAT, image.GetPixels());
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -92,37 +54,24 @@ namespace pine {
 		{
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			if (image.GetNumColorCh() == 1) {
+			if (image.GetPixelFormat() == PIXEL_FORMAT_R8G8B8) {
 				internal_format = GL_RGB8;
 				format = GL_RGB;
-				image.m_modifiedBytes = static_cast<unsigned char*>(malloc(texWidth * texHeight * 3 * sizeof(unsigned char)));
-				for (int i = 0; i < texWidth * texHeight; i++) {
-					const unsigned char v = image.GetBytes()[i];
-					image.m_modifiedBytes[i * 3 + 0] = v;
-					image.m_modifiedBytes[i * 3 + 1] = v;
-					image.m_modifiedBytes[i * 3 + 2] = v;
-				}
-				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
-					0, format, GL_UNSIGNED_BYTE, image.GetModifiedPtr());
+				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, _texWidth, _texHeight,
+					0, format, GL_UNSIGNED_BYTE, image.GetPixels());
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
-			else if (image.GetNumColorCh() == 3) {
-				internal_format = GL_RGB8;
-				format = GL_RGB;
-				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
-					0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
-				glGenerateMipmap(GL_TEXTURE_2D);
-			}
-			else if (image.GetNumColorCh() == 4)
+			else if (image.GetPixelFormat() == PIXEL_FORMAT_R8G8B8A8)
 			{
 				internal_format = GL_RGBA8;
 				format = GL_RGBA;
-				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texWidth, texHeight,
-					0, format, GL_UNSIGNED_BYTE, image.GetPixelsPtr());
+				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, _texWidth, _texHeight,
+					0, format, GL_UNSIGNED_BYTE, image.GetPixels());
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
 			else {
-				std::cout << "ERROR: Unsupported number of color channels in texture image: " << image.GetNumColorCh() << "\n";
+				std::cout << "ERROR: Unsupported pixel format. No columns: " << image.GetNumColorCh() <<
+					" | Format: " << enum_to_string(image.GetPixelFormat()) <<"\n";
 			}
 		}
 	}

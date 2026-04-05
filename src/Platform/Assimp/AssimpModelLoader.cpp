@@ -180,8 +180,8 @@ namespace pine {
 #else 
 		// initiate a new MeshRenderer and add to scene
         // multiple meshes version 
-            Application::scene_objects.emplace_back(new MeshRenderer);
-            MeshRenderer* meshRenderer = static_cast<MeshRenderer*>(Application::scene_objects.back().get());
+            Application::sceneObjects.emplace_back(new MeshRenderer);
+            MeshRenderer* meshRenderer = static_cast<MeshRenderer*>(Application::sceneObjects.back().get());
             // create mesh if load true
             LoadModelWithAssimp(filePath, *meshRenderer->GetModel());
 			meshRenderer->InitModel();

@@ -8,7 +8,10 @@ namespace pine {
 		Skybox();
 		~Skybox();
 	private:
+		void ConvertEquirectangularToCubemap();
+
 		Texture* _texture;
+		Image _cubemapTextures[6];
 	};
 }
 

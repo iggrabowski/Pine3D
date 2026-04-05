@@ -26,13 +26,13 @@ namespace pine {
 		static inline std::unique_ptr<Editor> editor = nullptr;
 		static inline std::unique_ptr<GlfwWindow> window = nullptr; //for now only GLFW window implementation
 		static inline std::unique_ptr<Renderer> renderer = nullptr;
-		static inline std::unique_ptr<InputHandler> input_handler = nullptr;
-		static inline std::vector<std::unique_ptr<SceneObject>> scene_objects;
+		static inline std::unique_ptr<InputHandler> inputHandler = nullptr;
+		static inline std::vector<std::unique_ptr<SceneObject>> sceneObjects;
 		static inline std::vector<Material> materials;
 		static inline std::vector<Image> images;
 		static inline std::vector<Texture> textures;
 		static inline std::vector<Light> lights;
-		static inline std::vector<std::vector<Light>> light_presets;
+		static inline std::vector<std::vector<Light>> lightPresets;
 		//static inline std::unique_ptr<Logger> logger = nullptr;
 
 		// The single mesh version of the app

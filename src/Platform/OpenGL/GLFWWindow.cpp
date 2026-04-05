@@ -504,9 +504,9 @@ void GlfwWindow::Startup()
 	default_keyboard->states = {};
 	default_keyboard->state_func = []
 	{
-		return Application::input_handler->GetKeyboardState();
+		return Application::inputHandler->GetKeyboardState();
 	};
-	Application::input_handler->RegisterDevice(default_keyboard);
+	Application::inputHandler->RegisterDevice(default_keyboard);
 
 	
 	const auto default_mouse = std::make_shared<InputDevice>();
@@ -517,9 +517,9 @@ void GlfwWindow::Startup()
 	//NOTE: mouse button codes are kept with the keys in the KeyCodes.h
 	default_mouse->state_func = []
 	{
-		return Application::input_handler->GetMouseState();
+		return Application::inputHandler->GetMouseState();
 	};
-	Application::input_handler->RegisterDevice(default_mouse);
+	Application::inputHandler->RegisterDevice(default_mouse);
 
 	Logger::Instance().Success("GLFW Window : ...startup complete.");
 }
@@ -659,7 +659,7 @@ void GlfwWindow::AddGlfwCallbacks()
 		} else if (action == GLFW_REPEAT) {
 			value = 1.0f; // key held down
 		}
-		Application::input_handler->UpdateKeyboardState(0, GlfwToKeyCode(key, InputDeviceType::KEYBOARD), {
+		Application::inputHandler->UpdateKeyboardState(0, GlfwToKeyCode(key, InputDeviceType::KEYBOARD), {
 			.value = value
 		}); 
 	});
@@ -676,7 +676,7 @@ void GlfwWindow::AddGlfwCallbacks()
 		} else if (action == GLFW_RELEASE) {
 			value = 0.0f; // key released
 		}
-		Application::input_handler->UpdateMouseState(0, GlfwToKeyCode(button, InputDeviceType::MOUSE), {
+		Application::inputHandler->UpdateMouseState(0, GlfwToKeyCode(button, InputDeviceType::MOUSE), {
 			.value = value
 		}); 
 	});
@@ -687,7 +687,7 @@ void GlfwWindow::AddGlfwCallbacks()
 
         // Update the mouse position in the input handler
 		// Note: xpos and ypos are in screen coordinates, not normalized device coordinates
-		Application::input_handler->UpdateMousePosition(0 , static_cast<float>(xpos), static_cast<float>(ypos));
+		Application::inputHandler->UpdateMousePosition(0 , static_cast<float>(xpos), static_cast<float>(ypos));
     });
 
 	// TODO:

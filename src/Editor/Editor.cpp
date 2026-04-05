@@ -57,15 +57,15 @@ namespace pine {
 		//		}
 		//	});
 
-		Application::input_handler->MapInputToAction(KeyCode::S, {
+		Application::inputHandler->MapInputToAction(KeyCode::S, {
 			.name = "editor_camera_strafe_z",
 			.type = pine::KEY_ON_HOLD,
 			.scale = -1.0f });
-		Application::input_handler->MapInputToAction(KeyCode::W, {
+		Application::inputHandler->MapInputToAction(KeyCode::W, {
 			.name = "editor_camera_strafe_z",
 			.type = pine::KEY_ON_HOLD,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_strafe_z",
+		Application::inputHandler->AddActionCallback("editor_camera_strafe_z",
 			pine::InputHandler::ActionCallback {
 				.ref = "editor_camera_strafe_z",
 				.func = [this](int sourceIndex, float value)
@@ -75,40 +75,40 @@ namespace pine {
 				}
 			});
 
-		Application::input_handler->MapInputToAction(KeyCode::MB_BUTTON_RIGHT, {
+		Application::inputHandler->MapInputToAction(KeyCode::MB_BUTTON_RIGHT, {
 			.name = "editor_camera_rotate",
 			.type = pine::KEY_ON_RELEASE,
 			.scale = -1.0f });
-		Application::input_handler->MapInputToAction(KeyCode::MB_BUTTON_RIGHT, {
+		Application::inputHandler->MapInputToAction(KeyCode::MB_BUTTON_RIGHT, {
 			.name = "editor_camera_rotate",
 			.type = pine::KEY_ON_HOLD,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_camera_rotate",
+		Application::inputHandler->AddActionCallback("editor_camera_rotate",
 			pine::InputHandler::ActionCallback {
 				.ref = "editor_camera_rotate",
 				.func = [this](int sourceIndex, float value)
 				{
 					// get raw mouse motion
-					std::pair<float, float> mousePos = Application::input_handler->GetCurrentMousePosition();
-					std::pair<float, float> lastMousePos = Application::input_handler->GetLastMousePosition();
+					std::pair<float, float> mousePos = Application::inputHandler->GetCurrentMousePosition();
+					std::pair<float, float> lastMousePos = Application::inputHandler->GetLastMousePosition();
 
 					float rotX = mousePos.first - lastMousePos.first;
 					float rotY = mousePos.second - lastMousePos.second;
 					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotX, glm::vec3(0.0f, 1.0f,0.0f));
 					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotY, glm::cross(GetCamera()->GetDirection(), GetCamera()->up));
 					Application::window->SetCursorDisabled(value);
-					Application::input_handler->UpdateMousePosition(0, mousePos.first, mousePos.second);
+					Application::inputHandler->UpdateMousePosition(0, mousePos.first, mousePos.second);
 					return true;
 				}
 			});
 
 		// --- Light preset switching controls ---
 		// Cycle light presets with 'C'
-		Application::input_handler->MapInputToAction(KeyCode::C, {
+		Application::inputHandler->MapInputToAction(KeyCode::C, {
 			.name = "editor_light_cycle",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_light_cycle",
+		Application::inputHandler->AddActionCallback("editor_light_cycle",
 			pine::InputHandler::ActionCallback {
 				.ref = "editor_light_cycle",
 				.func = [this](int sourceIndex, float value)
@@ -119,11 +119,11 @@ namespace pine {
 			});
 
 		// Direct select light presets with F1/F2/F3
-		Application::input_handler->MapInputToAction(KeyCode::F1, {
+		Application::inputHandler->MapInputToAction(KeyCode::F1, {
 			.name = "editor_light_select_0",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_light_select_0",
+		Application::inputHandler->AddActionCallback("editor_light_select_0",
 			pine::InputHandler::ActionCallback {
 				.ref = "editor_light_select_0",
 				.func = [this](int sourceIndex, float value)
@@ -133,11 +133,11 @@ namespace pine {
 				}
 			});
 
-		Application::input_handler->MapInputToAction(KeyCode::F2, {
+		Application::inputHandler->MapInputToAction(KeyCode::F2, {
 			.name = "editor_light_select_1",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_light_select_1",
+		Application::inputHandler->AddActionCallback("editor_light_select_1",
 			pine::InputHandler::ActionCallback {
 				.ref = "editor_light_select_1",
 				.func = [this](int sourceIndex, float value)
@@ -147,11 +147,11 @@ namespace pine {
 				}
 			});
 
-		Application::input_handler->MapInputToAction(KeyCode::F3, {
+		Application::inputHandler->MapInputToAction(KeyCode::F3, {
 			.name = "editor_light_select_2",
 			.type = pine::KEY_ON_PRESS,
 			.scale = 1.0f });
-		Application::input_handler->AddActionCallback("editor_light_select_2",
+		Application::inputHandler->AddActionCallback("editor_light_select_2",
 			pine::InputHandler::ActionCallback {
 				.ref = "editor_light_select_2",
 				.func = [this](int sourceIndex, float value)
@@ -214,22 +214,22 @@ namespace pine {
 	// Cycle to next light preset (wraps). Editor keeps the logic, active index is stored in Application.
 	void Editor::CycleLightPreset()
 	{
-		if (Application::light_presets.empty())
+		if (Application::lightPresets.empty())
 			return;
 
-		Application::activeLightPresetIndex = (Application::activeLightPresetIndex + 1) % static_cast<int>(Application::light_presets.size());
+		Application::activeLightPresetIndex = (Application::activeLightPresetIndex + 1) % static_cast<int>(Application::lightPresets.size());
 
 		// apply the chosen preset to the active lights list
-		Application::lights = Application::light_presets[Application::activeLightPresetIndex];
+		Application::lights = Application::lightPresets[Application::activeLightPresetIndex];
 	}
 
 	// Select a specific light preset index
 	void Editor::SetActiveLightPreset(int index)
 	{
-		if (index < 0 || index >= static_cast<int>(Application::light_presets.size()))
+		if (index < 0 || index >= static_cast<int>(Application::lightPresets.size()))
 			return;
 
 		Application::activeLightPresetIndex = index;
-		Application::lights = Application::light_presets[Application::activeLightPresetIndex];
+		Application::lights = Application::lightPresets[Application::activeLightPresetIndex];
 	}
 }

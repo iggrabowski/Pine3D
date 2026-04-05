@@ -143,14 +143,14 @@ namespace pine {
 				shader->SetUniform("u_renderFlags", mr->m_render_flags[bm.materialIndex]);
 
 				// lights
-				unsigned int lightCount = static_cast<unsigned int>(Application::light_presets[Application::activeLightPresetIndex].size());
+				unsigned int lightCount = static_cast<unsigned int>(Application::lightPresets[Application::activeLightPresetIndex].size());
 				std::vector<glm::vec3> lightDirs;
 				std::vector<glm::vec3> lightColors;
 
 				for (unsigned int i = 0; i < lightCount; i++)
 				{
-					lightDirs.push_back(Application::light_presets[Application::activeLightPresetIndex][i].GetDirection());
-					lightColors.push_back(Application::light_presets[Application::activeLightPresetIndex][i].GetColor());
+					lightDirs.push_back(Application::lightPresets[Application::activeLightPresetIndex][i].GetDirection());
+					lightColors.push_back(Application::lightPresets[Application::activeLightPresetIndex][i].GetColor());
 				}
 
 				shader->SetUniform("u_nLights", lightCount);

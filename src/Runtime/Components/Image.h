@@ -2,27 +2,43 @@
 #include <Utils/Utils.h>
 
 namespace pine {
+	enum PixelFormat
+	{
+		PIXEL_FORMAT_UNKNOWN = 0,
+		PIXEL_FORMAT_R8G8B8A8, // 32-bit RGBA
+		PIXEL_FORMAT_R8G8B8, // 24-bit RGB
+		PIXEL_FORMAT_R8, // 8-bit grayscale (transformed to RGB by default)
+		PIXEL_FORMAT_R16F, // 16-bit float
+		PIXEL_FORMAT_R32F, // 32-bit float
+	};
 
+	const char* enum_to_string(PixelFormat e);
+	
 	class Image {
 	public:
 		Image();
 		~Image();
 		explicit Image(const char* path);
-		[[nodiscard]] const void* GetPixelsPtr() const;
-		[[nodiscard]] const void* GetModifiedPtr() const;
-		int GetWidth() const { return _width; };
-		int GetHeight() const { return _height; };
-		int GetNumColorCh() const { return _numColorCh; };
-		unsigned char* GetBytes() const { return _bytes; };
-
+		void SoftCopyFrom(const Image& other); // copy metadata but not pixel data
+		[[nodiscard]] int GetWidth() const { return _width; };
+		[[nodiscard]] int GetHeight() const { return _height; };
+		[[nodiscard]] int GetNumColorCh() const { return _numColorCh; };
+		[[nodiscard]] void* GetPixels() { return _pixels; };
+		[[nodiscard]] std::string GetImageFileExtension() const { return m_extension; };
+		[[nodiscard]] PixelFormat GetPixelFormat() const { return _pixelFormat; };
+		void AllocateNewPixels(size_t newSize);
 		bool Load(const char* path);
-		unsigned char* m_modifiedBytes = nullptr; // this is used for 8bit image data, TODO: for node editor purposes textures are all turned 24bit, migh want to dupe 
-		std::string m_path;
-	private:
-		int _width;
-		int _height;
-		int _numColorCh;
 
-		unsigned char* _bytes = nullptr; 
+	private:
+		void ReadImageExtension(const char* path);
+		void ProcessBytes();
+		std::string m_path;
+		int _width = -1;
+		int _height = -1;
+		int _numColorCh = -1;
+		PixelFormat _pixelFormat = PIXEL_FORMAT_UNKNOWN;
+
+		void* _pixels = nullptr;
+		std::string m_extension; // TODO: might be redundant here
 	}; 
 }

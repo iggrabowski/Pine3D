@@ -4,10 +4,10 @@
 namespace pine {
 	InputListener::InputListener()
 	{
-		Application::input_handler->AddListener(this);
+		Application::inputHandler->AddListener(this);
 	}
 	InputListener::~InputListener()
 	{
-		Application::input_handler->RemoveListener(this);
+		Application::inputHandler->RemoveListener(this);
 	}
 }
