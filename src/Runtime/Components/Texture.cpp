@@ -37,10 +37,9 @@ namespace pine {
 		GLint internal_format;
 		GLenum format;
 
-		const std::string& ext = image.GetImageFileExtension();
-		if (image.GetPixelFormat() == PIXEL_FORMAT_R16F) {
+		if (image.GetPixelFormat() == PIXEL_FORMAT_R32F) {
 			// HDR image
-			internal_format = GL_RGB16F;
+			internal_format = GL_RGB32F;
 			format = GL_RGB;
 			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, _texWidth, _texHeight,
 				0, format, GL_FLOAT, image.GetPixels());

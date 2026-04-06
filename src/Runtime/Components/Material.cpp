@@ -8,6 +8,7 @@ namespace pine {
 		// Load default texture files from file
 		Image img("../res/textures/default.jpg");
 		// Load default shaders
+		// TODO: add global sheder vector and check if there already exists PBR shader
 		m_shader = Shader::LoadShaders("../res/shaders/PBR");
 
 		m_texture = new Texture();

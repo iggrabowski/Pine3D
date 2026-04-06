@@ -1,12 +1,48 @@
 #pragma once
 #include "Platform/OpenGL/OpenGLRenderer.h"
 #include "Core/Application.h"
-
+static const GLenum skyboxFaceTypes[6] = { GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+								  GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+								  GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+								  GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+								  GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+								  GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 namespace pine {
 	
 	void OpenGLRenderer::DrawIndexed(/*const IndexedModel& model*/)
 	{
 
+	}
+
+	void OpenGLRenderer::InitSkybox()
+	{
+		glGenVertexArrays(1, &_skyboxCubeVAO);
+		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &_skyboxTextureObj);
+		
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_BASE_LEVEL, 0);
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAX_LEVEL, 0);
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureStorage2D(_skyboxTextureObj, 1, GL_RGB32F,
+			_skybox->GetCubemapTextures()[0].GetWidth(), _skybox->GetCubemapTextures()[0].GetHeight());
+
+		for (int i = 0; i < 6; ++i) {
+			const void* pSrc = _skybox->GetCubemapTextures()[i].GetPixels();
+			glTextureSubImage3D(_skyboxTextureObj,
+				0,      // mipmap level
+				0,      // xOffset
+				0,      // yOffset
+				i,      // zOffset (layer in the case of a cubemap)
+				_skybox->GetCubemapTextures()[0].GetWidth(), _skybox->GetCubemapTextures()[0].GetHeight(),   // 2D image dimensions
+				1,          // depth
+				GL_RGB,     // format
+				GL_FLOAT,   // data type
+				pSrc);
+		}
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
 	void OpenGLRenderer::BufferModelMesh(MeshRenderer* mr)
@@ -90,6 +126,13 @@ namespace pine {
 		glEnable(GL_CULL_FACE);
 	}
 
+	void OpenGLRenderer::OnUpdate()
+	{
+		Clear();
+
+		// DrawSkybox();
+	}
+
 	/*void OpenGLRenderer::Init()
 	{
 		glewInit();
@@ -102,6 +145,50 @@ namespace pine {
 	{
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void OpenGLRenderer::DrawSkybox()
+	{
+		GLint prevDepthFunc = 0;
+		glGetIntegerv(GL_DEPTH_FUNC, &prevDepthFunc);
+		GLboolean prevDepthMask = GL_FALSE;
+		glGetBooleanv(GL_DEPTH_WRITEMASK, &prevDepthMask);
+
+		glDepthFunc(GL_LEQUAL);
+		glDepthMask(GL_FALSE);
+
+		// Bind skybox shader (replace with your actual shader instance)
+		// The shader must sample a samplerCube uniform and use view/proj where view has no translation.
+		Shader* skyboxShader = _skybox->GetShader();
+		if (skyboxShader) {
+			skyboxShader->Bind();
+
+			glm::mat4 view = Application::renderer->GetRenderCamera().GetViewMatrix();        // view matrix (camera)
+			glm::mat4 proj = Application::renderer->GetRenderCamera().GetProjectionMatrix(); // projection matrix
+			glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(view)); // strip translation
+
+			skyboxShader->SetUniform("u_View", viewNoTranslation);
+			skyboxShader->SetUniform("u_Projection", proj);
+
+			// Bind cubemap texture to unit 0 and point shader sampler to unit 0.
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
+			// Use your shader helper to set an int sampler uniform; fallback to glUniform1i if necessary:
+			skyboxShader->SetUniformTextureSampler2D("u_skybox", 0); // or SetUniform("u_skybox", 0)
+		}
+
+		// Draw a unit cube (36 verts). Create and keep a VAO/VBO for this cube in InitSkybox.
+		// _skyboxCubeVAO is expected to be created earlier in InitSkybox.
+		glBindVertexArray(_skyboxCubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+
+		// Unbind texture unit for cleanliness
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+		// Restore depth state
+		glDepthMask(prevDepthMask);
+		glDepthFunc(prevDepthFunc);
 	}
 
 	void OpenGLRenderer::Draw(MeshRenderer* mr)
@@ -118,6 +205,7 @@ namespace pine {
 		// bind VAO once for the mesh data
 		glBindVertexArray(model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
 
+		// TODO OPT: redundant operations
 		glm::mat4 umodel = mr->GetTransform().GetModel();
 		glm::mat4 mvp = Application::renderer.get()->GetRenderCamera().GetViewProjection() * umodel;
 		glm::vec3 camPos = Application::renderer.get()->GetRenderCamera().GetPos();

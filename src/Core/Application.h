@@ -41,33 +41,3 @@ namespace pine {
 	};
 
 }
-
-//
-////#include <string>
-//
-//namespace Pine {
-//
-//	class Application {
-//	public:
-//		static Application* GetInstance(const std::string& name = "Pine");
-//
-//		void Run();
-//	private:
-//		Application(const std::string& name = "Pine");
-//
-//		void Init();
-//
-//		static Application* s_Instance;
-//
-//		String m_Name;
-//
-//		UniquePtr<Window> m_Window;
-//		UniquePtr<Renderer> m_Rendereiir;
-//		UniquePtr<Controls> m_Controls;
-//		//Scene objects
-//		Vector<MeshRenderer*> m_SceneObjects;
-//				 
-//		bool m_Running = true;
-//	};
-//
-//}

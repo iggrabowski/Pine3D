@@ -1,5 +1,6 @@
 #pragma once
 #include "Runtime/Components/Texture.h"
+#include "Runtime/RenderCore/Shader.h"
 
 namespace pine {
 	class Skybox
@@ -7,10 +8,13 @@ namespace pine {
 	public:
 		Skybox();
 		~Skybox();
+		Image* GetCubemapTextures() { return _cubemapTextures; }
+		Shader* GetShader() const { return _shader; }
 	private:
 		void ConvertEquirectangularToCubemap();
 
 		Texture* _texture;
+		Shader* _shader;
 		Image _cubemapTextures[6];
 	};
 }

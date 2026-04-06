@@ -103,7 +103,7 @@ namespace pine {
 		//---------------------------------------
 
 		inputHandler->OnUpdate();
-		renderer->Clear();
+		renderer->OnUpdate();
 		inputHandler->OnUpdate();
 		editor->OnUpdate();
 

@@ -48,11 +48,12 @@ bool pine::Image::Load(const char * path)
 		Logger::Instance().Error("Image file does not exist at path: " + m_path);
 		return false;
 	}
-	ReadImageExtension(path);
 	// NOTE: maybe use seperate class for loading 
 	{
-		if (stbi_is_hdr(path))
+		if (stbi_is_hdr(path)) {
+			_pixelFormat = PIXEL_FORMAT_R32F;
 			_pixels = stbi_loadf(path, &_width, &_height, &_numColorCh, 0);
+		}
 		else 
 			_pixels = stbi_load(path, &_width, &_height, &_numColorCh, 0);
 	}
@@ -60,65 +61,71 @@ bool pine::Image::Load(const char * path)
 	return true;
 }
 
-void pine::Image::ReadImageExtension(const char* path)
+std::string pine::Image::ReadImageExtension(const char* path)
 {
-		std::filesystem::path p(path);
-		std::string file_extension = p.extension().string(); // may include leading '.'
-		if (!file_extension.empty() && file_extension[0] == '.') 
-			file_extension.erase(0, 1);
-		std::ranges::transform(
-			file_extension,
-			file_extension.begin(),
-			[](unsigned char c)
-			{
-				return static_cast<char>(std::tolower(c));
-			});
-		m_extension = file_extension;
+	std::filesystem::path p(path);
+	std::string file_extension = p.extension().string(); // may include leading '.'
+	if (!file_extension.empty() && file_extension[0] == '.') 
+		file_extension.erase(0, 1);
+	std::ranges::transform(
+		file_extension,
+file_extension.begin(),
+		[](unsigned char c)
+		{
+			return static_cast<char>(std::tolower(c));
+		});
+	return file_extension;
 }
 
 void pine::Image::ProcessBytes()
 {
-	if (m_extension == "hdr") {
-		// HDR image 32
-		_pixelFormat = PIXEL_FORMAT_R32F;
+	// transform monohrome to rgb
+	if (GetNumColorCh() == 1) {
+		void* modified_bytes = malloc(_height * _width * 3 * sizeof(unsigned char));
+		unsigned char* modified_bytes_char = static_cast<unsigned char*>(modified_bytes);
+		for (int i = 0; i < _width * _height; i++) {
+			const unsigned char* v = static_cast<unsigned char*>(GetPixels());
+			modified_bytes_char[i * 3 + 0] = v[i];
+			modified_bytes_char[i * 3 + 1] = v[i];
+			modified_bytes_char[i * 3 + 2] = v[i];
+		}
+		stbi_image_free(_pixels);
+		_pixels = modified_bytes;
+		_pixelFormat = PIXEL_FORMAT_R8G8B8;
 	}
-	else
+	else if (GetNumColorCh() == 3) {
+		_pixelFormat = PIXEL_FORMAT_R8G8B8;
+	}
+	else if (GetNumColorCh() == 4)
 	{
-		// transform monohrome to rgb
-		if (GetNumColorCh() == 1) {
-			void* modified_bytes = malloc(_height * _width * 3 * sizeof(unsigned char));
-			unsigned char* modified_bytes_char = static_cast<unsigned char*>(modified_bytes);
-			for (int i = 0; i < _width * _height; i++) {
-				const unsigned char* v = static_cast<unsigned char*>(GetPixels());
-				modified_bytes_char[i * 3 + 0] = v[i];
-				modified_bytes_char[i * 3 + 1] = v[i];
-				modified_bytes_char[i * 3 + 2] = v[i];
-			}
-			stbi_image_free(_pixels);
-			_pixels = modified_bytes;
-			_pixelFormat = PIXEL_FORMAT_R8G8B8;
-		}
-		else if (GetNumColorCh() == 3) {
-			_pixelFormat = PIXEL_FORMAT_R8G8B8;
-		}
-		else if (GetNumColorCh() == 4)
-		{
-			_pixelFormat = PIXEL_FORMAT_R8G8B8A8;
-		}
-		else {
-			std::cout << "ERROR: Unsupported number of color channels in texture image: " << GetNumColorCh() << "\n";
-		}
+		_pixelFormat = PIXEL_FORMAT_R8G8B8A8;
 	}
+	else {
+		std::cout << "ERROR: Unsupported number of color channels in texture image: " << GetNumColorCh() << "\n";
+	}
+	
 }
 
 void pine::Image::SoftCopyFrom(const Image& other)
 {
 	// copy metadata first
 	m_path = other.m_path;
-	m_extension = other.m_extension;
 	_width = other._width;
 	_height = other._height;
 	_numColorCh = other._numColorCh;
 	_pixelFormat = other._pixelFormat;
 	_pixels = other._pixels;
+}
+
+void pine::Image::SetPixels(void* pixels, PixelFormat format, int width, int height, int numColorCh)
+{
+    if (_pixels) {
+        stbi_image_free(_pixels);
+        _pixels = nullptr;
+    }
+    _pixels = pixels;
+    _pixelFormat = format;
+    _width = width;
+    _height = height;
+    _numColorCh = numColorCh;
 }

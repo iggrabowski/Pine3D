@@ -24,13 +24,12 @@ namespace pine {
 		[[nodiscard]] int GetHeight() const { return _height; };
 		[[nodiscard]] int GetNumColorCh() const { return _numColorCh; };
 		[[nodiscard]] void* GetPixels() { return _pixels; };
-		[[nodiscard]] std::string GetImageFileExtension() const { return m_extension; };
+		[[nodiscard]] std::string ReadImageExtension(const char* path);
 		[[nodiscard]] PixelFormat GetPixelFormat() const { return _pixelFormat; };
-		void AllocateNewPixels(size_t newSize);
+		void SetPixels(void* pixels, PixelFormat format, int width, int height, int numColorCh);
 		bool Load(const char* path);
 
 	private:
-		void ReadImageExtension(const char* path);
 		void ProcessBytes();
 		std::string m_path;
 		int _width = -1;
@@ -39,6 +38,6 @@ namespace pine {
 		PixelFormat _pixelFormat = PIXEL_FORMAT_UNKNOWN;
 
 		void* _pixels = nullptr;
-		std::string m_extension; // TODO: might be redundant here
+		// std::string m_extension; // TODO: might be redundant here
 	}; 
 }

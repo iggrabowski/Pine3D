@@ -2,6 +2,7 @@
 #include "Runtime/Components/MeshRenderer.h"
 #include "Utils/Utils.h"
 #include "Runtime/Camera/Camera.h"
+#include "Runtime/Components/Skybox.h"
 
 #include <memory>
 
@@ -28,6 +29,7 @@ namespace pine {
 		virtual ~Renderer() = default;
 		static UniquePtr<Renderer> Init(GraphicsApi API);
 			
+		virtual void OnUpdate() = 0;
 		virtual void DrawIndexed(/*const IndexedModel& model*/) = 0;
 		virtual void Draw(MeshRenderer* mr) = 0;
 
@@ -42,7 +44,9 @@ namespace pine {
 		virtual void BufferModelMesh(MeshRenderer* mr) = 0;
 	protected:
 		Camera* _camera;
+		std::unique_ptr<Skybox> _skybox;
 		void UpdateRenderFlags(MeshRenderer* mr);
+		virtual void DrawSkybox() = 0;
 	};
 
 }
