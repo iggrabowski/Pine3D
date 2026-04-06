@@ -76,7 +76,7 @@ namespace pine {
 		lightPresets[2].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
 			glm::vec3(-2.0f, 1.0f, -2.0f),
-			glm::vec3(1.0f) // white light
+			glm::vec3(0.0f) // white light
 		);
 
 		//light_presets[2].emplace_back(

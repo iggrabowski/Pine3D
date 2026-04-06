@@ -129,6 +129,15 @@ namespace pine {
         }
 	}
 
+	// cube sampler
+    void Shader::SetUniformCubeSampler(const std::string& name, const int textureUnit)
+    {
+	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+            glUniform1i(loc, textureUnit);
+		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
+        }
+	}
+
     bool Shader::GetAttributeLocation(const std::string& name, unsigned int& outLoc) const
     {
         for (const auto& attribute : _attributes)

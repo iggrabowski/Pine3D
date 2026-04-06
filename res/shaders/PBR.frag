@@ -8,6 +8,7 @@
 const int MAX_DIR_LIGHTS = 4;
 
 // uniforms
+uniform samplerCube u_irradianceMap;
 uniform sampler2D u_albedoMap;
 uniform sampler2D u_normalMap;
 uniform sampler2D u_roughnessMap;
@@ -82,13 +83,14 @@ float G(float alpha, vec3 n, vec3 v, vec3 l) {
 	return G1(alpha, n, v) * G1(alpha, n, l);
 }
 
-vec3 F(vec3 f0, vec3 v, vec3 h) {
+vec3 F(vec3 f0, vec3 v, vec3 h, float roughness) {
 	float VdotH = max(dot(v, h), 0.0);
-	return f0 + (1 - f0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
+	return f0 + (max(vec3(1.0 - roughness), f0) - f0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
 }
 
 vec3 CalcPBRLighting() {
-	vec3 albedo = texture(u_albedoMap, texCoord0).xyz;
+	vec3 albedoSRGB = texture(u_albedoMap, texCoord0).rgb;
+vec3 albedo = pow(albedoSRGB, vec3(2.2)); // convert sRGB -> linear if textures are sRGB
 	vec3 n, v;
 	float metallic, roughness, ao;
 
@@ -128,8 +130,8 @@ vec3 CalcPBRLighting() {
 		// Specular
 		vec3 F0 = vec3(0.04); // reflectivity at normal incidence
 		F0 = mix(F0, albedo, metallic); // metallic goes here
-		vec3 Ks = F(F0, v, h); // reflectivity 0.04
-		vec3 Kd = 1 - Ks; // metallic goes here
+		vec3 Ks = F(F0, v, h, roughness); // reflectivity 0.04
+		vec3 Kd = (1 - Ks) * (1.0 - metallic); // metallic goes here
 		Kd *= 1.0 - metallic;
 
 		float nDotL = max(dot(n, l), 0.0);
@@ -143,7 +145,11 @@ vec3 CalcPBRLighting() {
 		vec3 specular = cookTorranceNumerator / cookTorranceDenominator;
 		Lo += (Kd * albedo /* <-- can be lambert maybe */ / 3.14159265 + specular) * radiance * nDotL; 
 	}
-	vec3 ambient = vec3(0.03) * albedo * ao;
+
+	vec3 irradiance = texture(u_irradianceMap, normalize(n)).rgb;
+	vec3 diffuseIBL = irradiance * (albedo / 3.14159265) * (1.0 - metallic);
+	vec3 ambient = diffuseIBL * ao;
+
     vec3 outColor =  ambient + Lo;
 
 	return outColor;
@@ -154,8 +160,8 @@ void main()
 	vec3 color = CalcPBRLighting();
 
 	// gamma correction
-	color = color / (color + vec3(1.0));
-	color = pow(color, vec3(1.0/2.2)); 
+	//color = color / (color + vec3(1.0));
+	//color = pow(color, vec3(1.0/2.2)); 
 	fragColor = vec4(color, 1.0);
 	// fragColor = vec4(CalcPBRLighting(), 1.0f);
 	// texture2D(u_albedoMap, texCoord0);

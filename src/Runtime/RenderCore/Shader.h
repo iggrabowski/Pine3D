@@ -38,6 +38,7 @@ namespace pine {
 		void SetUniform(const std::string& name, float val);
 		void SetUniform(const std::string& name, unsigned int val);
 		void SetUniformTextureSampler2D(const std::string& name, int textureUnit);
+		void SetUniformCubeSampler(const std::string& name, int textureUnit);
 		bool GetAttributeLocation(const std::string& name, unsigned int& outLoc) const;
 
 		static Shader* LoadShaders(const std::string& fileName);

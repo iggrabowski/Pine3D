@@ -6,8 +6,8 @@ uniform samplerCube u_Skybox;
 // simple exposure + Reinhard tone mapping + gamma correction
 
 // TODO: maybe adjustable?
-uniform float u_Exposure = 2.0;
-uniform float u_Gamma = 1.2;
+uniform float u_Exposure = 1.2;
+uniform float u_Gamma = 2.2;
 
 void main()
 {

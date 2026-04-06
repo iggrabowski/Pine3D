@@ -111,7 +111,8 @@ namespace pine {
 			}
 
 			// transfer ownership into the Image (SetPixels will free previous buffer)
-			_cubemapTextures[face].SetPixels(dst, PIXEL_FORMAT_R16F, face_size, face_size, 4);
+			_cubemapTextures[face].SoftCopyFrom(*this->_texture->_image);
+			_cubemapTextures[face].SetPixels(dst, face_size, face_size);
 		}
 
 		Logger::Instance().Info("Skybox: translated equirectangular -> cubemap (HDR).");

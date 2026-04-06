@@ -18,8 +18,11 @@ namespace pine {
 	private:
 		void DrawIndexed(/*const IndexedModel& model*/) override;
 		void InitSkybox();
+		void GenerateIrradianceMap();
 		GLuint _skyboxTextureObj;
 		GLuint _skyboxCubeVAO;
+		GLuint _irradianceMapTextureObj;
+		GLuint hdrTexture;
 	};
 
 }

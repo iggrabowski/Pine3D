@@ -10,6 +10,7 @@ namespace pine {
 		~Skybox();
 		Image* GetCubemapTextures() { return _cubemapTextures; }
 		Shader* GetShader() const { return _shader; }
+		Texture* GetTexture() const { return _texture; }
 	private:
 		void ConvertEquirectangularToCubemap();
 

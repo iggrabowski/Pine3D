@@ -111,23 +111,17 @@ void pine::Image::ProcessBytes()
 void pine::Image::SoftCopyFrom(const Image& other)
 {
 	// copy metadata first
-	m_path = other.m_path;
-	_width = other._width;
-	_height = other._height;
 	_numColorCh = other._numColorCh;
 	_pixelFormat = other._pixelFormat;
-	_pixels = other._pixels;
 }
 
-void pine::Image::SetPixels(void* pixels, PixelFormat format, int width, int height, int numColorCh)
+void pine::Image::SetPixels(void* pixels, int width, int height)
 {
     if (_pixels) {
         stbi_image_free(_pixels);
         _pixels = nullptr;
     }
     _pixels = pixels;
-    _pixelFormat = format;
     _width = width;
     _height = height;
-    _numColorCh = numColorCh;
 }
