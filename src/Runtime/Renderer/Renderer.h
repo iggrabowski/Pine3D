@@ -29,6 +29,7 @@ namespace pine {
 		virtual ~Renderer() = default;
 		static UniquePtr<Renderer> Init(GraphicsApi API);
 			
+		virtual void Startup() = 0;
 		virtual void OnUpdate() = 0;
 		virtual void DrawIndexed(/*const IndexedModel& model*/) = 0;
 		virtual void Draw(MeshRenderer* mr) = 0;

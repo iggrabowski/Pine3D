@@ -191,6 +191,11 @@ namespace pine {
 		glDepthFunc(prevDepthFunc);
 	}
 
+	void OpenGLRenderer::Startup()
+	{
+		_skybox = std::make_unique<Skybox>();
+	}
+
 	void OpenGLRenderer::Draw(MeshRenderer* mr)
 	{
 		// TODO: Draw can be abstracted

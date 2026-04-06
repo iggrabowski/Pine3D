@@ -11,6 +11,7 @@ namespace pine {
 		void OnUpdate() override;
 		void Clear() override;
 		void DrawSkybox() override;
+		void Startup() override;
 		void Draw(MeshRenderer* mr) override;
 		//void Init() override;
 		void BufferModelMesh(MeshRenderer* mr) override;
