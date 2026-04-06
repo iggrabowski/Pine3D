@@ -80,30 +80,32 @@ file_extension.begin(),
 void pine::Image::ProcessBytes()
 {
 	// transform monohrome to rgb
-	if (GetNumColorCh() == 1) {
-		void* modified_bytes = malloc(_height * _width * 3 * sizeof(unsigned char));
-		unsigned char* modified_bytes_char = static_cast<unsigned char*>(modified_bytes);
-		for (int i = 0; i < _width * _height; i++) {
-			const unsigned char* v = static_cast<unsigned char*>(GetPixels());
-			modified_bytes_char[i * 3 + 0] = v[i];
-			modified_bytes_char[i * 3 + 1] = v[i];
-			modified_bytes_char[i * 3 + 2] = v[i];
-		}
-		stbi_image_free(_pixels);
-		_pixels = modified_bytes;
-		_pixelFormat = PIXEL_FORMAT_R8G8B8;
-	}
-	else if (GetNumColorCh() == 3) {
-		_pixelFormat = PIXEL_FORMAT_R8G8B8;
-	}
-	else if (GetNumColorCh() == 4)
+	if (_pixelFormat != PIXEL_FORMAT_R32F && _pixelFormat != PIXEL_FORMAT_R16F)
 	{
-		_pixelFormat = PIXEL_FORMAT_R8G8B8A8;
+		if (GetNumColorCh() == 1) {
+			void* modified_bytes = malloc(_height * _width * 3 * sizeof(unsigned char));
+			unsigned char* modified_bytes_char = static_cast<unsigned char*>(modified_bytes);
+			for (int i = 0; i < _width * _height; i++) {
+				const unsigned char* v = static_cast<unsigned char*>(GetPixels());
+				modified_bytes_char[i * 3 + 0] = v[i];
+				modified_bytes_char[i * 3 + 1] = v[i];
+				modified_bytes_char[i * 3 + 2] = v[i];
+			}
+			stbi_image_free(_pixels);
+			_pixels = modified_bytes;
+			_pixelFormat = PIXEL_FORMAT_R8G8B8;
+		}
+		else if (GetNumColorCh() == 3) {
+			_pixelFormat = PIXEL_FORMAT_R8G8B8;
+		}
+		else if (GetNumColorCh() == 4)
+		{
+			_pixelFormat = PIXEL_FORMAT_R8G8B8A8;
+		}
+		else {
+			std::cout << "ERROR: Unsupported number of color channels in texture image: " << GetNumColorCh() << "\n";
+		}
 	}
-	else {
-		std::cout << "ERROR: Unsupported number of color channels in texture image: " << GetNumColorCh() << "\n";
-	}
-	
 }
 
 void pine::Image::SoftCopyFrom(const Image& other)

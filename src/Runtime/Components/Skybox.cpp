@@ -16,7 +16,6 @@ namespace pine {
 			Logger::Instance().Warning("Couldn't create a skybox using default texture path (missing texture).");
 			return;
 		}
-		Application::images.push_back(image);
 
 		_texture = &Application::textures.emplace_back();
 		_texture->LoadFromImage(image);
@@ -40,7 +39,7 @@ namespace pine {
 
 		Image& src_image = *_texture->_image;
 		const PixelFormat srcFmt = src_image.GetPixelFormat();
-		if (!(_texture->_image->GetPixelFormat() == PIXEL_FORMAT_R16F))
+		if (!(_texture->_image->GetPixelFormat() == PIXEL_FORMAT_R32F))
 		{
 			Logger::Instance().Error("ConvertEquirectangularToCubemap: Unsupported skybox texture format, only HDR types supported.");
 			}

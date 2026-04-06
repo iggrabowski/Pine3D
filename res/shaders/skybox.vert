@@ -1,16 +1,13 @@
-#version 130
+#version 330 core
+layout (location = 0) in vec3 aPos;
 
-attribute vec3 position;
+out vec3 TexCoords;
 
-out vec2 texCoord0;
-out vec3 normal0;
-
-uniform mat4 MVP;
-uniform mat4 Model;
+uniform mat4 u_Projection;
+uniform mat4 u_View;
 
 void main()
 {
-	gl_Position = MVP * vec4(position, 1.0);
-	texCoord0 = texCoord;
-	normal0 = (Model * vec4(normal, 0.0)).xyz;
-}
+    TexCoords = aPos;
+    gl_Position = u_Projection * u_View * vec4(aPos, 1.0);
+}  

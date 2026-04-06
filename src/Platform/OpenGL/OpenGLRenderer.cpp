@@ -17,6 +17,68 @@ namespace pine {
 	void OpenGLRenderer::InitSkybox()
 	{
 		glGenVertexArrays(1, &_skyboxCubeVAO);
+		glBindVertexArray(_skyboxCubeVAO);
+
+		GLuint skyboxVBO = 0;
+		glGenBuffers(1, &skyboxVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+
+		// 36 vertices, 3 components each
+		static const float skyboxVertices[] = {
+			// positions
+			-1.0f,  1.0f, -1.0f,
+			-1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			 1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+
+			-1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
+
+			 1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+
+			-1.0f, -1.0f,  1.0f,
+			-1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
+
+			-1.0f,  1.0f, -1.0f,
+			 1.0f,  1.0f, -1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			-1.0f,  1.0f,  1.0f,
+			-1.0f,  1.0f, -1.0f,
+
+			-1.0f, -1.0f, -1.0f,
+			-1.0f, -1.0f,  1.0f,
+			 1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			-1.0f, -1.0f,  1.0f,
+			 1.0f, -1.0f,  1.0f
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+		// position attribute (location = 0 in shader)
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+		// unbind VBO/VAO until use
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		// Create cubemap texture
 		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &_skyboxTextureObj);
 		
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -36,7 +98,7 @@ namespace pine {
 				0,      // xOffset
 				0,      // yOffset
 				i,      // zOffset (layer in the case of a cubemap)
-				_skybox->GetCubemapTextures()[0].GetWidth(), _skybox->GetCubemapTextures()[0].GetHeight(),   // 2D image dimensions
+				_skybox->GetCubemapTextures()[i].GetWidth(), _skybox->GetCubemapTextures()[i].GetHeight(),   // 2D image dimensions
 				1,          // depth
 				GL_RGB,     // format
 				GL_FLOAT,   // data type
@@ -130,7 +192,7 @@ namespace pine {
 	{
 		Clear();
 
-		// DrawSkybox();
+		DrawSkybox();
 	}
 
 	/*void OpenGLRenderer::Init()
@@ -174,7 +236,7 @@ namespace pine {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
 			// Use your shader helper to set an int sampler uniform; fallback to glUniform1i if necessary:
-			skyboxShader->SetUniformTextureSampler2D("u_skybox", 0); // or SetUniform("u_skybox", 0)
+			skyboxShader->SetUniformTextureSampler2D("u_Skybox", 0); // or SetUniform("u_skybox", 0)
 		}
 
 		// Draw a unit cube (36 verts). Create and keep a VAO/VBO for this cube in InitSkybox.
@@ -194,6 +256,7 @@ namespace pine {
 	void OpenGLRenderer::Startup()
 	{
 		_skybox = std::make_unique<Skybox>();
+		InitSkybox();
 	}
 
 	void OpenGLRenderer::Draw(MeshRenderer* mr)
