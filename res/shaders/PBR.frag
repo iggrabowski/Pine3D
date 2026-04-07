@@ -29,9 +29,9 @@ in vec3 tangentCameraPos;
 in vec3 tangentLightDirs[MAX_DIR_LIGHTS];
 in vec3 tangentLightDiffs[MAX_DIR_LIGHTS];
 in vec3 tangentNormal;
+in mat3 TBN;
 
 out vec4 fragColor;
-
 
 // shader flag constants
 const uint BASE_TEXTURE = 1u;
@@ -39,7 +39,6 @@ const uint NORMAL_MAP = 2u;
 const uint ROUGHNESS_MAP = 4u;
 const uint METALNESS_MAP = 8u;
 const uint AO_MAP = 16u;
-
 
 // GGX/Trowbridge-Reitz normal distribution function
 float D(float roughness, vec3 n, vec3 h) {
@@ -146,8 +145,8 @@ vec3 albedo = pow(albedoSRGB, vec3(2.2)); // convert sRGB -> linear if textures 
 		Lo += (Kd * albedo /* <-- can be lambert maybe */ / 3.14159265 + specular) * radiance * nDotL; 
 	}
 
-	vec3 irradiance = texture(u_irradianceMap, normalize(n)).rgb;
-	vec3 diffuseIBL = irradiance * (albedo / 3.14159265) * (1.0 - metallic);
+	vec3 irradiance = texture(u_irradianceMap, normalize(TBN * n)).rgb;
+	vec3 diffuseIBL = irradiance * albedo* (1.0 - metallic);
 	vec3 ambient = diffuseIBL * ao;
 
     vec3 outColor =  ambient + Lo;
@@ -160,8 +159,8 @@ void main()
 	vec3 color = CalcPBRLighting();
 
 	// gamma correction
-	//color = color / (color + vec3(1.0));
-	//color = pow(color, vec3(1.0/2.2)); 
+	color = color / (color + vec3(1.0));
+	color = pow(color, vec3(1.0/2.2)); 
 	fragColor = vec4(color, 1.0);
 	// fragColor = vec4(CalcPBRLighting(), 1.0f);
 	// texture2D(u_albedoMap, texCoord0);
