@@ -82,9 +82,8 @@ float G(float alpha, vec3 n, vec3 v, vec3 l) {
 	return G1(alpha, n, v) * G1(alpha, n, l);
 }
 
-vec3 F(vec3 f0, vec3 v, vec3 h, float roughness) {
-	float VdotH = max(dot(v, h), 0.0);
-	return f0 + (max(vec3(1.0 - roughness), f0) - f0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
+vec3 F(vec3 f0, float cosTheta) {
+	return f0 + (vec3(1.0) - f0) * pow(1.0 - cosTheta, 5.0);
 }
 
 vec3 CalcPBRLighting() {
@@ -115,10 +114,13 @@ vec3 albedo = pow(albedoSRGB, vec3(2.2)); // convert sRGB -> linear if textures 
 	else ao = 1.0;
 
 	vec3 Lo = vec3(0.0);
+	vec3 Ks, Kd, l, h;
+	vec3 F0 = vec3(0.04); // reflectivity at normal incidence
+	F0 = mix(F0, albedo, metallic); // metallic goes here
 	for (uint i = 0u; i < u_nLights; i++){
 
-		vec3 l = normalize(-tangentLightDirs[i]);
-		vec3 h = normalize(v + l);
+		l = normalize(-tangentLightDirs[i]);
+		h = normalize(v + l);
 
 		// calc radiance here
 		// for point light
@@ -127,11 +129,8 @@ vec3 albedo = pow(albedoSRGB, vec3(2.2)); // convert sRGB -> linear if textures 
 		vec3 radiance = tangentLightDiffs[i]; // for now, we set radiance to light color
 	
 		// Specular
-		vec3 F0 = vec3(0.04); // reflectivity at normal incidence
-		F0 = mix(F0, albedo, metallic); // metallic goes here
-		vec3 Ks = F(F0, v, h, roughness); // reflectivity 0.04
-		vec3 Kd = (1 - Ks) * (1.0 - metallic); // metallic goes here
-		Kd *= 1.0 - metallic;
+		Ks = F(F0, max(dot(h,v), 0.0)); // reflectivity 0.04
+		Kd = (1 - Ks) * (1.0 - metallic); // metallic goes here
 
 		float nDotL = max(dot(n, l), 0.0);
 		float nDotV = max(dot(n, v), 0.0);
@@ -144,10 +143,12 @@ vec3 albedo = pow(albedoSRGB, vec3(2.2)); // convert sRGB -> linear if textures 
 		vec3 specular = cookTorranceNumerator / cookTorranceDenominator;
 		Lo += (Kd * albedo /* <-- can be lambert maybe */ / 3.14159265 + specular) * radiance * nDotL; 
 	}
-
-	vec3 irradiance = texture(u_irradianceMap, normalize(TBN * n)).rgb;
-	vec3 diffuseIBL = irradiance * albedo* (1.0 - metallic);
-	vec3 ambient = diffuseIBL * ao;
+	vec3 N = normalize(TBN * n);
+	Ks = F(F0, max(dot(n, v), 0.0));
+	Kd = (vec3(1.0) - Ks) * (1.0 - metallic);
+	vec3 irradiance = texture(u_irradianceMap, N).rgb;
+	vec3 diffuseIBL = irradiance * albedo;
+	vec3 ambient = (Kd * diffuseIBL) * ao;
 
     vec3 outColor =  ambient + Lo;
 
