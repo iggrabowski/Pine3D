@@ -31,8 +31,8 @@ namespace pine {
 
 	void Skybox::ConvertEquirectangularToCubemap()
 	{
-		int face_size = _texture->GetWidth() / 4;
-		if (face_size <= 0) {
+		_resolution = _texture->GetWidth() / 4;
+		if (_resolution <= 0) {
 			Logger::Instance().Error("ConvertEquirectangularToCubemap: invalid skybox size.");
 			return;
 		}
@@ -59,7 +59,7 @@ namespace pine {
 
 		for (int face = 0; face < 6; ++face)
 		{
-			const int numPixels = face_size * face_size;
+			const unsigned int numPixels = _resolution * _resolution;
 			// allocate RGB float buffer (3 floats per texel)
 			float* dst = static_cast<float*>(malloc(sizeof(float) * numPixels * 3));
 			if (!dst) {
@@ -68,13 +68,12 @@ namespace pine {
 			}
 
 			int idx = 0;
-			for (int y = 0; y < face_size; ++y)
+			for (int y = 0; y < _resolution; ++y)
 			{
-				for (int x = 0; x < face_size; ++x)
+				for (int x = 0; x < _resolution; ++x)
 				{
-					const float a = 2.0f * ((x + 0.5f) / face_size) - 1.0f;
-					const float b = 2.0f * ((y + 0.5f) / face_size) - 1.0f;
-
+					const float a = 2.0f * ((x + 0.5f) / _resolution) - 1.0f;
+					const float b = 2.0f * ((y + 0.5f) / _resolution) - 1.0f;
 					glm::vec3 dir;
 					switch (face)
 					{
@@ -112,7 +111,7 @@ namespace pine {
 
 			// transfer ownership into the Image (SetPixels will free previous buffer)
 			_cubemapTextures[face].SoftCopyFrom(*this->_texture->_image);
-			_cubemapTextures[face].SetPixels(dst, face_size, face_size);
+			_cubemapTextures[face].SetPixels(dst, _resolution, _resolution);
 		}
 
 		Logger::Instance().Info("Skybox: translated equirectangular -> cubemap (HDR).");

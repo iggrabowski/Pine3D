@@ -115,13 +115,13 @@ void pine::Image::SoftCopyFrom(const Image& other)
 	_pixelFormat = other._pixelFormat;
 }
 
-void pine::Image::SetPixels(void* pixels, int width, int height)
+void pine::Image::SetPixels(void* pixels, unsigned int width, unsigned int height)
 {
     if (_pixels) {
         stbi_image_free(_pixels);
         _pixels = nullptr;
     }
     _pixels = pixels;
-    _width = width;
-    _height = height;
+    _width = static_cast<int>(width);
+    _height = static_cast<int>(height);
 }

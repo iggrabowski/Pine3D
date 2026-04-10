@@ -1,13 +1,28 @@
 #pragma once
+#include <utility>
+
 #include "Platform/OpenGL/OpenGLRenderer.h"
 #include "Core/Application.h"
-static const GLenum skyboxFaceTypes[6] = { GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+namespace pine {
+
+	static const GLenum skyboxFaceTypes[6] = { GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 								  GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
 								  GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
 								  GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 								  GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 								  GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
-namespace pine {
+	static glm::mat4 captureViews[] =
+		{
+			glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+		};
+	
+	static glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+
 	
 	void OpenGLRenderer::DrawIndexed(/*const IndexedModel& model*/)
 	{
@@ -16,6 +31,8 @@ namespace pine {
 
 	void OpenGLRenderer::InitSkybox()
 	{
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
 		glGenVertexArrays(1, &_skyboxCubeVAO);
 		glBindVertexArray(_skyboxCubeVAO);
 
@@ -80,31 +97,117 @@ namespace pine {
 
 		// Create cubemap texture
 		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &_skyboxTextureObj);
-		
+
+		// determine size and mip-levels
+		unsigned int faceWidth = _skybox->GetResolution();
+		unsigned int faceHeight = _skybox->GetResolution();
+		unsigned int maxDim = std::max(faceWidth, faceHeight);
+		unsigned int maxMipLevels = static_cast<unsigned int>(std::floor(std::log2(static_cast<float>(maxDim)))) + 1;
+
+		// allocate full mip chain
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_BASE_LEVEL, 0);
-		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAX_LEVEL, 0);
-		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(maxMipLevels - 1));
+		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTextureStorage2D(_skyboxTextureObj, 1, GL_RGB32F,
-			_skybox->GetCubemapTextures()[0].GetWidth(), _skybox->GetCubemapTextures()[0].GetHeight());
 
+		glTextureStorage2D(_skyboxTextureObj, static_cast<GLsizei>(maxMipLevels), GL_RGB32F, static_cast<GLint>(faceWidth),
+			static_cast<GLint>(faceHeight));
+
+		// upload level 0 faces (your source pixel data must be float RGB if using GL_RGB32F + GL_FLOAT)
 		for (int i = 0; i < 6; ++i) {
 			const void* pSrc = _skybox->GetCubemapTextures()[i].GetPixels();
 			glTextureSubImage3D(_skyboxTextureObj,
 				0,      // mipmap level
 				0,      // xOffset
 				0,      // yOffset
-				i,      // zOffset (layer in the case of a cubemap)
-				_skybox->GetCubemapTextures()[i].GetWidth(), _skybox->GetCubemapTextures()[i].GetHeight(),   // 2D image dimensions
+				i,      // zOffset (layer)
+				static_cast<GLsizei>(faceWidth), static_cast<GLsizei>(faceHeight),   // 2D image dimensions
 				1,          // depth
 				GL_RGB,     // format
 				GL_FLOAT,   // data type
 				pSrc);
 		}
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	}
+
+	void OpenGLRenderer::PrefilterEnvironmentMap()
+	{
+		constexpr GLuint prefilterSize = 256;
+		glGenTextures(1, &_prefilteredMapObj);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilteredMapObj);
+
+		_prefilteredMapMaxMipLevels = static_cast<unsigned int>(std::floor(std::log2(static_cast<float>(prefilterSize)))) + 1;
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP, static_cast<GLsizei>(_prefilteredMapMaxMipLevels), GL_RGB16F, prefilterSize, prefilterSize);
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+		GLuint captureFBO = 0;
+		GLuint captureRBO = 0;
+		glGenFramebuffers(1, &captureFBO);
+		glGenRenderbuffers(1, &captureRBO);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, prefilterSize, prefilterSize);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+
+		Shader* prefilterShader = Shader::LoadShaders("../res/shaders/skybox_prefilter");
+		prefilterShader->Bind();
+		prefilterShader->SetUniformTextureSampler2D("u_environmentMap", 0);
+		prefilterShader->SetUniform("u_projection", captureProjection);
+		prefilterShader->SetUniform("u_envResolution", _skybox->GetResolution());
+
+		GLint prevViewport[4];
+		glGetIntegerv(GL_VIEWPORT, prevViewport);
+
+		for (unsigned int mip = 0; mip < _prefilteredMapMaxMipLevels; ++mip)
+		{
+			GLsizei mipWidth = static_cast<GLsizei>(std::max(1u, prefilterSize >> mip));
+
+			glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipWidth);
+
+			glViewport(0, 0, mipWidth, mipWidth);
+
+			float roughness = static_cast<float>(mip) / static_cast<float>(_prefilteredMapMaxMipLevels - 1);
+			prefilterShader->SetUniform("u_roughness", roughness);
+
+			glBindVertexArray(_skyboxCubeVAO);
+			for (unsigned int i = 0; i < 6; ++i)
+			{
+				prefilterShader->SetUniform("u_view", captureViews[i]);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, skyboxFaceTypes[i], _prefilteredMapObj, (GLint)mip);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+		}
+
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+
+		glDeleteFramebuffers(1, &captureFBO);
+		glDeleteRenderbuffers(1, &captureRBO);
+
+		delete prefilterShader;
 	}
 
 	void OpenGLRenderer::GenerateIrradianceMap()
@@ -130,22 +233,11 @@ namespace pine {
 		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, irradianceSize, irradianceSize);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-
-		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-		glm::mat4 captureViews[] =
-		{
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-		};
-
+				
 		Shader* convShader = Shader::LoadShaders("../res/shaders/skybox_irradiance_conv");
 		convShader->Bind();
 		convShader->SetUniformTextureSampler2D("environmentMap", 0);
-		convShader->SetUniform("u_Projection", captureProjection);
+		convShader->SetUniform("u_projection", captureProjection);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
@@ -156,8 +248,8 @@ namespace pine {
 		glBindVertexArray(_skyboxCubeVAO);
 		for (unsigned int i = 0; i < 6; ++i)
 		{
-			convShader->SetUniform("u_View", captureViews[i]);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _irradianceMapTextureObj, 0);
+			convShader->SetUniform("u_view", captureViews[i]);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, skyboxFaceTypes[i], _irradianceMapTextureObj, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
@@ -238,6 +330,75 @@ namespace pine {
 		mesh._buffered = true;
 	}
 
+	void OpenGLRenderer::DrawBRDFLUT()
+	{
+		glGenTextures(1, &_brdfLUTTextureObj);
+
+		// pre-allocate enough memory for the LUT texture.
+		glBindTexture(GL_TEXTURE_2D, _brdfLUTTextureObj);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		GLuint captureFBO = 0;
+		GLuint captureRBO = 0;
+		glGenFramebuffers(1, &captureFBO);
+		glGenRenderbuffers(1, &captureRBO);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _brdfLUTTextureObj, 0);
+
+		GLint prevViewport[4];
+		glGetIntegerv(GL_VIEWPORT, prevViewport);
+		glViewport(0, 0, 512, 512);
+		Shader* brdfShader = Shader::LoadShaders("../res/shaders/brdf_lut_gen");
+		brdfShader->Bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		RenderQuad();
+
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteFramebuffers(1, &captureFBO);
+		glDeleteRenderbuffers(1, &captureRBO);
+		glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+	}
+
+	void OpenGLRenderer::RenderQuad()
+	{
+		static GLuint quadVAO = 0;
+		static GLuint quadVBO = 0;
+		if (quadVAO == 0)
+		{
+			float quadVertices[] = {
+				-1.0f, -1.0f,
+				 1.0f, -1.0f,
+				-1.0f,  1.0f,
+
+				-1.0f,  1.0f,
+				 1.0f, -1.0f,
+				 1.0f,  1.0f
+			};
+
+			glGenVertexArrays(1, &quadVAO);
+			glGenBuffers(1, &quadVBO);
+			glBindVertexArray(quadVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+		}
+
+		glBindVertexArray(quadVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+	}
+
 	OpenGLRenderer::OpenGLRenderer()
 	{
 		//s_Instance = this;
@@ -260,14 +421,6 @@ namespace pine {
 
 		DrawSkybox();
 	}
-
-	/*void OpenGLRenderer::Init()
-	{
-		glewInit();
-
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-	}*/
 
 	void OpenGLRenderer::Clear()
 	{
@@ -295,14 +448,14 @@ namespace pine {
 			glm::mat4 proj = Application::renderer->GetRenderCamera().GetProjectionMatrix(); // projection matrix
 			glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(view)); // strip translation
 
-			skyboxShader->SetUniform("u_View", viewNoTranslation);
-			skyboxShader->SetUniform("u_Projection", proj);
+			skyboxShader->SetUniform("u_view", viewNoTranslation);
+			skyboxShader->SetUniform("u_projection", proj);
 
 			// Bind cubemap texture to unit 0 and point shader sampler to unit 0.
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
 			// Use your shader helper to set an int sampler uniform; fallback to glUniform1i if necessary:
-			skyboxShader->SetUniformTextureSampler2D("u_Skybox", 0); // or SetUniform("u_skybox", 0)
+			skyboxShader->SetUniformTextureSampler2D("u_skybox", 0); // or SetUniform("u_skybox", 0)
 		}
 
 		// Draw a unit cube (36 verts). Create and keep a VAO/VBO for this cube in InitSkybox.
@@ -324,7 +477,10 @@ namespace pine {
 		_skybox = std::make_unique<Skybox>();
 		InitSkybox();
 		GenerateIrradianceMap();
-		//_skyboxTextureObj = _irradianceMapTextureObj;
+		PrefilterEnvironmentMap();
+		DrawBRDFLUT();
+		// debug
+		//_skyboxTextureObj = _prefilteredMapObj;
 	}
 
 	void OpenGLRenderer::Draw(MeshRenderer* mr)
@@ -343,8 +499,8 @@ namespace pine {
 
 		// TODO OPT: redundant operations
 		glm::mat4 umodel = mr->GetTransform().GetModel();
-		glm::mat4 mvp = Application::renderer.get()->GetRenderCamera().GetViewProjection() * umodel;
-		glm::vec3 camPos = Application::renderer.get()->GetRenderCamera().GetPos();
+		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
+		glm::vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
 
 		// TODO : check if window open cause of crashes
 		// If model defines BasicMesh ranges, draw each range separately.
@@ -365,16 +521,21 @@ namespace pine {
 				shader->SetUniform("u_roughness", model->materials[bm.materialIndex]->m_roughness);
 				shader->SetUniform("u_metalness", model->materials[bm.materialIndex]->m_metallic);
 				shader->SetUniform("u_renderFlags", mr->m_render_flags[bm.materialIndex]);
+				shader->SetUniform("u_prefilteredMapMaxLOD", _prefilteredMapMaxMipLevels - 1);
 
 				// lights
-				unsigned int lightCount = static_cast<unsigned int>(Application::lightPresets[Application::activeLightPresetIndex].size());
+				unsigned int lightCount = 0;
 				std::vector<glm::vec3> lightDirs;
 				std::vector<glm::vec3> lightColors;
-
-				for (unsigned int i = 0; i < lightCount; i++)
+				if (!Application::lightPresets.empty() && std::cmp_less(Application::activeLightPresetIndex, Application::lightPresets.size()))
 				{
-					lightDirs.push_back(Application::lightPresets[Application::activeLightPresetIndex][i].GetDirection());
-					lightColors.push_back(Application::lightPresets[Application::activeLightPresetIndex][i].GetColor());
+					lightCount = static_cast<unsigned int>(Application::lightPresets[Application::activeLightPresetIndex].size());
+
+					for (unsigned int i = 0; i < lightCount; ++i)
+					{
+						lightDirs.push_back(Application::lightPresets[Application::activeLightPresetIndex][i].GetDirection());
+						lightColors.push_back(Application::lightPresets[Application::activeLightPresetIndex][i].GetColor());
+					}
 				}
 
 				shader->SetUniform("u_nLights", lightCount);
@@ -385,37 +546,45 @@ namespace pine {
 				glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMapTextureObj);
 				shader->SetUniformCubeSampler("u_irradianceMap", 0);
 
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilteredMapObj);
+				shader->SetUniformCubeSampler("u_prefilteredMap", 1);
+
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, _brdfLUTTextureObj);
+				shader->SetUniformTextureSampler2D("u_brdfLUT", 2);
+
 				// Bind albedo (base) to texture unit 0
 				// TODO: hardcoded texture unit indexes, also make functions for redundant uniform setting
 				auto* albedoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
 				if (albedoTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::BASE_TEXTURE)) {
-					albedoTex->Bind(1);
-					shader->SetUniformTextureSampler2D("u_albedoMap", 1);
+					albedoTex->Bind(3);
+					shader->SetUniformTextureSampler2D("u_albedoMap", 3);
 				}
 
 				 //Bind normal map to texture unit 1
 				auto* normalTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
 				if (normalTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::NORMAL_MAPS)) {
-					normalTex->Bind(2);
-					shader->SetUniformTextureSampler2D("u_normalMap", 2);
+					normalTex->Bind(4);
+					shader->SetUniformTextureSampler2D("u_normalMap", 4);
 				}
 
 				auto* roughnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
 				if (roughnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS)) {
-					roughnessTex->Bind(3);
-					shader->SetUniformTextureSampler2D("u_roughnessMap", 3);
+					roughnessTex->Bind(5);
+					shader->SetUniformTextureSampler2D("u_roughnessMap", 5);
 				}
 
 				auto* metalnessTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
 				if (metalnessTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::METALNESS_MAPS)) {
-					metalnessTex->Bind(4);
-					shader->SetUniformTextureSampler2D("u_metalnessMap", 4);
+					metalnessTex->Bind(6);
+					shader->SetUniformTextureSampler2D("u_metalnessMap", 6);
 				}
 
 				auto* aoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_AO];
 				if (aoTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::AO_MAPS)) {
-					aoTex->Bind(5);
-					shader->SetUniformTextureSampler2D("u_aoMap", 5);
+					aoTex->Bind(7);
+					shader->SetUniformTextureSampler2D("u_aoMap", 7);
 				}
 
 				// TODO: bind other textures (metallic, roughness, ao, etc.)

@@ -26,7 +26,7 @@ namespace pine {
 		[[nodiscard]] void* GetPixels() { return _pixels; };
 		[[nodiscard]] std::string ReadImageExtension(const char* path);
 		[[nodiscard]] PixelFormat GetPixelFormat() const { return _pixelFormat; };
-		void SetPixels(void* pixels, int width, int height);
+		void SetPixels(void* pixels, unsigned int width, unsigned int height);
 		bool Load(const char* path);
 
 	private:

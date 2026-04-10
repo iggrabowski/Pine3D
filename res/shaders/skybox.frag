@@ -2,7 +2,7 @@
 out vec4 FragColor;
 
 in vec3 TexCoords;
-uniform samplerCube u_Skybox;
+uniform samplerCube u_skybox;
 // simple exposure + Reinhard tone mapping + gamma correction
 
 // TODO: maybe adjustable?
@@ -11,7 +11,7 @@ uniform float u_Gamma = 2.2;
 
 void main()
 {
-    vec3 hdrColor = texture(u_Skybox, TexCoords).rgb;
+    vec3 hdrColor = texture(u_skybox, TexCoords).rgb;
 
     // Exposure
     vec3 mapped = hdrColor * u_Exposure;

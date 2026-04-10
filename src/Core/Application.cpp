@@ -15,19 +15,13 @@ namespace pine {
 		return s_Instance;
 	}*/
 
-	//int run()
-	//{
-	//	//MAIN LOOP
-	//	while (window->IsOpen()) {
-	//		update_frame();
-	//	}
-	//	return 0;
-	//}
 	int Application::Run()
 	{
 		lightPresets.resize(3); // three light presets
-		// light preset 1
 
+		/*
+		// light preset 1
+		// 3 rgb lights
 		lightPresets[0].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
 			glm::vec3(2.0f, 1.0f, 1.0f),
@@ -46,7 +40,8 @@ namespace pine {
 			glm::vec3(0.12f, 0.1f, 0.917f) // blue light
 		);
 
-		// light preset 2  //blue
+		// light preset 2
+		// 3 blue lights
 		lightPresets[1].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
 			glm::vec3(2.0f, 1.0f, 1.0f),
@@ -66,24 +61,13 @@ namespace pine {
 		);
 
 		// light preset 3
-
-		//light_presets[2].emplace_back(
-		//	LIGHT_TYPE_DIRECTIONAL,
-		//	glm::vec3(2.0f, 1.0f, 1.0f),
-		//	glm::vec3(0.52f, 0.8f, 0.917f) // blue sky light
-		//);
-
+		// no lights
 		lightPresets[2].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
 			glm::vec3(-2.0f, 1.0f, -2.0f),
 			glm::vec3(0.0f) // white light
 		);
-
-		//light_presets[2].emplace_back(
-		//	LIGHT_TYPE_DIRECTIONAL,
-		//	glm::vec3(0.0f, -1.0f, 0.0f),
-		//	glm::vec3(0.95f, 0.4f, 0.2f) // orange light
-		//);
+		*/
 
 		//MAIN LOOP
 		while (window->IsOpen()) {

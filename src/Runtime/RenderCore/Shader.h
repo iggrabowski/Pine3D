@@ -41,6 +41,7 @@ namespace pine {
 		void SetUniformCubeSampler(const std::string& name, int textureUnit);
 		bool GetAttributeLocation(const std::string& name, unsigned int& outLoc) const;
 
+		// TODO: implement shader lookup
 		static Shader* LoadShaders(const std::string& fileName);
 		int GetUniformLocation(std::string name);
 		unsigned int GetNumberOfAttributes() const {
