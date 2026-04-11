@@ -16,6 +16,10 @@
 
 \- Lighting presets.
 
+\- HDR Skybox loading
+
+\- Image based lighting
+
 \- Simplified node-based material preview.
 
 
