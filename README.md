@@ -43,7 +43,12 @@ The folder structure should look as follows:
 		└─ shaders/
 	
 			├─ PBR.vert
-	       	└─ PBR.frag
+	       	├─ PBR.frag
+			└─ {...}
+		
+		└─ textures/
+			
+			└─ skybox.hdr
 	
 
 
