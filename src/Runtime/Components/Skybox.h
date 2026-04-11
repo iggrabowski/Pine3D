@@ -13,7 +13,7 @@ namespace pine {
 		Texture* GetTexture() const { return _texture; }
 		unsigned int GetResolution() const { return _resolution; }
 	private:
-		void ConvertEquirectangularToCubemap();
+		void ConvertEquirectangularToCubemap(Image& image);
 
 		unsigned int _resolution;
 		Texture* _texture;

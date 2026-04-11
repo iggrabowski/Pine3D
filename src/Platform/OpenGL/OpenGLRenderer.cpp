@@ -113,10 +113,9 @@ namespace pine {
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTextureStorage2D(_skyboxTextureObj, static_cast<GLsizei>(maxMipLevels), GL_RGB32F, static_cast<GLint>(faceWidth),
+		glTextureStorage2D(_skyboxTextureObj, static_cast<GLsizei>(maxMipLevels), GL_RGB16F, static_cast<GLint>(faceWidth),
 			static_cast<GLint>(faceHeight));
 
-		// upload level 0 faces (your source pixel data must be float RGB if using GL_RGB32F + GL_FLOAT)
 		for (int i = 0; i < 6; ++i) {
 			const void* pSrc = _skybox->GetCubemapTextures()[i].GetPixels();
 			glTextureSubImage3D(_skyboxTextureObj,

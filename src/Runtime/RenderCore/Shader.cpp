@@ -26,14 +26,14 @@ namespace pine {
         glCompileShader(_shaders[VERTEX_SHADER]);
         glCompileShader(_shaders[FRAGMENT_SHADER]);
 
-        CheckShaderError(_shaders[VERTEX_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
-        CheckShaderError(_shaders[FRAGMENT_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
+        //CheckShaderError(_shaders[VERTEX_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
+        //CheckShaderError(_shaders[FRAGMENT_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
 
         glAttachShader(_program, _shaders[VERTEX_SHADER]);
         glAttachShader(_program, _shaders[FRAGMENT_SHADER]);
         glLinkProgram(_program);
 
-        CheckShaderError(_program, GL_LINK_STATUS, true, "Error linking shader program");
+        //CheckShaderError(_program, GL_LINK_STATUS, true, "Error linking shader program");
 
         // query the number of active uniforms and attributes
         GLint nrAttributes, nrUniforms;

@@ -111,6 +111,7 @@ vec3 CalcPBRLighting() {
 	} else {
 		roughness = u_roughness;
 	}
+	if (roughness <= 0.01) roughness = 0.01;
 	if ((u_renderFlags & AO_MAP) != 0u){
 		ao = normalize(texture(u_aoMap, texCoord0).r);
 	} 

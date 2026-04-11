@@ -531,7 +531,7 @@ void GlfwWindow::SetCursorDisabled(const bool hidden)
 		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         if (glfwRawMouseMotionSupported())
         {
-            Logger::Instance().Info("GLFW Window : raw mouse motion supported.");
+            //Logger::Instance().Info("GLFW Window : raw mouse motion supported.");
             glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
         else

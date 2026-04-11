@@ -51,7 +51,7 @@ bool pine::Image::Load(const char * path)
 	// NOTE: maybe use seperate class for loading 
 	{
 		if (stbi_is_hdr(path)) {
-			_pixelFormat = PIXEL_FORMAT_R32F;
+			_pixelFormat = PIXEL_FORMAT_R16F;
 			_pixels = stbi_loadf(path, &_width, &_height, &_numColorCh, 0);
 		}
 		else 

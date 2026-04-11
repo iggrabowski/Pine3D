@@ -8,8 +8,12 @@
 namespace pine {
 	Skybox::Skybox()
 	{
-		// default path to skybox texture
-		Image& image = Application::images.emplace_back();
+		// load shaders + texture (interface?)
+		// evaluate
+		// convert to cubemap (its equirectangular) or not (shader maybe)
+		// clear ram from stbi data
+		// keep in gl objects
+		Image image;
 		_shader = Shader::LoadShaders("../res/shaders/skybox");
 		if (!image.Load("../res/textures/skybox.hdr"))
 		{
@@ -17,11 +21,8 @@ namespace pine {
 			return;
 		}
 
-		_texture = &Application::textures.emplace_back();
-		_texture->LoadFromImage(image);
-
-		ConvertEquirectangularToCubemap();	// translate Equirectangular to skybox format
-											// shoutout OGLDEV
+		ConvertEquirectangularToCubemap(image);	// translate Equirectangular to skybox format
+													// shoutout OGLDEV
 	}
 
 	Skybox::~Skybox()
@@ -29,30 +30,28 @@ namespace pine {
 		delete _shader;
 	}
 
-	void Skybox::ConvertEquirectangularToCubemap()
+	void Skybox::ConvertEquirectangularToCubemap(Image& image)
 	{
-		_resolution = _texture->GetWidth() / 4;
+		_resolution = image.GetWidth() / 4;
 		if (_resolution <= 0) {
 			Logger::Instance().Error("ConvertEquirectangularToCubemap: invalid skybox size.");
 			return;
 		}
 
-		Image& src_image = *_texture->_image;
-		const PixelFormat srcFmt = src_image.GetPixelFormat();
-		if (!(_texture->_image->GetPixelFormat() == PIXEL_FORMAT_R32F))
+		if (!(image.GetPixelFormat() == PIXEL_FORMAT_R16F))
 		{
 			Logger::Instance().Error("ConvertEquirectangularToCubemap: Unsupported skybox texture format, only HDR types supported.");
 			}
 
-		const float* src = static_cast<const float*>(src_image.GetPixels());
+		const float* src = static_cast<const float*>(image.GetPixels());
 		if (!src) {
 			Logger::Instance().Error("ConvertEquirectangularToCubemap: source has no pixel data.");
 			return;
 		}
 
-		const int srcW = src_image.GetWidth();
-		const int srcH = src_image.GetHeight();
-		const int srcCh = std::max(1, src_image.GetNumColorCh());
+		const int srcW = image.GetWidth();
+		const int srcH = image.GetHeight();
+		const int srcCh = std::max(1, image.GetNumColorCh());
 
 		const float PI = std::numbers::pi_v<float>;
 		const float TWO_PI = 2.0f * PI;
@@ -110,7 +109,7 @@ namespace pine {
 			}
 
 			// transfer ownership into the Image (SetPixels will free previous buffer)
-			_cubemapTextures[face].SoftCopyFrom(*this->_texture->_image);
+			_cubemapTextures[face].SoftCopyFrom(image);
 			_cubemapTextures[face].SetPixels(dst, _resolution, _resolution);
 		}
 

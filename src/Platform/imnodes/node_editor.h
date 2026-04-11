@@ -294,7 +294,7 @@ public:
                     ImGui::Checkbox("Enable fixed metalness", &enable_fixed_metalness);
 					root_ui_node->material->m_enableMetallicMap =! enable_fixed_metalness;
                     ImGui::BeginDisabled(!enable_fixed_metalness);
-                    ImGui::SliderFloat("Metalness", &root_ui_node->material->m_metallic, 0.0f, 1.0f, "%.2f");
+                    ImGui::SliderFloat("Metalness", &root_ui_node->material->m_metallic, 0.02f, 1.0f, "%.2f");
                     ImGui::EndDisabled();
 
                     ImGui::Separator();
@@ -302,7 +302,7 @@ public:
                     ImGui::Checkbox("Enable fixed roughness", &enable_fixed_roughness);
 					root_ui_node->material->m_enableRoughnessMap =! enable_fixed_roughness;
                     ImGui::BeginDisabled(!enable_fixed_roughness);
-                    ImGui::SliderFloat("Roughness", &root_ui_node->material->m_roughness, 0.0f, 1.0f, "%.2f");
+                    ImGui::SliderFloat("Roughness", &root_ui_node->material->m_roughness, 0.02f, 1.0f, "%.2f");
                     ImGui::EndDisabled();
                 }
             }
