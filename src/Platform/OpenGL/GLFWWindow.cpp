@@ -394,6 +394,7 @@ GlfwWindow::GlfwWindow()
     const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_SAMPLES, 4); // Enable 4x MSAA
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
@@ -405,6 +406,8 @@ GlfwWindow::GlfwWindow()
         nullptr,
         nullptr
     );
+
+	glEnable(GL_MULTISAMPLE); // Enable anti-aliasing
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
