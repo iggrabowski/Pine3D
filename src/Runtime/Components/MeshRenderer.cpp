@@ -78,6 +78,11 @@ namespace pine {
 				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::AO_MAPS);
 				_model3D->materials[i]->m_enableAmbientOcclusionMap = true;
 			}
+			if (_model3D->materials[i]->m_textures[TEX_TYPE_EMISSIVE] != nullptr)
+			{
+				m_render_flags[i] |= static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS);
+				_model3D->materials[i]->m_enableEmissiveMap = true;
+			}
 		}
 		return true;
 	}

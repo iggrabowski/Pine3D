@@ -16,6 +16,7 @@ uniform sampler2D	u_normalMap;
 uniform sampler2D	u_roughnessMap;
 uniform sampler2D	u_metalnessMap;
 uniform sampler2D	u_aoMap;
+uniform sampler2D	u_emissiveMap;
 uniform vec3		u_lightColor;
 uniform float		u_roughness;
 uniform float		u_metalness;
@@ -42,6 +43,7 @@ const uint NORMAL_MAP = 2u;
 const uint ROUGHNESS_MAP = 4u;
 const uint METALNESS_MAP = 8u;
 const uint AO_MAP = 16u;
+const uint EMISSIVE_MAP = 32u;
 
 // GGX/Trowbridge-Reitz normal distribution function
 float D(float roughness, vec3 n, vec3 h) {
@@ -165,8 +167,13 @@ vec3 CalcPBRLighting() {
 	vec3 diffuseIBL = irradiance * albedo;
 		
 	vec3 ambient = (Kd * diffuseIBL + specular) * ao;
+	vec3 emissive = vec3(0.0);
+	if ((u_renderFlags & EMISSIVE_MAP) != 0u) {
+		vec3 emissiveSRGB = texture(u_emissiveMap, texCoord0).rgb;
+		emissive = pow(emissiveSRGB, vec3(2.2));
+	}
 
-    vec3 outColor =  ambient + Lo;
+    vec3 outColor =  ambient + Lo + emissive;
 
 	return outColor;
 }

@@ -27,6 +27,7 @@ namespace pine {
 		bool m_enableRoughnessMap = false;
 		bool m_enableMetallicMap = false;
 		bool m_enableAmbientOcclusionMap = false;
+		bool m_enableEmissiveMap = false;
 	};
 
 }

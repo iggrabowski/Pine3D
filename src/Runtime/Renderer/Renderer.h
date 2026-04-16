@@ -19,7 +19,8 @@ namespace pine {
 		NORMAL_MAPS = 0x2,
 		ROUGHNESS_MAPS = 0x4,
 		METALNESS_MAPS = 0x8,
-		AO_MAPS = 0x16
+		AO_MAPS = 0x10,
+		EMISSIVE_MAPS = 0x20
 	};
 
 	//main rendering object

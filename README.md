@@ -12,6 +12,8 @@
 
 \- Toggling texture inputs (normal / roughness / metalness).
 
+\- Emissive textures in the PBR pipeline.
+
 \- Sliders for roughness and metalness.
 
 \- Lighting presets.
@@ -57,4 +59,3 @@ Use "--recursive"" flag when cloning the project to get the submodules as well.
 
 
 ![Pine3D Screenshot](https://github.com/iggrabowski/Pine3D/blob/master/docs/screenshot.png)
-

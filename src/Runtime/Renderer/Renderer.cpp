@@ -39,6 +39,18 @@ namespace pine {
 				else
 					*flags -= *flags & static_cast<uint32_t>(RenderFlags::METALNESS_MAPS);
 			}
+			if (mat->m_textures[TEX_TYPE_AO] != nullptr) {
+				if (mat->m_enableAmbientOcclusionMap)
+					*flags |= static_cast<uint32_t>(RenderFlags::AO_MAPS);
+				else
+					*flags -= *flags & static_cast<uint32_t>(RenderFlags::AO_MAPS);
+			}
+			if (mat->m_textures[TEX_TYPE_EMISSIVE] != nullptr) {
+				if (mat->m_enableEmissiveMap)
+					*flags |= static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS);
+				else
+					*flags -= *flags & static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS);
+			}
 		}
 	}
 

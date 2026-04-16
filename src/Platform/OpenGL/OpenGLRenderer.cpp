@@ -586,6 +586,12 @@ namespace pine {
 					shader->SetUniformTextureSampler2D("u_aoMap", 7);
 				}
 
+				auto* emissiveTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_EMISSIVE];
+				if (emissiveTex && mr->m_render_flags[bm.materialIndex] & static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS)) {
+					emissiveTex->Bind(8);
+					shader->SetUniformTextureSampler2D("u_emissiveMap", 8);
+				}
+
 				// TODO: bind other textures (metallic, roughness, ao, etc.)
 
 				// If the mesh has an index buffer, use glDrawElementsBaseVertex with the BaseIndex offset.
