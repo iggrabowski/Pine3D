@@ -33,7 +33,7 @@ namespace pine {
 				else
 					*flags -= *flags & static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS);
 			}
-			if (mat->m_textures[TEX_TYPE_METALLIC] != nullptr && mat->m_enableMetallicMap) {
+			if (mat->m_textures[TEX_TYPE_METALLIC] != nullptr) {
 				if (mat->m_enableMetallicMap)
 					*flags |= static_cast<uint32_t>(RenderFlags::METALNESS_MAPS);
 				else
