@@ -592,8 +592,6 @@ namespace pine {
 					shader->SetUniformTextureSampler2D("u_emissiveMap", 8);
 				}
 
-				// TODO: bind other textures (metallic, roughness, ao, etc.)
-
 				// If the mesh has an index buffer, use glDrawElementsBaseVertex with the BaseIndex offset.
 				if (!model->mesh.m_Indices.empty())
 				{
