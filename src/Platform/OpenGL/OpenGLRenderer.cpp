@@ -29,6 +29,28 @@ namespace pine {
 
 	}
 
+	static void LogGLErrors(const std::string& context)
+	{
+		GLenum error;
+		while ((error = glGetError()) != GL_NO_ERROR)
+		{
+			std::string errorString;
+			switch (error)
+			{
+			case GL_INVALID_ENUM:                  errorString = "GL_INVALID_ENUM"; break;
+			case GL_INVALID_VALUE:                 errorString = "GL_INVALID_VALUE"; break;
+			case GL_INVALID_OPERATION:             errorString = "GL_INVALID_OPERATION"; break;
+			case GL_STACK_OVERFLOW:                errorString = "GL_STACK_OVERFLOW"; break;
+			case GL_STACK_UNDERFLOW:               errorString = "GL_STACK_UNDERFLOW"; break;
+			case GL_OUT_OF_MEMORY:                 errorString = "GL_OUT_OF_MEMORY"; break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION: errorString = "GL_INVALID_FRAMEBUFFER_OPERATION"; break;
+			default:                               errorString = "UNKNOWN_ERROR"; break;
+			}
+
+			std::cerr << "OpenGL Error in " << context << ": " << errorString << " (" << error << ")" << std::endl;
+		}
+	}
+
 	void OpenGLRenderer::InitSkybox()
 	{
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -596,6 +618,7 @@ namespace pine {
 						GL_UNSIGNED_INT,
 						(void*)(sizeof(unsigned int) * bm.baseIndex),
 						static_cast<GLint>(bm.baseVertex));
+					LogGLErrors("glDrawElementsBaseVertex");
 				}
 				else
 				{
@@ -615,6 +638,12 @@ namespace pine {
 				glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model->mesh.m_Positions.size()));
 		}
 
+		for (int i = 0; i < 16; ++i) // Assuming 16 texture units (adjust if needed)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		}
 		glBindVertexArray(0);
 	}
 
