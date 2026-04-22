@@ -29,12 +29,17 @@ namespace pine {
 		std::vector<Material*>		materials;
 		unsigned int						num_meshes = 0;
 		unsigned int						num_materials = 0;
+		~Model3D() {
+			for (Material* mat : materials) {
+				delete mat;
+			}
+		}
 	};
 
 	class MeshRenderer : public SceneObject {
 	public:
 		MeshRenderer();
-		~MeshRenderer();
+		~MeshRenderer() override;
 		Model3D* GetModel() const { return _model3D; }
 		Transform GetTransform() const { return *_transform; }
 

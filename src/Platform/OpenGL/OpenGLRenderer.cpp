@@ -302,6 +302,7 @@ namespace pine {
 		// Corrected usage of loc
 		int loc;
 
+		// TODO: need to do VAO and VBO setup in defferent function than assigning attributes.
 		if ((loc = mr->GetAttributeLocation("position")) >= 0) {
 			glEnableVertexAttribArray(loc);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Positions[0]) * mesh.m_Positions.size(), &mesh.m_Positions[0], GL_STATIC_DRAW);

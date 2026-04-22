@@ -33,7 +33,7 @@ namespace pine {
         }
         else {
             targetMaterial->m_textures[texType]->LoadFromImage(image);
-            outModel.materials[MaterialIndex] = targetMaterial;
+            // outModel.materials[MaterialIndex] = targetMaterial;
             printf("Loaded texture '%s' (type %d) at index %d\n", fullPath.c_str(), texType, MaterialIndex);
         }
     }
@@ -154,12 +154,12 @@ namespace pine {
 
         printf("Num materials: %d\n", scene->mNumMaterials);
 
-         Application::materials.reserve(Application::materials.size() + scene->mNumMaterials);
+         // Application::materials.reserve(Application::materials.size() + scene->mNumMaterials);
 
         // Initialize the materials
         for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
             const aiMaterial* pMaterial = scene->mMaterials[i];
-            Material* currentMat = &Application::materials.emplace_back();
+			Material* currentMat = new Material();
 			pMaterial->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, currentMat->m_roughness);
 
 			outModel.materials.emplace_back(currentMat);

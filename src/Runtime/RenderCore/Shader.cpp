@@ -65,6 +65,7 @@ namespace pine {
 
     Shader::~Shader()
     {
+		glUseProgram(0);
         for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
         {
             glDetachShader(_program, _shaders[i]);

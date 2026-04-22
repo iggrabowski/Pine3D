@@ -47,6 +47,7 @@ namespace pine {
 		TANGENT_VB,
 		BITANGENT_VB,
 		INDEX_VB,
+		POSITIONS_COUNT
 	};
 
 	class OpenGLRenderer;

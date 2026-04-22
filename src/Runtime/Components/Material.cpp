@@ -17,6 +17,13 @@ namespace pine {
 
 	Material::~Material()
 	{
+		delete m_shader;
+		delete m_texture;
+		for (int i = 0; i < 7; ++i) {
+			if (m_textures[i] != nullptr) {
+				delete m_textures[i];
+			}
+		}
 	}
 
 	Material::Material(Shader* shader): m_texture(nullptr)
