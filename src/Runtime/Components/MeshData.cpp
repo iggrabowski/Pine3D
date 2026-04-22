@@ -55,48 +55,6 @@ namespace pine {
 		this->m_Indices = indices;
 	}
 
-	void MeshData::InitMesh()
-	{
-		// maybe delegate to different object?
-		// send mesh data to the vertex buffer
-		glGenVertexArrays(1, &m_vertexArrayObject);
-		glBindVertexArray(m_vertexArrayObject);
-
-		glGenBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[POSITION_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(m_Positions[0]) * m_Positions.size(), &m_Positions[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(POSITION_LOCATION);
-		glVertexAttribPointer(POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[TEXCOORD_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(m_TexCoords[0]) * m_TexCoords.size(), &m_TexCoords[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(TEX_COORD_LOCATION);
-		glVertexAttribPointer(TEX_COORD_LOCATION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[NORMAL_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(m_Normals[0]) * m_Normals.size(), &m_Normals[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(NORMAL_LOCATION);
-		glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[TANGENT_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(m_Tangents[0]) * m_Tangents.size(), &m_Tangents[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(TANGENT_LOCATION);
-		glVertexAttribPointer(TANGENT_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[BITANGENT_VB]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(m_Bitangents[0]) * m_Bitangents.size(), &m_Bitangents[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(BITANGENT_LOCATION);
-		glVertexAttribPointer(BITANGENT_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDEX_VB]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices[0]) * m_Indices.size(), &m_Indices[0], GL_STATIC_DRAW);
-
-		glBindVertexArray(0);
-
-		_buffered = true;
-	}
-
 	/*Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices)
 	{
 		IndexedModel* model = new IndexedModel();

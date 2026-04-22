@@ -22,6 +22,7 @@ namespace pine {
 	{
 		delete _model3D;
 		_model3D = new Model3D();
+		_modelDataInitiated = false;
 	}
 
 	void MeshRenderer::OnUpdate()
