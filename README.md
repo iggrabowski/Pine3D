@@ -16,6 +16,10 @@
 
 \- Lighting presets.
 
+\- HDR Skybox loading
+
+\- Image based lighting
+
 \- Simplified node-based material preview.
 
 
@@ -39,7 +43,12 @@ The folder structure should look as follows:
 		└─ shaders/
 	
 			├─ PBR.vert
-	       	└─ PBR.frag
+	       	├─ PBR.frag
+			└─ {...}
+		
+		└─ textures/
+			
+			└─ skybox.hdr
 	
 
 

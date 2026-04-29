@@ -16,12 +16,17 @@ namespace pine {
 	}
 
 	MeshRenderer::~MeshRenderer() {
+		delete _model3D;
 	}
 
 	void MeshRenderer::ResetModel3D()
 	{
 		delete _model3D;
 		_model3D = new Model3D();
+		_modelDataInitiated = false;
+		_shadersValidated = false;
+		loc_map.clear();
+		name_map.clear();
 	}
 
 	void MeshRenderer::OnUpdate()
