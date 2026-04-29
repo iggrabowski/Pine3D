@@ -14,13 +14,13 @@ namespace pine {
             ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x,height), ImGuiCond_Always);
             //ImGui::SetNextWindowViewport(main_viewport->ID);
         }
-        example::NodeEditorShowColor();
+        NodeEditorShowColor();
 	}
 
 	void NodeEditorWindow::Init()
 	{
     ImNodes::CreateContext();
-    example::NodeEditorInitializeColor();
+    NodeEditorInitialize();
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();

@@ -1,216 +1,162 @@
-#pragma once
-#include "Runtime/Components/Material.h"
-#include <imgui.h>
-#include "Platform/imnodes/imnodes.h"
-#include "graph.h"
+#include "NodeEditor.h"
 
-#include "imnodes.h"
-#include <imgui.h>
-
-//#include <SDL2/SDL_timer.h>
-#include <algorithm>
-#include <cassert>
-#include <chrono>
-#include <cmath>
-#include <vector>
-#include <unordered_set>
-
-// TODO: can abstract this (gettime)
-//#include "GLFW/glfw3.h"
-#include <Runtime/Components/Image.h>
-#include <Runtime/Components/Texture.h>
-#include <string>
-
-namespace example
+namespace pine
 {
-
-enum class NodeType
+bool ColorNode::GetFirstOutgoingNodeValue(int nodeId, float &outValue) const
 {
-    add,
-    multiply,
-    output,
-    sine,
-    time,
-    value,
-    image,    // added: differentiate image-node graph ids from value nodes
-    material
-};
+	for (const auto &edge : graph_.edges())
+	{
+		if (edge.from == nodeId)
+		{
+			outValue = graph_.node(edge.to).value;
+			return true;
+		}
+	}
+	return false;
+}
 
-struct Node
+void ColorNode::AddMaterialNodes(pine::Material* material, ImVec2 pos)
 {
-    NodeType type;
-    float    value;
+	if (!nodes_.empty())
+	{
+		std::unordered_set<int> ids_to_erase;
+		for (const UiNode& n : nodes_)
+		{
+			ids_to_erase.insert(n.id);
+			switch (n.type)
+			{
+			case UiNodeType::add:
+				ids_to_erase.insert(n.ui.add.lhs);
+				ids_to_erase.insert(n.ui.add.rhs);
+				break;
+			case UiNodeType::multiply:
+				ids_to_erase.insert(n.ui.multiply.lhs);
+				ids_to_erase.insert(n.ui.multiply.rhs);
+				break;
+			case UiNodeType::output:
+				ids_to_erase.insert(n.ui.output.r);
+				ids_to_erase.insert(n.ui.output.g);
+				ids_to_erase.insert(n.ui.output.b);
+				break;
+			case UiNodeType::sine:
+				ids_to_erase.insert(n.ui.sine.input);
+				break;
+			case UiNodeType::material:
+				ids_to_erase.insert(n.ui.material.input1);
+				ids_to_erase.insert(n.ui.material.input2);
+				ids_to_erase.insert(n.ui.material.input3);
+				ids_to_erase.insert(n.ui.material.input4);
+				break;
+			case UiNodeType::image:
+				// image nodes have no internal child nodes in the graph (only the node id)
+				break;
+			case UiNodeType::time:
+				// time node has only the op node id
+				break;
+			}
+		}
 
-    explicit Node(const NodeType t) : type(t), value(0.f) {}
+		// Erase unique graph nodes
+		for (int id : ids_to_erase)
+		{
+			graph_.erase_node(id);
+		}
+		// Clear UI list and reset root
+		nodes_.clear();
+		root_node_id_ = -1;
+	}
 
-    Node(const NodeType t, const float v) : type(t), value(v) {}
-};
-class ColorNodeEditor
+	pine::Texture* pointer = nullptr;
+	for (auto texture : material->m_textures)
+	{
+		if (texture != nullptr) pointer = texture;
+	}
+	if (pointer == nullptr) return;
+
+	// depending on texture type the node will be placed accordingly, after that they all connect to a material node
+	// create mat node first
+	const Node value(NodeType::value, 0.f);
+	const Node out(NodeType::output);
+			
+	UiNode ui_node;
+	ui_node.type = UiNodeType::material;
+	ui_node.ui.material.input1 = graph_.insert_node(value);
+	ui_node.ui.material.input2 = graph_.insert_node(value);
+	ui_node.ui.material.input3 = graph_.insert_node(value);
+	ui_node.ui.material.input4 = graph_.insert_node(value);
+	ui_node.material = material;
+	ui_node.id = graph_.insert_node(out);
+			
+	graph_.insert_edge(ui_node.id, ui_node.ui.material.input1);
+	graph_.insert_edge(ui_node.id, ui_node.ui.material.input2);
+	graph_.insert_edge(ui_node.id, ui_node.ui.material.input3);
+	graph_.insert_edge(ui_node.id, ui_node.ui.material.input4);
+	nodes_.push_back(ui_node);
+	ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(471, 541));
+	root_node_id_ = ui_node.id;
+	if (material->m_textures[pine::TEX_TYPE_BASE]) {
+		UiNode base_tex_node;
+
+		base_tex_node.type = UiNodeType::image;
+		base_tex_node.imageTexturePath = "";
+		base_tex_node.texture = material->m_textures[pine::TEX_TYPE_BASE];
+		base_tex_node.id = graph_.insert_node(Node(NodeType::image, base_tex_node.texture->GetGLHandle()));
+
+		nodes_.push_back(base_tex_node);
+		ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(371, 341));
+		graph_.insert_edge(ui_node.ui.material.input1, base_tex_node.id);
+	}
+
+	if (material->m_textures[pine::TEX_TYPE_NORMAL])
+	{
+		UiNode normal_tex_node;
+
+		normal_tex_node.type = UiNodeType::image;
+		normal_tex_node.imageTexturePath = "";
+		normal_tex_node.texture = material->m_textures[pine::TEX_TYPE_NORMAL];
+		normal_tex_node.id = graph_.insert_node(Node(NodeType::image,  normal_tex_node.texture->GetGLHandle()));
+
+		nodes_.push_back(normal_tex_node);
+		ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,341));
+	
+		graph_.insert_edge( ui_node.ui.material.input2, normal_tex_node.id);
+	}
+
+	if (material->m_textures[pine::TEX_TYPE_METALLIC])
+	{
+		UiNode metal_tex_node;
+
+		metal_tex_node.type = UiNodeType::image;
+		metal_tex_node.imageTexturePath = "";
+		metal_tex_node.texture = material->m_textures[pine::TEX_TYPE_METALLIC];
+		metal_tex_node.id = graph_.insert_node(Node(NodeType::image,  metal_tex_node.texture->GetGLHandle()));
+
+		nodes_.push_back(metal_tex_node);
+		ImNodes::SetNodeScreenSpacePos(metal_tex_node.id, ImVec2(171,541));
+	
+		graph_.insert_edge( ui_node.ui.material.input3, metal_tex_node.id);
+	}
+
+	if (material->m_textures[pine::TEX_TYPE_ROUGHNESS])
+	{
+		UiNode node;
+
+		node.type = UiNodeType::image;
+		node.imageTexturePath = "";
+		node.texture = material->m_textures[pine::TEX_TYPE_ROUGHNESS];
+		node.id = graph_.insert_node(Node(NodeType::image,  node.texture->GetGLHandle()));
+
+		nodes_.push_back(node);
+		ImNodes::SetNodeScreenSpacePos(node.id, ImVec2(171,741));
+	
+		graph_.insert_edge( ui_node.ui.material.input4, node.id);
+	}
+}
+
+
+void ColorNode::show()
 {
-public:
-    ColorNodeEditor()
-        : graph_(), nodes_(), root_node_id_(-1),
-          minimap_location_(ImNodesMiniMapLocation_BottomRight)
-    {
-    }
-    bool GetFirstOutgoingNodeValue(int nodeId, float &outValue) const
-   {
-        for (const auto &edge : graph_.edges())
-        {
-            if (edge.from == nodeId)
-            {
-                outValue = graph_.node(edge.to).value;
-                return true;
-            }
-        }
-        return false;
-    }
-    // Adds a new image node and takes ownership of the provided texture pointer.
-    // - texture: pointer to a pine::Texture already created (may be nullptr).
-    //            This object will be deleted when the node is removed.
-    // - path: optional file path to record on the node (informational).
-    // - pos: optional screen-space position; if pos.x < 0 the current mouse position is used.
-    void AddMaterialNodes(pine::Material* material, ImVec2 pos = ImVec2(-1.0f, -1.0f))
-    {
-        if (!nodes_.empty())
-        {
-            std::unordered_set<int> ids_to_erase;
-            for (const UiNode& n : nodes_)
-            {
-                ids_to_erase.insert(n.id);
-                switch (n.type)
-                {
-                case UiNodeType::add:
-                    ids_to_erase.insert(n.ui.add.lhs);
-                    ids_to_erase.insert(n.ui.add.rhs);
-                    break;
-                case UiNodeType::multiply:
-                    ids_to_erase.insert(n.ui.multiply.lhs);
-                    ids_to_erase.insert(n.ui.multiply.rhs);
-                    break;
-                case UiNodeType::output:
-                    ids_to_erase.insert(n.ui.output.r);
-                    ids_to_erase.insert(n.ui.output.g);
-                    ids_to_erase.insert(n.ui.output.b);
-                    break;
-                case UiNodeType::sine:
-                    ids_to_erase.insert(n.ui.sine.input);
-                    break;
-                case UiNodeType::material:
-                    ids_to_erase.insert(n.ui.material.input1);
-                    ids_to_erase.insert(n.ui.material.input2);
-                    ids_to_erase.insert(n.ui.material.input3);
-                    ids_to_erase.insert(n.ui.material.input4);
-                    break;
-                case UiNodeType::image:
-                    // image nodes have no internal child nodes in the graph (only the node id)
-                    break;
-                case UiNodeType::time:
-                    // time node has only the op node id
-                    break;
-                }
-            }
-
-            // Erase unique graph nodes
-            for (int id : ids_to_erase)
-            {
-                graph_.erase_node(id);
-            }
-            // Clear UI list and reset root
-            nodes_.clear();
-            root_node_id_ = -1;
-        }
-
-		pine::Texture* pointer = nullptr;
-        for (auto texture : material->m_textures)
-        {
-            if (texture != nullptr) pointer = texture;
-        }
-        if (pointer == nullptr) return;
-
-        // depending on texture type the node will be placed accordingly, after that they all connect to a material node
-        // create mat node first
-        const Node value(NodeType::value, 0.f);
-		const Node out(NodeType::output);
-				
-		UiNode ui_node;
-		ui_node.type = UiNodeType::material;
-		ui_node.ui.material.input1 = graph_.insert_node(value);
-		ui_node.ui.material.input2 = graph_.insert_node(value);
-		ui_node.ui.material.input3 = graph_.insert_node(value);
-		ui_node.ui.material.input4 = graph_.insert_node(value);
-		ui_node.material = material;
-		ui_node.id = graph_.insert_node(out);
-				
-		graph_.insert_edge(ui_node.id, ui_node.ui.material.input1);
-		graph_.insert_edge(ui_node.id, ui_node.ui.material.input2);
-		graph_.insert_edge(ui_node.id, ui_node.ui.material.input3);
-		graph_.insert_edge(ui_node.id, ui_node.ui.material.input4);
-        nodes_.push_back(ui_node);
-        ImNodes::SetNodeScreenSpacePos(ui_node.id, ImVec2(471, 541));
-        root_node_id_ = ui_node.id;
-        if (material->m_textures[pine::TEX_TYPE_BASE]) {
-            UiNode base_tex_node;
-
-            base_tex_node.type = UiNodeType::image;
-            base_tex_node.imageTexturePath = "";
-            base_tex_node.texture = material->m_textures[pine::TEX_TYPE_BASE];
-            base_tex_node.id = graph_.insert_node(Node(NodeType::image, base_tex_node.texture->GetGLHandle()));
-
-            nodes_.push_back(base_tex_node);
-            ImNodes::SetNodeScreenSpacePos(base_tex_node.id, ImVec2(371, 341));
-            graph_.insert_edge(ui_node.ui.material.input1, base_tex_node.id);
-        }
-
-        if (material->m_textures[pine::TEX_TYPE_NORMAL])
-        {
-            UiNode normal_tex_node;
-
-            normal_tex_node.type = UiNodeType::image;
-            normal_tex_node.imageTexturePath = "";
-            normal_tex_node.texture = material->m_textures[pine::TEX_TYPE_NORMAL];
-            normal_tex_node.id = graph_.insert_node(Node(NodeType::image,  normal_tex_node.texture->GetGLHandle()));
-
-            nodes_.push_back(normal_tex_node);
-            ImNodes::SetNodeScreenSpacePos(normal_tex_node.id, ImVec2(171,341));
-		
-		    graph_.insert_edge( ui_node.ui.material.input2, normal_tex_node.id);
-        }
-
-        if (material->m_textures[pine::TEX_TYPE_METALLIC])
-        {
-            UiNode metal_tex_node;
-
-            metal_tex_node.type = UiNodeType::image;
-            metal_tex_node.imageTexturePath = "";
-            metal_tex_node.texture = material->m_textures[pine::TEX_TYPE_METALLIC];
-            metal_tex_node.id = graph_.insert_node(Node(NodeType::image,  metal_tex_node.texture->GetGLHandle()));
-
-            nodes_.push_back(metal_tex_node);
-            ImNodes::SetNodeScreenSpacePos(metal_tex_node.id, ImVec2(171,541));
-		
-		    graph_.insert_edge( ui_node.ui.material.input3, metal_tex_node.id);
-        }
-
-        if (material->m_textures[pine::TEX_TYPE_ROUGHNESS])
-        {
-            UiNode node;
-
-            node.type = UiNodeType::image;
-            node.imageTexturePath = "";
-            node.texture = material->m_textures[pine::TEX_TYPE_ROUGHNESS];
-            node.id = graph_.insert_node(Node(NodeType::image,  node.texture->GetGLHandle()));
-
-            nodes_.push_back(node);
-            ImNodes::SetNodeScreenSpacePos(node.id, ImVec2(171,741));
-		
-		    graph_.insert_edge( ui_node.ui.material.input4, node.id);
-        }
-    }
-
-    void show()
-    {
-        // Update timer context
+    // Update timer context
         //current_time_seconds = glfwGetTime();
 
         auto flags = ImGuiWindowFlags_MenuBar;
@@ -973,79 +919,19 @@ public:
         //ImGui::Begin("output color");
         //ImGui::End();
         //ImGui::PopStyleColor();
-    }
 
-private:
-    enum class UiNodeType
-    {
-        add,
-        multiply,
-        output,
-        sine,
-        time,
-        image,
-        material
-    };
+}
 
-    struct UiNode
-    {
-        UiNodeType type;
-        // The identifying id of the ui node. For add, multiply, sine, and time
-        // this is the "operation" node id. The additional input nodes are
-        // stored in the structs.
-        int id;
+ColorNode color_editor;
 
-        union
-        {
-            struct
-            {
-                int lhs, rhs;
-            } add;
+void NodeEditorInitialize()
+{
+    ImNodesIO& io = ImNodes::GetIO();
+    io.LinkDetachWithModifierClick.Modifier = &ImGui::GetIO().KeyCtrl;
+}
 
-            struct
-            {
-                int lhs, rhs;
-            } multiply;
+void NodeEditorShowColor() { color_editor.show(); }
 
-            struct
-            {
-                int r, g, b;
-            } output;
+void NodeEditorShutdownColor() {}
 
-            struct
-            {
-                int input;
-            } sine;
-
-            struct
-            {
-                int input1, input2, input3, input4;
-            } material;
-        } ui;
-        // image node data (kept outside the union)
-        std::string imageTexturePath;
-        pine::Texture* texture = nullptr;
-		pine::Material* material = nullptr;
-    };
-
-    Graph<Node>            graph_;
-    std::vector<UiNode>    nodes_;
-    int                    root_node_id_;
-    ImNodesMiniMapLocation minimap_location_;
-};
-
-extern ColorNodeEditor color_editor;
-
-void NodeEditorInitializeHello();
-void NodeEditorShowHello();
-void NodeEditorShutdownHello();
-void NodeEditorInitializeColor();
-void NodeEditorShowColor();
-void NodeEditorShutdownColor();
-void NodeEditorInitializeMulti();
-void NodeEditorShowMulti();
-void NodeEditorShutdownMulti();
-void NodeEditorInitializeSave();
-void NodeEditorShowSave();
-void NodeEditorShutdownSave();
-} // namespace example
+} // namespace pine

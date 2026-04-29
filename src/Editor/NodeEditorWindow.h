@@ -1,5 +1,5 @@
 #pragma once
-#include "Platform/imnodes/node_editor.h"
+#include "Platform/imnodes/NodeEditor.h"
 
 namespace pine {
 	class NodeEditorWindow

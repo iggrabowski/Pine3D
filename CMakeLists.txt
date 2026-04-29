@@ -95,9 +95,9 @@ source_group("Source Files/Platform/ImGui" FILES ${PINE3D-PLATFORM-IMGUI})
 	${SRC_ROOT}/Platform/imnodes/imnodes.h
 	${SRC_ROOT}/Platform/imnodes/imnodes.cpp
 	${SRC_ROOT}/Platform/imnodes/imnodes_internal.h
-	${SRC_ROOT}/Platform/imnodes/color_node_editor.cpp
+	${SRC_ROOT}/Platform/imnodes/NodeEditor.cpp
 	${SRC_ROOT}/Platform/imnodes/graph.h
-	${SRC_ROOT}/Platform/imnodes/node_editor.h
+	${SRC_ROOT}/Platform/imnodes/NodeEditor.cpp
 	)
 
 source_group("Source Files/Platform/ImNodes" FILES ${PINE3D-PLATFORM-IMNODES})
