@@ -29,6 +29,28 @@ namespace pine {
 
 	}
 
+	static void LogGLErrors(const std::string& context)
+	{
+		GLenum error;
+		while ((error = glGetError()) != GL_NO_ERROR)
+		{
+			std::string errorString;
+			switch (error)
+			{
+			case GL_INVALID_ENUM:                  errorString = "GL_INVALID_ENUM"; break;
+			case GL_INVALID_VALUE:                 errorString = "GL_INVALID_VALUE"; break;
+			case GL_INVALID_OPERATION:             errorString = "GL_INVALID_OPERATION"; break;
+			case GL_STACK_OVERFLOW:                errorString = "GL_STACK_OVERFLOW"; break;
+			case GL_STACK_UNDERFLOW:               errorString = "GL_STACK_UNDERFLOW"; break;
+			case GL_OUT_OF_MEMORY:                 errorString = "GL_OUT_OF_MEMORY"; break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION: errorString = "GL_INVALID_FRAMEBUFFER_OPERATION"; break;
+			default:                               errorString = "UNKNOWN_ERROR"; break;
+			}
+
+			std::cerr << "OpenGL Error in " << context << ": " << errorString << " (" << error << ")" << std::endl;
+		}
+	}
+
 	void OpenGLRenderer::InitSkybox()
 	{
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -133,6 +155,7 @@ namespace pine {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	void OpenGLRenderer::PrefilterEnvironmentMap()
@@ -273,55 +296,9 @@ namespace pine {
 
 		glGenBuffers(NUM_BUFFERS, mesh.m_vertexArrayBuffers);
 
-		glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[POSITION_VB]);
-		size_t offset = 0;
-		std::vector<float> data;
-		unsigned int loc;
 
-		// TODO: maybe list the attributes somewhere
-		if ((loc = mr->GetAttributeLocation("position") >= 0)) {
-			glEnableVertexAttribArray(loc);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Positions[0]) * mesh.m_Positions.size(), &mesh.m_Positions[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(POSITION_LOCATION);
-			glVertexAttribPointer(POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		}
-		if (!mesh.m_TexCoords.empty() && (loc = mr->GetAttributeLocation("texCoord") >= 0))
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[TEXCOORD_VB]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_TexCoords[0]) * mesh.m_TexCoords.size(), &mesh.m_TexCoords[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(TEX_COORD_LOCATION);
-			glVertexAttribPointer(TEX_COORD_LOCATION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		}
-		if (!mesh.m_Normals.empty() && (loc = mr->GetAttributeLocation("normal") >= 0))
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[NORMAL_VB]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Normals[0]) * mesh.m_Normals.size(), &mesh.m_Normals[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(NORMAL_LOCATION);
-			glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		}
-
-		if (!mesh.m_Tangents.empty() && (loc = mr->GetAttributeLocation("tangent") >= 0))
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[TANGENT_VB]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Tangents[0]) * mesh.m_Tangents.size(), &mesh.m_Tangents[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(TANGENT_LOCATION);
-			glVertexAttribPointer(TANGENT_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		}
-
-		if (!mesh.m_Bitangents.empty() && (loc = mr->GetAttributeLocation("bitangent") >= 0))
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[BITANGENT_VB]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Bitangents[0]) * mesh.m_Bitangents.size(), &mesh.m_Bitangents[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(BITANGENT_LOCATION);
-			glVertexAttribPointer(BITANGENT_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		}
-
-		// only fill the index buffer if the index array is non-empty.
-		if (!mesh.m_Indices.empty() && (loc = mr->GetAttributeLocation("bitangent") >= 0))
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[INDEX_VB]);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.m_Indices[0]) * mesh.m_Indices.size(), &mesh.m_Indices[0], GL_STATIC_DRAW);
+		for (MeshBufferDataInfo& info : meshBufferDataTypes) {
+			LoadVertexAttributeArray(info, *mr);
 		}
 
 		glBindVertexArray(0);
@@ -396,6 +373,58 @@ namespace pine {
 		glBindVertexArray(quadVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
+	}
+
+	void OpenGLRenderer::LoadVertexAttributeArray(MeshBufferDataInfo& info, MeshRenderer& mr)
+	{
+		int location = -1;
+		if (info.position != INDEX_VB) {
+			location = mr.GetAttributeLocation(info.attributeName);
+			if (location < 0 )
+				return; // index does not use program attribute location
+		}
+
+		MeshData& mesh = mr.GetModel()->mesh;
+
+		glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[info.position]);
+		GLsizei attributeSize;
+		switch (info.position) {
+		case POSITION_VB:
+			if (mesh.m_Positions.empty()) return;
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Positions[0]) * mesh.m_Positions.size(), &mesh.m_Positions[0], GL_STATIC_DRAW);
+			attributeSize = 3;
+			break;
+		case TEXCOORD_VB:
+			if (mesh.m_TexCoords.empty()) return;	
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_TexCoords[0]) * mesh.m_TexCoords.size(), &mesh.m_TexCoords[0], GL_STATIC_DRAW);
+			attributeSize = 2;
+			break;
+		case NORMAL_VB:
+			if (mesh.m_Normals.empty()) return;
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Normals[0]) * mesh.m_Normals.size(), &mesh.m_Normals[0], GL_STATIC_DRAW);
+			attributeSize = 3;
+			break;
+		case TANGENT_VB:
+			if (mesh.m_Tangents.empty()) return;
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Tangents[0]) * mesh.m_Tangents.size(), &mesh.m_Tangents[0], GL_STATIC_DRAW);
+			attributeSize = 3;
+			break;
+		case BITANGENT_VB:
+			if (mesh.m_Bitangents.empty()) return;
+			glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.m_Bitangents[0]) * mesh.m_Bitangents.size(), &mesh.m_Bitangents[0], GL_STATIC_DRAW);
+			attributeSize = 3;
+			break;
+		case INDEX_VB:
+			if (mesh.m_Indices.empty()) return;
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[info.position]);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.m_Indices[0]) * mesh.m_Indices.size(), &mesh.m_Indices[0], GL_STATIC_DRAW);
+			return;
+		default:
+			return;
+		}
+		glEnableVertexAttribArray(location);
+		glVertexAttribPointer(location, attributeSize, GL_FLOAT, GL_FALSE, 0, 0);
+
 	}
 
 	OpenGLRenderer::OpenGLRenderer()

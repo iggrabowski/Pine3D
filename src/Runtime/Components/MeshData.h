@@ -49,6 +49,21 @@ namespace pine {
 		INDEX_VB,
 	};
 
+	struct MeshBufferDataInfo
+	{
+		MeshBufferPositions position;
+		std::string attributeName;
+	};
+
+	inline MeshBufferDataInfo meshBufferDataTypes[POSITIONS_COUNT] = {
+		{ POSITION_VB, "position" },
+		{ TEXCOORD_VB, "texCoord" },
+		{ NORMAL_VB, "normal" },
+		{ TANGENT_VB, "tangent" },
+		{ BITANGENT_VB, "bitangent" },
+		{ INDEX_VB, "" } // No attribute for index buffer
+	};
+
 	class OpenGLRenderer;
 
 
