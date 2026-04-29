@@ -37,8 +37,8 @@ namespace pine {
     void InputHandler::Zoom(const int delta) const
     {
         Camera& camera = Application::renderer->GetRenderCamera();
-        glm::vec3 pos = camera.GetPos();
-        glm::vec3 dir = camera.GetDirection();
+        vec3 pos = camera.GetPos();
+        vec3 dir = camera.GetDirection();
 
         //move in camera direction
         camera.SetPos(static_cast<float>(delta) * (dir * _zoomPerScroll) + pos);
@@ -145,11 +145,11 @@ namespace pine {
 
         for (const auto& action : actions) {
 
-            if (constexpr float epsilon = 1e-5f; glm::abs(newVal - oldVal) < epsilon)
+            if (constexpr float epsilon = 1e-5f; abs(newVal - oldVal) < epsilon)
             {
 	            // No change in value, generate continuous action events
 				// if newVal is close to 1.0
-                if (glm::abs(1.0f - newVal) < epsilon)
+                if (abs(1.0f - newVal) < epsilon)
                 {
 					if (action.type & KEY_ON_HOLD)
 					{
@@ -165,7 +165,7 @@ namespace pine {
             {
 	            // Value has changed, generate on value change action events
 				// if newVal is close to 1.0
-                if (glm::abs(1.0f - newVal) < epsilon)
+                if (abs(1.0f - newVal) < epsilon)
                 {
 					if (action.type & KEY_ON_PRESS || action.type & KEY_ON_HOLD)
 					{
@@ -177,7 +177,7 @@ namespace pine {
 					}
                 }
                 // if newVal is close to 0.0
-                else if (glm::abs(newVal) < epsilon)
+                else if (abs(newVal) < epsilon)
                 {
 					if (action.type & KEY_ON_RELEASE)
 					{

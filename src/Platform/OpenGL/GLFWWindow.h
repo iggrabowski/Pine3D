@@ -30,8 +30,8 @@ namespace pine {
 		void Startup() override;
 		void SetCursorDisabled(bool hidden) override;
 	
-		glm::ivec2 GetMousePosition() override;
-		glm::ivec2 GetSize() override;
+		ivec2 GetMousePosition() override;
+		ivec2 GetSize() override;
 		void OnUpdate() override;
 
 		[[nodiscard]] GLFWwindow* GetWindow() const;
@@ -47,7 +47,7 @@ namespace pine {
 		static int KeyCodeToGlfw(KeyCode code);
 
 		//sf::RenderWindow* m_Window;
-		glm::vec2 _lastMousePosition;
+		vec2 _lastMousePosition;
 
 		 // Our ImGUI state
 		bool _show_demo_window = false;

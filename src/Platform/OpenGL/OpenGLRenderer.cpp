@@ -1,5 +1,5 @@
 #pragma once
-#include <utility>
+//#include <utility>
 
 #include "Platform/OpenGL/OpenGLRenderer.h"
 #include "Core/Application.h"
@@ -11,17 +11,17 @@ namespace pine {
 								  GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 								  GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 								  GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
-	static glm::mat4 captureViews[] =
+	static mat4 captureViews[] =
 		{
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-			glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+			lookAt(vec3(0.0f), vec3(1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+			lookAt(vec3(0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+			lookAt(vec3(0.0f), vec3(0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
+			lookAt(vec3(0.0f), vec3(0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
+			lookAt(vec3(0.0f), vec3(0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
+			lookAt(vec3(0.0f), vec3(0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
 		};
 	
-	static glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+	static mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
 
 	
 	void OpenGLRenderer::DrawIndexed(/*const IndexedModel& model*/)
@@ -472,9 +472,9 @@ namespace pine {
 		if (skyboxShader) {
 			skyboxShader->Bind();
 
-			glm::mat4 view = Application::renderer->GetRenderCamera().GetViewMatrix();        // view matrix (camera)
-			glm::mat4 proj = Application::renderer->GetRenderCamera().GetProjectionMatrix(); // projection matrix
-			glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(view)); // strip translation
+			mat4 view = Application::renderer->GetRenderCamera().GetViewMatrix();        // view matrix (camera)
+			mat4 proj = Application::renderer->GetRenderCamera().GetProjectionMatrix(); // projection matrix
+			mat4 viewNoTranslation = mat4(mat3(view)); // strip translation
 
 			skyboxShader->SetUniform("u_view", viewNoTranslation);
 			skyboxShader->SetUniform("u_projection", proj);
@@ -526,9 +526,9 @@ namespace pine {
 		glBindVertexArray(model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
 
 		// TODO OPT: redundant operations
-		glm::mat4 umodel = mr->GetTransform().GetModel();
-		glm::mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
-		glm::vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
+		mat4 umodel = mr->GetTransform().GetModel();
+		mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
+		vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
 
 		// TODO : check if window open cause of crashes
 		// If model defines BasicMesh ranges, draw each range separately.
@@ -553,8 +553,8 @@ namespace pine {
 
 				// lights
 				unsigned int lightCount = 0;
-				std::vector<glm::vec3> lightDirs;
-				std::vector<glm::vec3> lightColors;
+				std::vector<vec3> lightDirs;
+				std::vector<vec3> lightColors;
 				if (!Application::lightPresets.empty() && std::cmp_less(Application::activeLightPresetIndex, Application::lightPresets.size()))
 				{
 					lightCount = static_cast<unsigned int>(Application::lightPresets[Application::activeLightPresetIndex].size());

@@ -14,6 +14,10 @@ set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "Assimp install PDB" FORCE)
 
 add_definitions(-DCMAKE_POLICY_VERSION_MINIMUM=3.5)
 add_definitions(-DGLEW_STATIC)
+
+# OpenGL API
+add_definitions(-DGRAPHICS_API_OPENGL)
+
 add_subdirectory(lib/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glew EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glm EXCLUDE_FROM_ALL)

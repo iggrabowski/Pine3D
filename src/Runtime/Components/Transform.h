@@ -6,7 +6,7 @@ namespace pine {
 
 	class Transform {
 	public:
-		Transform(const glm::vec3& pos = glm::vec3(), const glm::vec3& rot = glm::vec3(), const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f), const glm::mat4 model = glm::mat4())
+		Transform(const vec3& pos = vec3(), const vec3& rot = vec3(), const vec3& scale = vec3(1.0f, 1.0f, 1.0f), const mat4 model = mat4())
 		{
 			this->_pos = pos;
 			this->_rot = rot;
@@ -14,15 +14,15 @@ namespace pine {
 			this->_model = model;
 		}
 
-		inline glm::mat4 GetModel() const
+		inline mat4 GetModel() const
 		{
 			return this->_model;
 		}
 
-		inline glm::mat4 GetMVP(const Camera& camera) const
+		inline mat4 GetMVP(const Camera& camera) const
 		{
-			glm::mat4 VP = camera.GetViewProjection();
-			glm::mat4 M = GetModel();
+			mat4 VP = camera.GetViewProjection();
+			mat4 M = GetModel();
 
 			return VP * M;//camera.GetViewProjection() * GetModel();
 		}
@@ -30,30 +30,30 @@ namespace pine {
 		inline void UpdateModel() {
 
 			// TODO: only update when something changes
-			glm::mat4 posMat = glm::translate(_pos);
-			glm::mat4 scaleMat = glm::scale(_scale);
-			glm::mat4 rotX = glm::rotate(_rot.x, glm::vec3(1.0, 0.0, 0.0));
-			glm::mat4 rotY = glm::rotate(_rot.y, glm::vec3(0.0, 1.0, 0.0));
-			glm::mat4 rotZ = glm::rotate(_rot.z, glm::vec3(0.0, 0.0, 1.0));
-			glm::mat4 rotMat = rotX * rotY * rotZ;
+			mat4 posMat = translate(_pos);
+			mat4 scaleMat = scale(_scale);
+			mat4 rotX = rotate(_rot.x, vec3(1.0, 0.0, 0.0));
+			mat4 rotY = rotate(_rot.y, vec3(0.0, 1.0, 0.0));
+			mat4 rotZ = rotate(_rot.z, vec3(0.0, 0.0, 1.0));
+			mat4 rotMat = rotX * rotY * rotZ;
 
 			_model = posMat * rotMat * scaleMat;
 		}
 
-		inline glm::vec3* GetPos() { return &_pos; }
-		inline glm::vec3* GetRot() { return &_rot; }
-		inline glm::vec3* GetScale() { return &_scale; }
+		inline vec3* GetPos() { return &_pos; }
+		inline vec3* GetRot() { return &_rot; }
+		inline vec3* GetScale() { return &_scale; }
 
-		inline void SetPos(glm::vec3& pos) { this->_pos = pos; UpdateModel(); }
-		inline void SetRot(glm::vec3& rot) { this->_rot = rot; UpdateModel();}
-		inline void SetScale(glm::vec3& scale) { this->_scale = scale; UpdateModel();}
+		inline void SetPos(vec3& pos) { this->_pos = pos; UpdateModel(); }
+		inline void SetRot(vec3& rot) { this->_rot = rot; UpdateModel();}
+		inline void SetScale(vec3& scale) { this->_scale = scale; UpdateModel();}
 	protected:
 	private:
-		glm::mat4 _model;
+		mat4 _model;
 
-		glm::vec3 _pos;
-		glm::vec3 _rot;
-		glm::vec3 _scale;
+		vec3 _pos;
+		vec3 _rot;
+		vec3 _scale;
 	};
 
 }

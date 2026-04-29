@@ -5,7 +5,7 @@ namespace pine {
 
 	//Default constructor
 	//TODO: check if it actually works
-	/*Transform::Transform(const glm::vec3& positon, const glm::vec3& rotation, const glm::vec3& scale)
+	/*Transform::Transform(const vec3& positon, const vec3& rotation, const vec3& scale)
 	{
 		this->pos = positon;
 		this->rot = rotation;

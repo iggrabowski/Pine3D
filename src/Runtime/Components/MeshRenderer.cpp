@@ -44,7 +44,7 @@ namespace pine {
 			//_model->materials[basic_mesh.MaterialIndex]->OnUpdate();
 
 			// shader binding
-			//glm::vec3 light_dir(0.5, 0.5, 1.0);
+			//vec3 light_dir(0.5, 0.5, 1.0);
 			//material->m_Shader->SetUniform("lightDirection", light_dir);
 
 			// draw call

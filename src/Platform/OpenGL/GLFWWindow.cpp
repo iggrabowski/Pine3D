@@ -624,18 +624,18 @@ GLFWwindow* GlfwWindow::GetWindow() const
 	return _window;
 }
 
-glm::ivec2 GlfwWindow::GetMousePosition()
+ivec2 GlfwWindow::GetMousePosition()
 {
 	double x_pos, y_pos;
 	glfwGetCursorPos(_window, &x_pos, &y_pos);
 
-	glm::ivec2 pos(x_pos, y_pos);
+	ivec2 pos(x_pos, y_pos);
 	return pos;
 }
 
-glm::ivec2 GlfwWindow::GetSize()
+ivec2 GlfwWindow::GetSize()
 {
-	return glm::ivec2(_settings.width, _settings.height);
+	return ivec2(_settings.width, _settings.height);
 }
 
 bool GlfwWindow::IsOpen()

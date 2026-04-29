@@ -12,11 +12,11 @@ int main(void)
 	//pine::Application::scene_objects.emplace_back(&mr);
 
 	///* ADD POLYGON TO THE SCENE */
-	//std::vector<Pine::glm::vec2> vs;
-	//vs.push_back(Pine::glm::vec2( 0.5f, -0.5f));
-	//vs.push_back(Pine::glm::vec2( 0.5f,  0.5f));
-	//vs.push_back(Pine::glm::vec2(-0.5f,  0.5f));
-	//vs.push_back(Pine::glm::vec2(-0.5f, -0.5f));
+	//std::vector<Pine::vec2> vs;
+	//vs.push_back(Pine::vec2( 0.5f, -0.5f));
+	//vs.push_back(Pine::vec2( 0.5f,  0.5f));
+	//vs.push_back(Pine::vec2(-0.5f,  0.5f));
+	//vs.push_back(Pine::vec2(-0.5f, -0.5f));
 
 	//Pine::Polygon pl(vs);
 	//Pine::sceneObjects.push_back(&pl);
