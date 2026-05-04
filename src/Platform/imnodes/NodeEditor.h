@@ -45,14 +45,16 @@ struct Node
 
     Node(const NodeType t, const float v) : type(t), value(v) {}
 };
-class ColorNode
+class NodeEditor
 {
 public:
-    ColorNode()
+    NodeEditor()
         : graph_(), nodes_(), root_node_id_(-1),
           minimap_location_(ImNodesMiniMapLocation_BottomRight)
     {
     }
+
+	void NodeEditorInitialize();
     bool GetFirstOutgoingNodeValue(int nodeId, float& outValue) const;
    
     // Adds a new image node and takes ownership of the provided texture pointer.
@@ -61,8 +63,9 @@ public:
     // - path: optional file path to record on the node (informational).
     // - pos: optional screen-space position; if pos.x < 0 the current mouse position is used.
     void AddMaterialNodes(pine::Material* material, ImVec2 pos = ImVec2(-1.0f, -1.0f));
+	int GetWidth() const { return _windowHeight; }
 
-    void show();
+    void Show();
     
 
 private:
@@ -122,20 +125,7 @@ private:
     std::vector<UiNode>    nodes_;
     int                    root_node_id_;
     ImNodesMiniMapLocation minimap_location_;
+    int                    _windowHeight;
 };
 
-extern ColorNode color_editor;
-
-void NodeEditorInitializeHello();
-void NodeEditorShowHello();
-void NodeEditorShutdownHello();
-void NodeEditorInitialize();
-void NodeEditorShowColor();
-void NodeEditorShutdownColor();
-void NodeEditorInitializeMulti();
-void NodeEditorShowMulti();
-void NodeEditorShutdownMulti();
-void NodeEditorInitializeSave();
-void NodeEditorShowSave();
-void NodeEditorShutdownSave();
-} // namespace example
+} // namespace pine

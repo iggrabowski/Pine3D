@@ -10,6 +10,9 @@
 
 namespace pine {
 
+	static std::unique_ptr<ObjLoaderWindow> OLwindow = nullptr;
+	static std::unique_ptr<NodeEditorWindow> NEwindow = nullptr;
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -570,13 +573,12 @@ void GlfwWindow::OnUpdate()
         if (_show_demo_window)
             ImGui::ShowDemoWindow(&_show_demo_window);
 
-        static ObjLoaderWindow OLwindow;
-        OLwindow.Show(NULL);
-        OLwindow.OnLoad = LoadModel;
+		if (!OLwindow) OLwindow = std::make_unique<ObjLoaderWindow>();
+        OLwindow->Show(NULL);
+        OLwindow->OnLoad = LoadModel;
 
-		static NodeEditorWindow NEwindow;
-		NEwindow.Show(NULL, OLwindow.GetHeight());
-
+		if (!NEwindow) NEwindow = std::make_unique<NodeEditorWindow>();
+        NEwindow->Show(NULL, OLwindow->GetHeight());
   //  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
   //  {
   //      static float f = 0.0f;
@@ -622,6 +624,11 @@ void GlfwWindow::OnUpdate()
 GLFWwindow* GlfwWindow::GetWindow() const
 {
 	return _window;
+}
+
+NodeEditor& GlfwWindow::GetNodeEditor()
+{
+    return NEwindow->GetNodeEditor();
 }
 
 ivec2 GlfwWindow::GetMousePosition()

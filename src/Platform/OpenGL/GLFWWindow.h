@@ -39,6 +39,7 @@ namespace pine {
 		//void Init() override;
 		//void Sleep(float seconds) override;
 		//void Display() override;
+		NodeEditor& GetNodeEditor() override;
 
 		bool IsOpen() override;
 	private:

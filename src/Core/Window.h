@@ -6,6 +6,7 @@
 #define WINDOW_HEIGHT_DEFAULT 900
 
 namespace pine {
+	class NodeEditor;
 
 	//extern class Application;
 
@@ -45,6 +46,7 @@ namespace pine {
 		//virtual void Display() = 0;
 		//virtual void Sleep(float seconds) = 0;
 		virtual bool IsOpen() = 0;
+		virtual NodeEditor& GetNodeEditor() = 0;
 	protected:
 		WindowSettings _settings;
 		bool _isActive = false;
