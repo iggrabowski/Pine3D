@@ -16,7 +16,7 @@ namespace pine {
 		NodeEditor& GetNodeEditor() { return _nodeEditor; }
 	private:
 		NodeEditor _nodeEditor;
-		int _width = DEFAULT_WIDTH;
+		int _width = DEFAULT_WIDTH;	
 	};
 }
 

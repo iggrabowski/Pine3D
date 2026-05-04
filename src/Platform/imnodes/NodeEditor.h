@@ -112,7 +112,7 @@ private:
 
             struct
             {
-                int input1, input2, input3, input4;
+                int input1, input2, input3, input4, input5, input6;
             } material;
         } ui;
         // image node data (kept outside the union)
@@ -121,6 +121,7 @@ private:
 		pine::Material* material = nullptr;
     };
 
+    void CreateMaterialComponentNode(TextureType type, Material& material, UiNode& ui_node);
     example::Graph<Node>            graph_;
     std::vector<UiNode>    nodes_;
     int                    root_node_id_;
