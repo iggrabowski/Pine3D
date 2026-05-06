@@ -76,7 +76,7 @@ namespace pine {
     }
 
 	// float matrix4
-    void Shader::SetUniform(const std::string& name, glm::mat4& val)
+    void Shader::SetUniform(const std::string& name, mat4& val)
     {
 	    if (int loc = GetUniformLocation(name); loc >= 0) {
             glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
@@ -85,7 +85,7 @@ namespace pine {
     }
 
 	// float vector3
-    void Shader::SetUniform(const std::string& name, glm::vec3& val)
+    void Shader::SetUniform(const std::string& name, vec3& val)
     {
 	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
             glUniform3fv(loc, 1, &val[0]);
@@ -93,14 +93,14 @@ namespace pine {
         }
     }
 
-	void Shader::SetUniformArray(const std::string& name, const std::vector<glm::vec3>& vec, int maxSizeAllowed)
+	void Shader::SetUniformArray(const std::string& name, const std::vector<vec3>& vec, int maxSizeAllowed)
     {
 		if (vec.empty()) return;
 
 	    if (int loc = GetUniformLocation(std::move(name + "[0]")); loc >= 0) {
             GLsizei count = static_cast<GLsizei>(std::min<size_t>(vec.size(), static_cast<size_t>(maxSizeAllowed)));
 
-            glUniform3fv(loc, count, glm::value_ptr(vec[0]));
+            glUniform3fv(loc, count, value_ptr(vec[0]));
         }
     }
     // float

@@ -20,6 +20,7 @@ namespace pine {
 		void RenderQuad();
 
 	private:
+		void LoadVertexAttributeArray(MeshBufferDataInfo& info, MeshRenderer& mr);
 		void DrawIndexed(/*const IndexedModel& model*/) override;
 		void InitSkybox();
 		void GenerateIrradianceMap();

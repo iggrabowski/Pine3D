@@ -10,11 +10,11 @@ namespace pine {
 
 	class Polygon : public SceneObject {
 	public:
-		Polygon(std::vector<glm::vec2> points);
+		Polygon(std::vector<vec2> points);
 
 		void OnUpdate() override;
 	private:
-		std::vector<glm::vec2> _points;
+		std::vector<vec2> _points;
 	};
 
 }

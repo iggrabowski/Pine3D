@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 
+if(NOT CMAKE_GENERATOR)
+    set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "" FORCE)
+endif()
+
 project(Pine3D VERSION 0.1.0)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW lib only" FORCE)
@@ -11,9 +15,15 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Assimp build tests" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "Assimp install" FORCE)
 set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "Assimp install PDB" FORCE)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-variable -Wno-ignored-qualifiers -Wno-unused-parameter -Wno-pragma-once-outside-header")
 
 add_definitions(-DCMAKE_POLICY_VERSION_MINIMUM=3.5)
 add_definitions(-DGLEW_STATIC)
+
+# OpenGL API
+add_definitions(-DGRAPHICS_API_OPENGL)
+
 add_subdirectory(lib/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glew EXCLUDE_FROM_ALL)
 add_subdirectory(lib/glm EXCLUDE_FROM_ALL)
@@ -91,9 +101,9 @@ source_group("Source Files/Platform/ImGui" FILES ${PINE3D-PLATFORM-IMGUI})
 	${SRC_ROOT}/Platform/imnodes/imnodes.h
 	${SRC_ROOT}/Platform/imnodes/imnodes.cpp
 	${SRC_ROOT}/Platform/imnodes/imnodes_internal.h
-	${SRC_ROOT}/Platform/imnodes/color_node_editor.cpp
+	${SRC_ROOT}/Platform/imnodes/NodeEditor.cpp
 	${SRC_ROOT}/Platform/imnodes/graph.h
-	${SRC_ROOT}/Platform/imnodes/node_editor.h
+	${SRC_ROOT}/Platform/imnodes/NodeEditor.cpp
 	)
 
 source_group("Source Files/Platform/ImNodes" FILES ${PINE3D-PLATFORM-IMNODES})
@@ -215,6 +225,8 @@ target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRC_ROOT} ${STD_INCL
 ## ------------------------------------------------ ##
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw libglew_static glm assimp::assimp)
 

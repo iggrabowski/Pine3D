@@ -10,6 +10,9 @@
 
 namespace pine {
 
+	static std::unique_ptr<ObjLoaderWindow> OLwindow = nullptr;
+	static std::unique_ptr<NodeEditorWindow> NEwindow = nullptr;
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -570,13 +573,12 @@ void GlfwWindow::OnUpdate()
         if (_show_demo_window)
             ImGui::ShowDemoWindow(&_show_demo_window);
 
-        static ObjLoaderWindow OLwindow;
-        OLwindow.Show(NULL);
-        OLwindow.OnLoad = LoadModel;
+		if (!OLwindow) OLwindow = std::make_unique<ObjLoaderWindow>();
+        OLwindow->Show(NULL);
+        OLwindow->OnLoad = LoadModel;
 
-		static NodeEditorWindow NEwindow;
-		NEwindow.Show(NULL, OLwindow.GetHeight());
-
+		if (!NEwindow) NEwindow = std::make_unique<NodeEditorWindow>();
+        NEwindow->Show(NULL, OLwindow->GetHeight());
   //  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
   //  {
   //      static float f = 0.0f;
@@ -624,18 +626,23 @@ GLFWwindow* GlfwWindow::GetWindow() const
 	return _window;
 }
 
-glm::ivec2 GlfwWindow::GetMousePosition()
+NodeEditor& GlfwWindow::GetNodeEditor()
+{
+    return NEwindow->GetNodeEditor();
+}
+
+ivec2 GlfwWindow::GetMousePosition()
 {
 	double x_pos, y_pos;
 	glfwGetCursorPos(_window, &x_pos, &y_pos);
 
-	glm::ivec2 pos(x_pos, y_pos);
+	ivec2 pos(x_pos, y_pos);
 	return pos;
 }
 
-glm::ivec2 GlfwWindow::GetSize()
+ivec2 GlfwWindow::GetSize()
 {
-	return glm::ivec2(_settings.width, _settings.height);
+	return ivec2(_settings.width, _settings.height);
 }
 
 bool GlfwWindow::IsOpen()

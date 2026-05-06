@@ -73,17 +73,17 @@ namespace pine {
 				{
 					const float a = 2.0f * ((x + 0.5f) / _resolution) - 1.0f;
 					const float b = 2.0f * ((y + 0.5f) / _resolution) - 1.0f;
-					glm::vec3 dir;
+					vec3 dir;
 					switch (face)
 					{
-					case 0: dir = glm::vec3(1.0f, -b, -a); break; // +X
-					case 1: dir = glm::vec3(-1.0f, -b, a); break; // -X
-					case 2: dir = glm::vec3(a, 1.0f, b); break; // +Y
-					case 3: dir = glm::vec3(a, -1.0f, -b); break; // -Y
-					case 4: dir = glm::vec3(a, -b, 1.0f); break; // +Z
-					case 5: dir = glm::vec3(-a, -b, -1.0f); break; // -Z
+					case 0: dir = vec3(1.0f, -b, -a); break; // +X
+					case 1: dir = vec3(-1.0f, -b, a); break; // -X
+					case 2: dir = vec3(a, 1.0f, b); break; // +Y
+					case 3: dir = vec3(a, -1.0f, -b); break; // -Y
+					case 4: dir = vec3(a, -b, 1.0f); break; // +Z
+					case 5: dir = vec3(-a, -b, -1.0f); break; // -Z
 					}
-					dir = glm::normalize(dir);
+					dir = normalize(dir);
 
 					const float theta = std::atan2(dir.z, dir.x);
 					const float phi = std::asin(std::clamp(dir.y, -1.0f, 1.0f));
