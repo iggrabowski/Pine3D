@@ -1,2 +1,4 @@
 build/
-compile_flags.txt
+ninja/
+res/textures/skybox.hdr
+compile_commands.json
