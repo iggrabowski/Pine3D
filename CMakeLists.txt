@@ -16,7 +16,6 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Assimp build tests" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "Assimp install" FORCE)
 set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "Assimp install PDB" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-variable -Wno-ignored-qualifiers -Wno-unused-parameter -Wno-pragma-once-outside-header")
 
 add_definitions(-DCMAKE_POLICY_VERSION_MINIMUM=3.5)
 add_definitions(-DGLEW_STATIC)
@@ -224,6 +223,7 @@ set(IMGUI_INCLUDE
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SRC_ROOT} ${STD_INCLUDE} ${IMGUI_INCLUDE})
 ## ------------------------------------------------ ##
 
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-unused-variable -Wno-ignored-qualifiers -Wno-unused-parameter -Wno-pragma-once-outside-header)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

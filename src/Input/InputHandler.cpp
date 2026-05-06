@@ -107,7 +107,7 @@ void InputHandler::ProcessInput() {
 
 // TODO: implement this function
 void InputHandler::PropagateActionEvent(const ActionEvent &actionEvent) {
-  for (size_t i = _actionCallbacks[actionEvent.action_name].size(); i > 0;
+  for (int i = static_cast<int>(_actionCallbacks[actionEvent.action_name].size()) -1; i >= 0;
        --i) {
     auto &callback = _actionCallbacks[actionEvent.action_name][i];
     if (callback.func(actionEvent.device_index, actionEvent.new_value))
