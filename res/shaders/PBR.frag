@@ -2,8 +2,8 @@
 // Physically Based Rendering (PBR)
 #version 330
 
-// shader flags
-// uniform int shaderFlags; // TODO: will implement later
+layout (location = 0) out vec4 fragColor;
+layout (loacation = 1) out vec4 glowColor;
 
 const int MAX_DIR_LIGHTS = 4;
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "Runtime/Components/Transform.h"
 #include "Runtime/Camera/Camera.h"
+#include "Runtime/Components/Transform.h"
 #include "Utils/Utils.h"
 
 #include <string>
@@ -9,63 +9,62 @@
 
 namespace pine {
 
-	enum SHADER_TYPE
-	{
-		VERTEX_SHADER,
-		FRAGMENT_SHADER,
-		NUM_OF_SHADERS
-	};
+enum SHADER_TYPE { VERTEX_SHADER, FRAGMENT_SHADER, NUM_OF_SHADERS };
 
-	struct ShaderVariable
-	{
-		unsigned int	type;
-		std::string	name;
-		int				size;
-		unsigned int	loc;
-	};
+struct ShaderVariable {
+  unsigned int type;
+  std::string name;
+  int size;
+  unsigned int loc;
+};
 
-	class Shader
-	{
-	public:
-		Shader(std::string name, std::string vsCode, std::string fsCode);
-		~Shader();
+class Shader {
+public:
+  Shader(std::string vsCode, std::string fsCode);
+  ~Shader();
 
-		void Bind() const;
+  void Bind() const;
 
-		void SetUniform(const std::string& name, vec3& val);
-		void SetUniformArray(const std::string& name, const std::vector<vec3>& vec, int maxSizeAllowed);
-		void SetUniform(const std::string& name, mat4& val);
-		void SetUniform(const std::string& name, float val);
-		void SetUniform(const std::string& name, unsigned int val);
-		void SetUniformTextureSampler2D(const std::string& name, int textureUnit);
-		void SetUniformCubeSampler(const std::string& name, int textureUnit);
-		bool GetAttributeLocation(const std::string& name, unsigned int& outLoc) const;
+  void SetUniform(const std::string &name, vec3 &val);
+  void SetUniformArray(const std::string &name, const std::vector<vec3> &vec,
+                       int maxSizeAllowed);
+  void SetUniform(const std::string &name, mat4 &val);
+  void SetUniform(const std::string &name, float val);
+  void SetUniform(const std::string &name, unsigned int val);
+  void SetUniformTextureSampler2D(const std::string &name, int textureUnit);
+  void SetUniformCubeSampler(const std::string &name, int textureUnit);
+  bool GetAttributeLocation(const std::string &name,
+                            unsigned int &outLoc) const;
 
-		// TODO: implement shader lookup
-		static Shader* LoadShaders(const std::string& fileName);
-		int GetUniformLocation(std::string name);
-		unsigned int GetNumberOfAttributes() const {
-			return static_cast<unsigned int>(_attributes.size());
-		}
-		unsigned int GetNumberOfUniforms()	const {
-			return static_cast<unsigned int>(_uniforms.size());
-		}
+  // TODO: implement shader lookup
+  static Shader *LoadShaders(const std::string &fileName);
+  static Shader *LoadShaders(const std::string &fileNameVertex,
+                             const std::string &fileNameFragmeknt);
+  int GetUniformLocation(std::string name);
+  unsigned int GetNumberOfAttributes() const {
+    return static_cast<unsigned int>(_attributes.size());
+  }
+  unsigned int GetNumberOfUniforms() const {
+    return static_cast<unsigned int>(_uniforms.size());
+  }
 
-		// Expose const access to attributes so callers can validate/inspect them.
-		const std::vector<ShaderVariable>& GetAttributes() const { return _attributes; }
+  // Expose const access to attributes so callers can validate/inspect them.
+  const std::vector<ShaderVariable> &GetAttributes() const {
+    return _attributes;
+  }
 
-	protected:
-	private:
-		std::vector<ShaderVariable>	_uniforms;
-		std::vector<ShaderVariable>	_attributes;
+protected:
+private:
+  std::vector<ShaderVariable> _uniforms;
+  std::vector<ShaderVariable> _attributes;
 
-		static void ReadShader(const std::string fileName, std::string& outCode);
+  static void ReadShader(const std::string fileName, std::string &outCode);
 
-		void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage);
+  void CheckShaderError(GLuint shader, GLuint flag, bool isProgram,
+                        const std::string &errorMessage);
 
+  GLuint _program;
+  GLuint _shaders[NUM_OF_SHADERS];
+};
 
-		GLuint _program;
-		GLuint _shaders[NUM_OF_SHADERS];
-	};
-
-}
+} // namespace pine
