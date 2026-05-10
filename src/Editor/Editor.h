@@ -37,6 +37,6 @@ namespace pine {
 
 		// Input handling methods (prob deprecated)
 		void HandleEventlessInput() const;
-		void MoveInDirection(glm::vec3 direction) const;
+		void MoveInDirection(vec3 direction) const;
 	};
 }

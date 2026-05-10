@@ -2,227 +2,230 @@
 #include "Runtime/RenderCore/Shader.h"
 #include "Runtime/Renderer/Renderer.h"
 #include "Utils/Logger.h"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <utility>
 
 namespace pine {
 
-    extern UniquePtr<Renderer> renderer;
+extern UniquePtr<Renderer> renderer;
 
-    //Credit: https://github.com/JoeyDeVries/Cell/blob/master/cell/shading/shader.cpp
-    Shader::Shader(std::string name, std::string vsCode, std::string fsCode)
-    {
-        _shaders[VERTEX_SHADER] = glCreateShader(GL_VERTEX_SHADER);
-        _shaders[FRAGMENT_SHADER] = glCreateShader(GL_FRAGMENT_SHADER);
-        _program = glCreateProgram();
+// Credit:
+// https://github.com/JoeyDeVries/Cell/blob/master/cell/shading/shader.cpp
+Shader::Shader(std::string vsCode, std::string fsCode) {
+  _shaders[VERTEX_SHADER] = glCreateShader(GL_VERTEX_SHADER);
+  _shaders[FRAGMENT_SHADER] = glCreateShader(GL_FRAGMENT_SHADER);
+  _program = glCreateProgram();
 
-        const char* vsSourceC = vsCode.c_str();
-        const char* fsSourceC = fsCode.c_str();
+  const char *vsSourceC = vsCode.c_str();
+  const char *fsSourceC = fsCode.c_str();
 
-        glShaderSource(_shaders[VERTEX_SHADER], 1, &vsSourceC, NULL);
-        glShaderSource(_shaders[FRAGMENT_SHADER], 1, &fsSourceC, NULL);
+  glShaderSource(_shaders[VERTEX_SHADER], 1, &vsSourceC, NULL);
+  glShaderSource(_shaders[FRAGMENT_SHADER], 1, &fsSourceC, NULL);
 
-        glCompileShader(_shaders[VERTEX_SHADER]);
-        glCompileShader(_shaders[FRAGMENT_SHADER]);
+  glCompileShader(_shaders[VERTEX_SHADER]);
+  glCompileShader(_shaders[FRAGMENT_SHADER]);
 
-        //CheckShaderError(_shaders[VERTEX_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
-        //CheckShaderError(_shaders[FRAGMENT_SHADER], GL_COMPILE_STATUS, false, "Error compiling shader!");
+  // CheckShaderError(_shaders[VERTEX_SHADER], GL_COMPILE_STATUS, false, "Error
+  // compiling shader!"); CheckShaderError(_shaders[FRAGMENT_SHADER],
+  // GL_COMPILE_STATUS, false, "Error compiling shader!");
 
-        glAttachShader(_program, _shaders[VERTEX_SHADER]);
-        glAttachShader(_program, _shaders[FRAGMENT_SHADER]);
-        glLinkProgram(_program);
+  glAttachShader(_program, _shaders[VERTEX_SHADER]);
+  glAttachShader(_program, _shaders[FRAGMENT_SHADER]);
+  glLinkProgram(_program);
 
-        //CheckShaderError(_program, GL_LINK_STATUS, true, "Error linking shader program");
+  // CheckShaderError(_program, GL_LINK_STATUS, true, "Error linking shader
+  // program");
 
-        // query the number of active uniforms and attributes
-        GLint nrAttributes, nrUniforms;
-        glGetProgramiv(_program, GL_ACTIVE_ATTRIBUTES, &nrAttributes);
-        glGetProgramiv(_program, GL_ACTIVE_UNIFORMS, &nrUniforms);
-        _attributes.resize(nrAttributes);
-        _uniforms.resize(nrUniforms);
+  // query the number of active uniforms and attributes
+  GLint nrAttributes, nrUniforms;
+  glGetProgramiv(_program, GL_ACTIVE_ATTRIBUTES, &nrAttributes);
+  glGetProgramiv(_program, GL_ACTIVE_UNIFORMS, &nrUniforms);
+  _attributes.resize(nrAttributes);
+  _uniforms.resize(nrUniforms);
 
-        // iterate over all active attributes
-        char buffer[128];
-        for (int i = 0; i < nrAttributes; ++i)
-        {
-            glGetActiveAttrib(_program, i, sizeof(buffer), 0, &_attributes[i].size, &_attributes[i].type, buffer);
-            _attributes[i].name = std::string(buffer);
+  // iterate over all active attributes
+  char buffer[128];
+  for (int i = 0; i < nrAttributes; ++i) {
+    glGetActiveAttrib(_program, i, sizeof(buffer), 0, &_attributes[i].size,
+                      &_attributes[i].type, buffer);
+    _attributes[i].name = std::string(buffer);
 
-            _attributes[i].loc = glGetAttribLocation(_program, buffer);
-        }
+    _attributes[i].loc = glGetAttribLocation(_program, buffer);
+  }
 
-        // iterate over all active uniforms
-        for (int i = 0; i < nrUniforms; ++i)
-        {
-            //GLenum glType;
-            glGetActiveUniform(_program, i, sizeof(buffer), 0, &_uniforms[i].size, &_uniforms[i].type, buffer);
-            _uniforms[i].name = std::string(buffer);
+  // iterate over all active uniforms
+  for (int i = 0; i < nrUniforms; ++i) {
+    // GLenum glType;
+    glGetActiveUniform(_program, i, sizeof(buffer), 0, &_uniforms[i].size,
+                       &_uniforms[i].type, buffer);
+    _uniforms[i].name = std::string(buffer);
 
-            _uniforms[i].loc = glGetUniformLocation(_program, buffer);
-        }
-    }
-
-    Shader::~Shader()
-    {
-		glUseProgram(0);
-        for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
-        {
-            glDetachShader(_program, _shaders[i]);
-            glDeleteShader(_shaders[i]);
-        }
-
-        glDeleteProgram(_program);
-    }
-
-	// float matrix4
-    void Shader::SetUniform(const std::string& name, glm::mat4& val)
-    {
-	    if (int loc = GetUniformLocation(name); loc >= 0) {
-            glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
-			//Logger::Instance().Info("SHADER: Added value to uniform" + name);
-        }
-    }
-
-	// float vector3
-    void Shader::SetUniform(const std::string& name, glm::vec3& val)
-    {
-	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
-            glUniform3fv(loc, 1, &val[0]);
-		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
-        }
-    }
-
-	void Shader::SetUniformArray(const std::string& name, const std::vector<glm::vec3>& vec, int maxSizeAllowed)
-    {
-		if (vec.empty()) return;
-
-	    if (int loc = GetUniformLocation(std::move(name + "[0]")); loc >= 0) {
-            GLsizei count = static_cast<GLsizei>(std::min<size_t>(vec.size(), static_cast<size_t>(maxSizeAllowed)));
-
-            glUniform3fv(loc, count, glm::value_ptr(vec[0]));
-        }
-    }
-    // float
-    void Shader::SetUniform(const std::string& name, float val)
-    {
-	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
-            glUniform1f(loc,  val);
-		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
-        }
-    }
-
-    // unsigned int
-    void Shader::SetUniform(const std::string& name, unsigned int val)
-    {
-	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
-            glUniform1ui(loc,  val);
-		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
-        }
-    }
-
-	// texture sampler2D
-    void Shader::SetUniformTextureSampler2D(const std::string& name, const int textureUnit)
-    {
-	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
-            glUniform1i(loc, textureUnit);
-		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
-        }
-	}
-
-	// cube sampler
-    void Shader::SetUniformCubeSampler(const std::string& name, const int textureUnit)
-    {
-	    if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
-            glUniform1i(loc, textureUnit);
-		    //Logger::Instance().Info("SHADER: Added value to uniform" + name);
-        }
-	}
-
-    bool Shader::GetAttributeLocation(const std::string& name, unsigned int& outLoc) const
-    {
-        for (const auto& attribute : _attributes)
-        {
-            if (attribute.name == name) {
-                outLoc = attribute.loc;
-                return true;
-            }
-        }
-        std::cout << "ERROR: Attribute: \"" << name << "\" not found in the program " << _program << '\n';
-        return false;
-    }
-
-    void Shader::Bind() const
-    {
-        glUseProgram(_program);
-    }
-
-    Shader* Shader::LoadShaders(const std::string& fileName)
-    {
-        std::string vsCode;
-        std::string fsCode;
-
-        std::string vsFileName = fileName + ".vert";
-        ReadShader(vsFileName, vsCode);
-
-        std::string fsFileName = fileName + ".frag";
-        ReadShader(fsFileName, fsCode);
-        
-        return new Shader(fileName, vsCode, fsCode);
-    }
-
-    void Shader::ReadShader(const std::string fileName, std::string& outCode) {
-
-        std::ifstream File;
-        File.open((fileName).c_str());
-
-        std::string line;
-        if (File.is_open())
-        {
-            while (File.good())
-            {
-                getline(File, line);
-                outCode.append(line + "\n");
-            }
-        }
-        else
-        {
-            std::cerr << "Unable to load shader." << std::endl;
-        }
-        File.close();
-    }
-
-    void Shader::CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage)
-    {
-        GLint success = 0;
-        GLchar error[1024] = { 0 };
-
-        if (isProgram)
-            glGetProgramiv(shader, flag, &success);
-        else
-            glGetShaderiv(shader, flag, &success);
-
-        if (success == GL_FALSE)
-        {
-            if (isProgram)
-                glGetProgramInfoLog(shader, sizeof(error), NULL, error);
-            else
-                glGetShaderInfoLog(shader, sizeof(error), NULL, error);
-
-            std::cerr << errorMessage << ": '" << error << "'" << std::endl;
-        }
-    }
-
-    //Credit: https://github.com/JoeyDeVries/Cell/blob/master/cell/shading/shader.cpp
-    int Shader::GetUniformLocation(std::string name)
-    {
-        // read from uniform/attribute array as originally obtained from OpenGL
-        for (unsigned int i = 0; i < _uniforms.size(); ++i)
-        {
-            if (_uniforms[i].name == name)
-                return _uniforms[i].loc;
-        }
-        std::cout << "ERROR: Uniform: \"" << name << "\" not found in the program " << _program << std::endl;
-        return -1;
-    }
+    _uniforms[i].loc = glGetUniformLocation(_program, buffer);
+  }
 }
+
+Shader::~Shader() {
+  glUseProgram(0);
+  for (unsigned int i = 0; i < NUM_OF_SHADERS; i++) {
+    glDetachShader(_program, _shaders[i]);
+    glDeleteShader(_shaders[i]);
+  }
+
+  glDeleteProgram(_program);
+}
+
+// float matrix4
+void Shader::SetUniform(const std::string &name, mat4 &val) {
+  if (int loc = GetUniformLocation(name); loc >= 0) {
+    glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
+    // Logger::Instance().Info("SHADER: Added value to uniform" + name);
+  }
+}
+
+// float vector3
+void Shader::SetUniform(const std::string &name, vec3 &val) {
+  if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+    glUniform3fv(loc, 1, &val[0]);
+    // Logger::Instance().Info("SHADER: Added value to uniform" + name);
+  }
+}
+
+void Shader::SetUniformArray(const std::string &name,
+                             const std::vector<vec3> &vec, int maxSizeAllowed) {
+  if (vec.empty())
+    return;
+
+  if (int loc = GetUniformLocation(std::move(name + "[0]")); loc >= 0) {
+    GLsizei count = static_cast<GLsizei>(
+        std::min<size_t>(vec.size(), static_cast<size_t>(maxSizeAllowed)));
+
+    glUniform3fv(loc, count, value_ptr(vec[0]));
+  }
+}
+// float
+void Shader::SetUniform(const std::string &name, float val) {
+  if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+    glUniform1f(loc, val);
+    // Logger::Instance().Info("SHADER: Added value to uniform" + name);
+  }
+}
+
+// unsigned int
+void Shader::SetUniform(const std::string &name, unsigned int val) {
+  if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+    glUniform1ui(loc, val);
+    // Logger::Instance().Info("SHADER: Added value to uniform" + name);
+  }
+}
+
+// texture sampler2D
+void Shader::SetUniformTextureSampler2D(const std::string &name,
+                                        const int textureUnit) {
+  if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+    glUniform1i(loc, textureUnit);
+    // Logger::Instance().Info("SHADER: Added value to uniform" + name);
+  }
+}
+
+// cube sampler
+void Shader::SetUniformCubeSampler(const std::string &name,
+                                   const int textureUnit) {
+  if (int loc = GetUniformLocation(std::move(name)); loc >= 0) {
+    glUniform1i(loc, textureUnit);
+    // Logger::Instance().Info("SHADER: Added value to uniform" + name);
+  }
+}
+
+bool Shader::GetAttributeLocation(const std::string &name,
+                                  unsigned int &outLoc) const {
+  for (const auto &attribute : _attributes) {
+    if (attribute.name == name) {
+      outLoc = attribute.loc;
+      return true;
+    }
+  }
+  std::cout << "ERROR: Attribute: \"" << name << "\" not found in the program "
+            << _program << '\n';
+  return false;
+}
+
+void Shader::Bind() const { glUseProgram(_program); }
+
+Shader *Shader::LoadShaders(const std::string &fileName) {
+  std::string vsCode;
+  std::string fsCode;
+
+  std::string vsFileName = fileName + ".vert";
+  ReadShader(vsFileName, vsCode);
+
+  std::string fsFileName = fileName + ".frag";
+  ReadShader(fsFileName, fsCode);
+
+  return new Shader(vsCode, fsCode);
+}
+
+Shader *Shader::LoadShaders(const std::string &fileNameVertex,
+                            const std::string &fileNameFragment) {
+  std::string vsCode;
+  std::string fsCode;
+
+  std::string vsFileName = fileNameVertex + ".vert";
+  ReadShader(vsFileName, vsCode);
+
+  std::string fsFileName = fileNameFragment + ".frag";
+  ReadShader(fsFileName, fsCode);
+
+  return new Shader(vsCode, fsCode);
+}
+
+void Shader::ReadShader(const std::string fileName, std::string &outCode) {
+
+  std::ifstream File;
+  File.open((fileName).c_str());
+
+  std::string line;
+  if (File.is_open()) {
+    while (File.good()) {
+      getline(File, line);
+      outCode.append(line + "\n");
+    }
+  } else {
+    std::cerr << "Unable to load shader." << std::endl;
+  }
+  File.close();
+}
+
+void Shader::CheckShaderError(GLuint shader, GLuint flag, bool isProgram,
+                              const std::string &errorMessage) {
+  GLint success = 0;
+  GLchar error[1024] = {0};
+
+  if (isProgram)
+    glGetProgramiv(shader, flag, &success);
+  else
+    glGetShaderiv(shader, flag, &success);
+
+  if (success == GL_FALSE) {
+    if (isProgram)
+      glGetProgramInfoLog(shader, sizeof(error), NULL, error);
+    else
+      glGetShaderInfoLog(shader, sizeof(error), NULL, error);
+
+    std::cerr << errorMessage << ": '" << error << "'" << std::endl;
+  }
+}
+
+// Credit:
+// https://github.com/JoeyDeVries/Cell/blob/master/cell/shading/shader.cpp
+int Shader::GetUniformLocation(std::string name) {
+  // read from uniform/attribute array as originally obtained from OpenGL
+  for (unsigned int i = 0; i < _uniforms.size(); ++i) {
+    if (_uniforms[i].name == name)
+      return _uniforms[i].loc;
+  }
+  std::cout << "ERROR: Uniform: \"" << name << "\" not found in the program "
+            << _program << std::endl;
+  return -1;
+}
+} // namespace pine

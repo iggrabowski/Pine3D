@@ -4,7 +4,7 @@ pine::Light::Light()
 {
 }
 
-pine::Light::Light(LightType type, glm::vec3 dir_pos, glm::vec3 color)
+pine::Light::Light(LightType type, vec3 dir_pos, vec3 color)
 {
 	if (type == LIGHT_TYPE_DIRECTIONAL)
 	{

@@ -5,7 +5,7 @@
 
 namespace pine {
 
-	Polygon::Polygon(std::vector<glm::vec2> points)
+	Polygon::Polygon(std::vector<vec2> points)
 	{
 		_points = std::move(points);
 	}

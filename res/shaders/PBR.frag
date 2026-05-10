@@ -2,8 +2,8 @@
 // Physically Based Rendering (PBR)
 #version 330
 
-// shader flags
-// uniform int shaderFlags; // TODO: will implement later
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 glowColor;
 
 const int MAX_DIR_LIGHTS = 4;
 
@@ -16,6 +16,7 @@ uniform sampler2D	u_normalMap;
 uniform sampler2D	u_roughnessMap;
 uniform sampler2D	u_metalnessMap;
 uniform sampler2D	u_aoMap;
+uniform sampler2D u_emissiveMap;
 uniform vec3		u_lightColor;
 uniform float		u_roughness;
 uniform float		u_metalness;
@@ -34,14 +35,13 @@ in vec3 tangentLightDiffs[MAX_DIR_LIGHTS];
 in vec3 tangentNormal;
 in mat3 TBN;
 
-out vec4 fragColor;
-
 // shader flag constants
 const uint BASE_TEXTURE = 1u;
 const uint NORMAL_MAP = 2u;
 const uint ROUGHNESS_MAP = 4u;
 const uint METALNESS_MAP = 8u;
 const uint AO_MAP = 16u;
+const uint EMISSIVE_MAP = 32u;
 
 // GGX/Trowbridge-Reitz normal distribution function
 float D(float roughness, vec3 n, vec3 h) {
@@ -92,7 +92,7 @@ vec3 F(vec3 f0, float cosTheta, float roughness) {
 vec3 CalcPBRLighting() {
 	vec3 albedoSRGB =	texture(u_albedoMap, texCoord0).rgb;
 	vec3 albedo =		pow(albedoSRGB, vec3(2.2)); // convert sRGB -> linear if textures are sRGB
-	vec3 n, v;
+	vec3 n, v, emissive;
 	float metallic, roughness, ao;
 
 	if ((u_renderFlags & NORMAL_MAP) != 0u){
@@ -116,6 +116,10 @@ vec3 CalcPBRLighting() {
 		ao = normalize(texture(u_aoMap, texCoord0).r);
 	} 
 	else ao = 1.0;
+	if ((u_renderFlags & EMISSIVE_MAP) != 0u) {
+		vec3 emissiveSRGB = texture(u_emissiveMap, texCoord0).rgb;
+		emissive = pow(emissiveSRGB, vec3(2.2));
+	} else emissive = vec3(0.0);
 
 	vec3 Lo = vec3(0.0);
 	vec3 Ks, Kd, l, h;
@@ -163,10 +167,10 @@ vec3 CalcPBRLighting() {
 	Kd = (vec3(1.0) - Ks) * (1.0 - metallic);
 	vec3 irradiance = texture(u_irradianceMap, N).rgb;
 	vec3 diffuseIBL = irradiance * albedo;
-		
 	vec3 ambient = (Kd * diffuseIBL + specular) * ao;
 
-    vec3 outColor =  ambient + Lo;
+  vec3 outColor =  ambient + Lo + emissive;
+  glowColor = vec4(emissive, 1.0);
 
 	return outColor;
 }

@@ -24,48 +24,48 @@ namespace pine {
 		// 3 rgb lights
 		lightPresets[0].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
-			glm::vec3(2.0f, 1.0f, 1.0f),
-			glm::vec3(0.0f, 0.9f, 0.0f) // green light
+			vec3(2.0f, 1.0f, 1.0f),
+			vec3(0.0f, 0.9f, 0.0f) // green light
 		);
 
 		lightPresets[0].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
-			glm::vec3(-2.0f, 1.0f, -2.0f),
-			glm::vec3(0.95f, 0.1f, 0.1f) // red light
+			vec3(-2.0f, 1.0f, -2.0f),
+			vec3(0.95f, 0.1f, 0.1f) // red light
 		);
 
 		lightPresets[0].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
-			glm::vec3(0.0f, -1.0f, 0.0f),
-			glm::vec3(0.12f, 0.1f, 0.917f) // blue light
+			vec3(0.0f, -1.0f, 0.0f),
+			vec3(0.12f, 0.1f, 0.917f) // blue light
 		);
 
 		// light preset 2
 		// 3 blue lights
 		lightPresets[1].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
-			glm::vec3(2.0f, 1.0f, 1.0f),
-			glm::vec3(0.34f, 0.74f, 0.998f)
+			vec3(2.0f, 1.0f, 1.0f),
+			vec3(0.34f, 0.74f, 0.998f)
 		);
 
 		lightPresets[1].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
-			glm::vec3(-2.0f, 1.0f, -2.0f),
-			glm::vec3(0.339f, 0.898f, 0.979f	)
+			vec3(-2.0f, 1.0f, -2.0f),
+			vec3(0.339f, 0.898f, 0.979f	)
 		);
 
 		lightPresets[1].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
-			glm::vec3(0.0f, -1.0f, 0.0f),  // white light
-			glm::vec3(0.339f, 0.398f,0.998f)
+			vec3(0.0f, -1.0f, 0.0f),  // white light
+			vec3(0.339f, 0.398f,0.998f)
 		);
 
 		// light preset 3
 		// no lights
 		lightPresets[2].emplace_back(
 			LIGHT_TYPE_DIRECTIONAL,
-			glm::vec3(-2.0f, 1.0f, -2.0f),
-			glm::vec3(0.0f) // white light
+			vec3(-2.0f, 1.0f, -2.0f),
+			vec3(0.0f) // white light
 		);
 		*/
 
@@ -105,6 +105,11 @@ namespace pine {
 
 	void Application::Init()
 	{
+		GraphicsApi graphics_api = GraphicsApi::UNDEFINED_API;
+#ifdef GRAPHICS_API_OPENGL
+		graphics_api = GraphicsApi::OPENGL_API;
+#endif
+
 		// TODO: chekc if some init methods can be moved to Startup
 		Logger::Instance().Info("Pine3D: begin initiating objects...");
 		window = std::make_unique<GlfwWindow>();
@@ -112,7 +117,7 @@ namespace pine {
 		//If in editor
 		editor = Editor::Init();
 		// Default API is OpenGL due to the lack of other implementations obviously lol
-		renderer = Renderer::Init(GraphicsApi::OPENGL_API);
+		renderer = Renderer::Init(graphics_api);
 		Logger::Instance().Success("Pine3D: ...initiating objects complete.");
 	}
 

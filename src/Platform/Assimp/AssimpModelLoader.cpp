@@ -165,7 +165,7 @@ namespace pine {
 			outModel.materials.emplace_back(currentMat);
             LoadAllMaterialTextures(scene, Dir, pMaterial, i, currentMat, outModel);
 
-            example::color_editor.AddMaterialNodes(currentMat, ImVec2(1,1));
+            Application::window->GetNodeEditor().AddMaterialNodes(currentMat, ImVec2(1,1));
         }
 
         return Ret;

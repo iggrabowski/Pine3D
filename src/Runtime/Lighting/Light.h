@@ -13,14 +13,14 @@ namespace pine
     {
     public:
         Light();
-        Light(LightType type, glm::vec3 dir_pos, glm::vec3 color);
+        Light(LightType type, vec3 dir_pos, vec3 color);
         ~Light();
 
-		glm::vec3 GetColor() const { return m_Color; }
-		glm::vec3 GetDirection() const { return m_Direction; }
+		vec3 GetColor() const { return m_Color; }
+		vec3 GetDirection() const { return m_Direction; }
     private:
-		glm::vec3 m_Color = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 m_Direction = glm::vec3(0.0f, -1.0f, 0.0f);
-		glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
+		vec3 m_Color = vec3(1.0f, 1.0f, 1.0f);
+		vec3 m_Direction = vec3(0.0f, -1.0f, 0.0f);
+		vec3 m_Position = vec3(0.0f, 0.0f, 0.0f);
     };
 }

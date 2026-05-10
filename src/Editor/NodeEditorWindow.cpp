@@ -1,30 +1,37 @@
 #include "NodeEditorWindow.h"
+#include <algorithm>
 
 namespace pine {
+
 	NodeEditorWindow::NodeEditorWindow()
 	{
-        Init();
+		Init();
 	}
 
-	void NodeEditorWindow::Show(bool p_open, int height)
+	void NodeEditorWindow::Show(bool p_open, int objLoaderHeight)
 	{
-        ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-        if (main_viewport)
-        {
-            ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x,height), ImGuiCond_Always);
-            //ImGui::SetNextWindowViewport(main_viewport->ID);
-        }
-        example::NodeEditorShowColor();
+		ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+		if (main_viewport)
+		{
+			float remainingHeight = main_viewport->WorkSize.y - objLoaderHeight;
+
+			ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x, main_viewport->WorkPos.y + objLoaderHeight), ImGuiCond_Always);
+			_width = std::min<float>(_width, static_cast<int>(main_viewport->WorkSize.x));
+			ImGui::SetNextWindowSize(ImVec2(_width, remainingHeight), ImGuiCond_Always);
+		}
+		_nodeEditor.Show();
+		_width = _nodeEditor.GetWidth();
 	}
 
 	void NodeEditorWindow::Init()
 	{
-    ImNodes::CreateContext();
-    example::NodeEditorInitializeColor();
+		ImNodes::CreateContext();
+		_nodeEditor.NodeEditorInitialize();
 
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    ImNodes::StyleColorsDark();
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		ImNodes::StyleColorsDark();
 	}
 }
+
 

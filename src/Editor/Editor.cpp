@@ -4,7 +4,7 @@
 namespace pine {
 	Editor::Editor()
 	{
-		_camera = std::make_unique<Camera>(glm::vec3(2.0f, 2.0f, -5.0f));
+		_camera = std::make_unique<Camera>(vec3(2.0f, 2.0f, -5.0f));
 		_activeCameraIndex = 0;
 	}
 
@@ -94,8 +94,8 @@ namespace pine {
 
 					float rotX = mousePos.first - lastMousePos.first;
 					float rotY = mousePos.second - lastMousePos.second;
-					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotX, glm::vec3(0.0f, 1.0f,0.0f));
-					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotY, glm::cross(GetCamera()->GetDirection(), GetCamera()->up));
+					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotX, vec3(0.0f, 1.0f,0.0f));
+					GetCamera()->Rotate(EDITOR_CAMERA_MOVE_SPEED * -rotY, cross(GetCamera()->GetDirection(), GetCamera()->up));
 					Application::window->SetCursorDisabled(value);
 					Application::inputHandler->UpdateMousePosition(0, mousePos.first, mousePos.second);
 					return true;
@@ -187,8 +187,8 @@ namespace pine {
 
 	void Editor::MoveCameraX(const float scale) const
 	{
-		glm::vec3 moveDir = scale * glm::normalize(
-			glm::cross(Application::renderer->GetRenderCamera().GetDirection(), Application::renderer->GetRenderCamera().up)
+		vec3 moveDir = scale * normalize(
+			cross(Application::renderer->GetRenderCamera().GetDirection(), Application::renderer->GetRenderCamera().up)
 		);
 		MoveInDirection(moveDir);
 	}
@@ -203,10 +203,10 @@ namespace pine {
 		MoveInDirection(scale * Application::renderer->GetRenderCamera().GetDirection());
 	}
 
-	void Editor::MoveInDirection(glm::vec3 direction) const
+	void Editor::MoveInDirection(vec3 direction) const
 	{
 		Camera& camera = Application::renderer->GetRenderCamera();
-		glm::vec3 pos = camera.GetPos();
+		vec3 pos = camera.GetPos();
 
 		camera.SetPos(pos + direction * _moveSpeed);
 	}
