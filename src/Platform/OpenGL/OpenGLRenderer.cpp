@@ -124,6 +124,7 @@ void OpenGLRenderer::InitSkybox() {
 
   glTextureStorage2D(_skyboxTextureObj, static_cast<GLsizei>(maxMipLevels),
                      GL_RGB16F, static_cast<GLint>(faceWidth),
+                     //
                      static_cast<GLint>(faceHeight));
 
   for (int i = 0; i < 6; ++i) {
@@ -355,18 +356,28 @@ void OpenGLRenderer::RenderQuad() {
   static GLuint quadVAO = 0;
   static GLuint quadVBO = 0;
   if (quadVAO == 0) {
-    float quadVertices[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f,
+    float quadVertices[] = {
+      // positions   // texCoords
+      -1.0f, -1.0f,  0.0f, 0.0f,
+       1.0f, -1.0f,  1.0f, 0.0f,
+      -1.0f,  1.0f,  0.0f, 1.0f,
 
-                            -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f};
+      -1.0f,  1.0f,  0.0f, 1.0f,
+       1.0f, -1.0f,  1.0f, 0.0f,
+       1.0f,  1.0f,  1.0f, 1.0f
+    };
 
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &quadVBO);
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices,
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    // position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    // texcoord attribute
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
@@ -473,6 +484,8 @@ void OpenGLRenderer::Clear() {
 }
 
 void OpenGLRenderer::DrawSkybox() {
+	glBindFramebuffer(GL_FRAMEBUFFER, _captureFBO);
+
   GLint prevDepthFunc = 0;
   glGetIntegerv(GL_DEPTH_FUNC, &prevDepthFunc);
   GLboolean prevDepthMask = GL_FALSE;
@@ -518,17 +531,21 @@ void OpenGLRenderer::DrawSkybox() {
   // Restore depth state
   glDepthMask(prevDepthMask);
   glDepthFunc(prevDepthFunc);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
 void OpenGLRenderer::PostProcessBloom() {
   bool horizontal = true, first_iteration = true;
 
   // TODO: add control
-  unsigned int amount = 5;
+  unsigned int amount = 10;
   _blurShader->Bind();
+  glActiveTexture(GL_TEXTURE0);
   for (unsigned int i = 0; i < amount; i++) {
     glBindFramebuffer(GL_FRAMEBUFFER, _pingpongFBO[horizontal]);
-    _blurShader->SetUniform("horizontal",
+    _blurShader->SetUniform("u_horizontal",
                             static_cast<unsigned int>(horizontal));
+    _blurShader->SetUniformCubeSampler("u_image", 0);
     glBindTexture(GL_TEXTURE_2D, first_iteration
                                      ? _renderFrameCBO[BLOOM_COLOR_BUFFER]
                                      : _pingpongCBO[!horizontal]);
@@ -541,9 +558,9 @@ void OpenGLRenderer::PostProcessBloom() {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void OpenGLRenderer::LoadShaders() {
+void OpenGLRenderer::InitShaders() {
   _blurShader = std::make_unique<Shader>(*Shader::LoadShaders(
-      "../res/shaders/screen_space", "../res/shaders/gaussian"));
+      "../res/shaders/screen_space", "../res/shaders/gaussian_blur"));
   _blendShader = std::make_unique<Shader>(*Shader::LoadShaders(
       "../res/shaders/screen_space", "../res/shaders/blend"));
 }
@@ -564,9 +581,12 @@ void OpenGLRenderer::GenerateFrameBuffers() {
     // attach texture to framebuffer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
                            GL_TEXTURE_2D, _renderFrameCBO[i], 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
   }
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    std::cerr << "Framebuffer not complete!" << std::endl;
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void OpenGLRenderer::ResizeTexture(GLuint textureID, int width, int height) {
@@ -609,8 +629,34 @@ void OpenGLRenderer::Startup() {
   PrefilterEnvironmentMap();
   DrawBRDFLUT();
   GenerateFrameBuffers();
+  InitShaders();
+  InitPingPongBuffers();
   // debug
   //_skyboxTextureObj = _prefilteredMapObj;
+}
+
+void OpenGLRenderer::UpdateRenderDimensions() {
+  ivec2 newSize = Application::window->GetSize();
+  ResizeTexture(_renderFrameCBO[BLOOM_COLOR_BUFFER], newSize.x, newSize.y);
+  ResizeTexture(_renderFrameCBO[SCENE_COLOR_BUFFER], newSize.x, newSize.y);
+  ResizeTexture(_pingpongCBO[0], newSize.x, newSize.y);
+  ResizeTexture(_pingpongCBO[1], newSize.x, newSize.y);
+}
+
+void OpenGLRenderer::BlendColorBuffers(GLuint target, GLuint source) {
+  _blendShader->Bind();
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, target);
+  _blendShader->SetUniformTextureSampler2D("u_scene", 0);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, source);
+  _blendShader->SetUniformTextureSampler2D("u_bloomBlur", 1);
+  _blendShader->SetUniform("u_exposure",
+                           1.0f); // TODO: add control for exposure
+  RenderQuad();
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
@@ -790,50 +836,13 @@ void OpenGLRenderer::Draw(MeshRenderer *mr) {
   glBindFramebuffer(GL_FRAMEBUFFER, _captureFBO);
 
   RenderMesh(mr);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // post processing
   PostProcessBloom();
 
-  //_emissiveextractshader->bind();
-  // if (!mr->getmodel()->b_meshes.empty()) {
-  //  for (const basicmesh &bm : mr->getmodel()->b_meshes) {
-  //    glactivetexture(gl_texture0);
-  //    glbindtexture(gl_texture_2d, mr->getemissivemap());
-  //    _emissiveextractshader->setuniformtexturesampler2d("u_emissivemap", 0);
-  //    renderquad();
-  //  }
-  //}
-  // glbindframebuffer(gl_framebuffer, 0);
-
-  //// 3. apply gaussian blur to emissive map
-  // bool horizontal = true, firstiteration = true;
-  // unsigned int amount = 10; // number of blur passes
-  // for (unsigned int i = 0; i < amount; i++) {
-  //   glbindframebuffer(gl_framebuffer, _pingpongframebuffers[horizontal]);
-  //   _blurshader->bind();
-  //   glactivetexture(gl_texture0);
-  //   glbindtexture(gl_texture_2d, firstiteration
-  //                                    ? mr->isshadersvalid
-  //                                    : _pingpongtextures[!horizontal]);
-  //   _blurshader->setuniformtexturesampler2d("u_image", 0);
-  //   _blurshader->setuniform("u_horizontal", horizontal);
-  //   renderquad();
-  //   horizontal = !horizontal;
-  //   if (firstiteration)
-  //     firstiteration = false;
-  // }
-  // glbindframebuffer(gl_framebuffer, 0);
-
-  //// 4. combine scene and bloom from emissive maps
-  // glclear(gl_color_buffer_bit | gl_depth_buffer_bit);
-  //_bloomcombineshader->bind();
-  // glactivetexture(gl_texture0);
-  // glbindtexture(gl_texture_2d, _capturefbo);
-  //_bloomcombineshader->setuniformtexturesampler2d("u_scene", 0);
-  // glactivetexture(gl_texture1);
-  // glbindtexture(gl_texture_2d, _pingpongtextures[!horizontal]);
-  //_bloomcombineshader->setuniformtexturesampler2d("u_bloomblur", 1);
-  // renderquad();
+  // Blend bloom with scene
+  BlendColorBuffers(_renderFrameCBO[SCENE_COLOR_BUFFER], *_pingpongCBO);
 }
 
 } // namespace pine

@@ -30,6 +30,7 @@ public:
   virtual void OnUpdate() = 0;
   virtual void DrawIndexed(/*const IndexedModel& model*/) = 0;
   virtual void Draw(MeshRenderer *mr) = 0;
+  virtual void UpdateRenderDimensions() = 0;
 
   // static Renderer* s_Instance;
   GraphicsApi m_rendererAPI = GraphicsApi::UNDEFINED_API;
