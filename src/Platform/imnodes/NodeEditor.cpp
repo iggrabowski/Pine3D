@@ -1,9 +1,10 @@
 #include "NodeEditor.h"
 #include <Runtime/Components/Texture.h>
 #define BASE_NODE_POS_X 20
-#define BASE_NODE_POS_Y 440
+#define BASE_NODE_POS_Y 450
 #define MATERIAL_NODE_POS_X 450
-#define MATERIAL_NODE_POS_Y 690
+#define MATERIAL_NODE_POS_Y 540
+#define IMAGE_NODE_SIZE 100
 
 namespace pine {
 void NodeEditor::NodeEditorInitialize() {
@@ -28,26 +29,26 @@ void NodeEditor::CreateMaterialComponentNode(TextureType type,
   UiNode component_node;
   switch (type) {
   case TEX_TYPE_BASE:
-    position = ImVec2(BASE_NODE_POS_X + 200, BASE_NODE_POS_Y);
+    position = ImVec2(BASE_NODE_POS_X + 150, BASE_NODE_POS_Y);
     break;
   case TEX_TYPE_NORMAL:
     position = ImVec2(BASE_NODE_POS_X, BASE_NODE_POS_Y);
     break;
   case TEX_TYPE_METALLIC:
-    position = ImVec2(BASE_NODE_POS_X, BASE_NODE_POS_Y + 200);
+    position = ImVec2(BASE_NODE_POS_X, BASE_NODE_POS_Y + 175);
 
     break;
   case TEX_TYPE_ROUGHNESS:
-    position = ImVec2(BASE_NODE_POS_X, BASE_NODE_POS_Y + 400);
+    position = ImVec2(BASE_NODE_POS_X, BASE_NODE_POS_Y + 350);
     break;
   case TEX_TYPE_AO:
-    position = ImVec2(BASE_NODE_POS_X + 200, BASE_NODE_POS_Y + 200);
+    position = ImVec2(BASE_NODE_POS_X + 150, BASE_NODE_POS_Y + 175);
     break;
   case TEX_TYPE_HEIGHT:
-    position = ImVec2(BASE_NODE_POS_X + 200, BASE_NODE_POS_Y + 400);
+    position = ImVec2(BASE_NODE_POS_X + 150, BASE_NODE_POS_Y + 350);
     break;
   case TEX_TYPE_EMISSIVE:
-    position = ImVec2(BASE_NODE_POS_X + 200, BASE_NODE_POS_Y + 600);
+    position = ImVec2(BASE_NODE_POS_X + 150, BASE_NODE_POS_Y + 525);
     break;
   }
 
@@ -631,7 +632,7 @@ void NodeEditor::Show() {
       ImNodes::EndNode();
     } break;
     case UiNodeType::image: {
-      const float node_width = 250.0f;
+      const float node_width = IMAGE_NODE_SIZE;
       ImNodes::BeginNode(node.id);
 
       ImNodes::BeginNodeTitleBar();
@@ -677,7 +678,7 @@ void NodeEditor::Show() {
       // show thumbnail if texture present
       if (node.texture) {
         ImTextureID texId = (ImTextureID)(intptr_t)node.texture->GetGLHandle();
-        ImGui::Image(texId, ImVec2(128, 128));
+        ImGui::Image(texId, ImVec2(IMAGE_NODE_SIZE, IMAGE_NODE_SIZE));
       }
 
       // Add an output attribute on the right side so this image node can be
