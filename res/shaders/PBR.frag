@@ -3,7 +3,7 @@
 #version 330
 
 layout (location = 0) out vec4 fragColor;
-layout (loacation = 1) out vec4 glowColor;
+layout (location = 1) out vec4 glowColor;
 
 const int MAX_DIR_LIGHTS = 4;
 
@@ -34,8 +34,6 @@ in vec3 tangentLightDirs[MAX_DIR_LIGHTS];
 in vec3 tangentLightDiffs[MAX_DIR_LIGHTS];
 in vec3 tangentNormal;
 in mat3 TBN;
-
-out vec4 fragColor;
 
 // shader flag constants
 const uint BASE_TEXTURE = 1u;
@@ -172,6 +170,7 @@ vec3 CalcPBRLighting() {
 	vec3 ambient = (Kd * diffuseIBL + specular) * ao;
 
   vec3 outColor =  ambient + Lo + emissive;
+  glowColor = vec4(emissive, 1.0);
 
 	return outColor;
 }

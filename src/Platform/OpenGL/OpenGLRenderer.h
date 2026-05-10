@@ -12,6 +12,7 @@ enum RenderColorBufferType {
 class OpenGLRenderer final : public Renderer {
 public:
   OpenGLRenderer();
+  ~OpenGLRenderer();
 
   void OnUpdate() override;
   void Clear() override;
@@ -48,6 +49,7 @@ private:
   GLuint _brdfLUTTextureObj;
   GLuint _renderFrameCBO[NUM_COLOR_BUFFERS];
   GLuint _captureFBO;
+  GLuint _captureRBO;
   GLuint _pingpongFBO[2];
   GLuint _pingpongCBO[2];
 };

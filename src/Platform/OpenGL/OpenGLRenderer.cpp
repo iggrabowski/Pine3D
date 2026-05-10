@@ -356,28 +356,27 @@ void OpenGLRenderer::RenderQuad() {
   static GLuint quadVAO = 0;
   static GLuint quadVBO = 0;
   if (quadVAO == 0) {
-    float quadVertices[] = {
-      // positions   // texCoords
-      -1.0f, -1.0f,  0.0f, 0.0f,
-       1.0f, -1.0f,  1.0f, 0.0f,
-      -1.0f,  1.0f,  0.0f, 1.0f,
+    float quadVertices[] = {// positions   // texCoords
+                            -1.0f, -1.0f, 0.0f,  0.0f, 1.0f, -1.0f,
+                            1.0f,  0.0f,  -1.0f, 1.0f, 0.0f, 1.0f,
 
-      -1.0f,  1.0f,  0.0f, 1.0f,
-       1.0f, -1.0f,  1.0f, 0.0f,
-       1.0f,  1.0f,  1.0f, 1.0f
-    };
+                            -1.0f, 1.0f,  0.0f,  1.0f, 1.0f, -1.0f,
+                            1.0f,  0.0f,  1.0f,  1.0f, 1.0f, 1.0f};
 
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &quadVBO);
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices,
+                 GL_STATIC_DRAW);
     // position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                          (void *)0);
     // texcoord attribute
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                          (void *)(2 * sizeof(float)));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
@@ -472,6 +471,20 @@ OpenGLRenderer::OpenGLRenderer() {
   glEnable(GL_CULL_FACE);
 }
 
+OpenGLRenderer::~OpenGLRenderer()
+{
+  glDeleteTextures(1, &_skyboxTextureObj);
+  glDeleteVertexArrays(1, &_skyboxCubeVAO);
+  glDeleteTextures(1, &_irradianceMapTextureObj);
+  glDeleteTextures(1, &_prefilteredMapObj);
+  glDeleteTextures(1, &_brdfLUTTextureObj);
+  glDeleteTextures(NUM_COLOR_BUFFERS, _renderFrameCBO);
+  glDeleteFramebuffers(1, &_captureFBO);
+  glDeleteRenderbuffers(1, &_captureRBO);
+  glDeleteFramebuffers(2, _pingpongFBO);
+  glDeleteTextures(2, _pingpongCBO);
+}
+
 void OpenGLRenderer::OnUpdate() {
   Clear();
 
@@ -484,7 +497,7 @@ void OpenGLRenderer::Clear() {
 }
 
 void OpenGLRenderer::DrawSkybox() {
-	glBindFramebuffer(GL_FRAMEBUFFER, _captureFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, _captureFBO);
 
   GLint prevDepthFunc = 0;
   glGetIntegerv(GL_DEPTH_FUNC, &prevDepthFunc);
@@ -531,12 +544,11 @@ void OpenGLRenderer::DrawSkybox() {
   // Restore depth state
   glDepthMask(prevDepthMask);
   glDepthFunc(prevDepthFunc);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void OpenGLRenderer::PostProcessBloom() {
   bool horizontal = true, first_iteration = true;
-
   // TODO: add control
   unsigned int amount = 10;
   _blurShader->Bind();
@@ -569,6 +581,7 @@ void OpenGLRenderer::GenerateFrameBuffers() {
   glGenFramebuffers(1, &_captureFBO);
   glBindFramebuffer(GL_FRAMEBUFFER, _captureFBO);
   glGenTextures(2, _renderFrameCBO);
+
   ivec2 windowSize = Application::window->GetSize();
   for (unsigned int i = 0; i < 2; i++) {
     glBindTexture(GL_TEXTURE_2D, _renderFrameCBO[i]);
@@ -582,6 +595,11 @@ void OpenGLRenderer::GenerateFrameBuffers() {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
                            GL_TEXTURE_2D, _renderFrameCBO[i], 0);
   }
+  glGenRenderbuffers(1, &_captureRBO);
+  glBindRenderbuffer(GL_RENDERBUFFER, _captureRBO);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, windowSize.x, windowSize.y);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _captureRBO);
+
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     std::cerr << "Framebuffer not complete!" << std::endl;
   }
@@ -641,6 +659,10 @@ void OpenGLRenderer::UpdateRenderDimensions() {
   ResizeTexture(_renderFrameCBO[SCENE_COLOR_BUFFER], newSize.x, newSize.y);
   ResizeTexture(_pingpongCBO[0], newSize.x, newSize.y);
   ResizeTexture(_pingpongCBO[1], newSize.x, newSize.y);
+
+  glBindRenderbuffer(GL_RENDERBUFFER, _captureRBO);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, newSize.x, newSize.y);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void OpenGLRenderer::BlendColorBuffers(GLuint target, GLuint source) {
@@ -660,66 +682,69 @@ void OpenGLRenderer::BlendColorBuffers(GLuint target, GLuint source) {
 }
 
 void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
+   unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+  glDrawBuffers(2, attachments);
+
   // TODO: Draw can be abstracted
-  Model3D *model = mr->GetModel();
+  Model3D* model = mr->GetModel();
+  if (!model->mesh._buffered) {
+    // TODO: this is wrong, needs seperate mesh/shader
+    // BufferMesh(model.mesh, *mat.m_Shader);
+  }
 
   UpdateRenderFlags(mr); // TODO: OPT does not need to be here every draw call
 
-  // one color for the render, one for the bloom extraction
-  unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-  glDrawBuffers(2, attachments);
-
   // bind VAO once for the mesh data
   glBindVertexArray(
-      model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
+    model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
 
   // TODO OPT: redundant operations
   mat4 umodel = mr->GetTransform().GetModel();
   mat4 mvp =
-      Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
+    Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
   vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
 
   // TODO : check if window open cause of crashes
   // If model defines BasicMesh ranges, draw each range separately.
   if (!model->b_meshes.empty()) {
-    for (const BasicMesh &bm : model->b_meshes) {
+    for (const BasicMesh& bm : model->b_meshes) {
       // bind shader/texture (existing code assumes 'mat' is set up)
-      Shader *shader = model->materials[bm.materialIndex]->m_shader;
+      Shader* shader = model->materials[bm.materialIndex]->m_shader;
       shader->Bind();
       // material->m_Shader->SetUniform("Model", model);
       //  TODO: think if shader attributes should be selected from shader data
       shader->SetUniform("MVP", mvp); // TODO: build on uniform system to find
-                                      // needed uniforms from shader
+      // needed uniforms from shader
       shader->SetUniform("Model", umodel);
       shader->SetUniform("u_cameraPos", camPos);
       // shader->SetUniform("u_lightDir", lightDir);
       // shader->SetUniform("u_lightColor", lightColor);
       shader->SetUniform("u_roughness",
-                         model->materials[bm.materialIndex]->m_roughness);
+        model->materials[bm.materialIndex]->m_roughness);
       shader->SetUniform("u_metalness",
-                         model->materials[bm.materialIndex]->m_metallic);
+        model->materials[bm.materialIndex]->m_metallic);
       shader->SetUniform("u_renderFlags", mr->m_render_flags[bm.materialIndex]);
       shader->SetUniform("u_prefilteredMapMaxLOD",
-                         _prefilteredMapMaxMipLevels - 1);
+        _prefilteredMapMaxMipLevels - 1);
 
       // lights
       unsigned int lightCount = 0;
       std::vector<vec3> lightDirs;
       std::vector<vec3> lightColors;
       if (!Application::lightPresets.empty() &&
-          std::cmp_less(Application::activeLightPresetIndex,
-                        Application::lightPresets.size())) {
+        std::cmp_less(Application::activeLightPresetIndex,
+          Application::lightPresets.size())) {
         lightCount = static_cast<unsigned int>(
-            Application::lightPresets[Application::activeLightPresetIndex]
-                .size());
+          Application::lightPresets[Application::activeLightPresetIndex]
+          .size());
 
         for (unsigned int i = 0; i < lightCount; ++i) {
           lightDirs.push_back(
-              Application::lightPresets[Application::activeLightPresetIndex][i]
-                  .GetDirection());
+            Application::lightPresets[Application::activeLightPresetIndex][i]
+            .GetDirection());
           lightColors.push_back(
-              Application::lightPresets[Application::activeLightPresetIndex][i]
-                  .GetColor());
+            Application::lightPresets[Application::activeLightPresetIndex][i]
+            .GetColor());
         }
       }
 
@@ -727,7 +752,6 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
       shader->SetUniformArray("u_lightDirs", lightDirs, MAX_LIGHTS);
       shader->SetUniformArray("u_lightDiffs", lightColors, MAX_LIGHTS);
 
-      // TODO: textures
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMapTextureObj);
       shader->SetUniformCubeSampler("u_irradianceMap", 0);
@@ -743,83 +767,85 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
       // Bind albedo (base) to texture unit 0
       // TODO: hardcoded texture unit indexes, also make functions for redundant
       // uniform setting
-      auto *albedoTex =
-          model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
+      auto* albedoTex =
+        model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
       if (albedoTex && mr->m_render_flags[bm.materialIndex] &
-                           static_cast<uint32_t>(RenderFlags::BASE_TEXTURE)) {
+        static_cast<uint32_t>(RenderFlags::BASE_TEXTURE)) {
         albedoTex->Bind(3);
         shader->SetUniformTextureSampler2D("u_albedoMap", 3);
       }
 
       // Bind normal map to texture unit 1
-      auto *normalTex =
-          model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
+      auto* normalTex =
+        model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
       if (normalTex && mr->m_render_flags[bm.materialIndex] &
-                           static_cast<uint32_t>(RenderFlags::NORMAL_MAPS)) {
+        static_cast<uint32_t>(RenderFlags::NORMAL_MAPS)) {
         normalTex->Bind(4);
         shader->SetUniformTextureSampler2D("u_normalMap", 4);
       }
 
-      auto *roughnessTex =
-          model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
+      auto* roughnessTex =
+        model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
       if (roughnessTex &&
-          mr->m_render_flags[bm.materialIndex] &
-              static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS)) {
+        mr->m_render_flags[bm.materialIndex] &
+        static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS)) {
         roughnessTex->Bind(5);
         shader->SetUniformTextureSampler2D("u_roughnessMap", 5);
       }
 
-      auto *metalnessTex =
-          model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
+      auto* metalnessTex =
+        model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
       if (metalnessTex &&
-          mr->m_render_flags[bm.materialIndex] &
-              static_cast<uint32_t>(RenderFlags::METALNESS_MAPS)) {
+        mr->m_render_flags[bm.materialIndex] &
+        static_cast<uint32_t>(RenderFlags::METALNESS_MAPS)) {
         metalnessTex->Bind(6);
         shader->SetUniformTextureSampler2D("u_metalnessMap", 6);
       }
 
-      auto *aoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_AO];
+      auto* aoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_AO];
       if (aoTex && mr->m_render_flags[bm.materialIndex] &
-                       static_cast<uint32_t>(RenderFlags::AO_MAPS)) {
+        static_cast<uint32_t>(RenderFlags::AO_MAPS)) {
         aoTex->Bind(7);
         shader->SetUniformTextureSampler2D("u_aoMap", 7);
       }
 
-      auto *emissiveTex =
-          model->materials[bm.materialIndex]->m_textures[TEX_TYPE_EMISSIVE];
+      auto* emissiveTex =
+        model->materials[bm.materialIndex]->m_textures[TEX_TYPE_EMISSIVE];
       if (emissiveTex &&
-          mr->m_render_flags[bm.materialIndex] &
-              static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS)) {
+        mr->m_render_flags[bm.materialIndex] &
+        static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS)) {
         emissiveTex->Bind(8);
         shader->SetUniformTextureSampler2D("u_emissiveMap", 8);
       }
 
-      // TODO: bind other textures
+      // TODO: bind other textures (metallic, roughness, ao, etc.)
 
       // If the mesh has an index buffer, use glDrawElementsBaseVertex with the
       // BaseIndex offset.
       if (!model->mesh.m_Indices.empty()) {
         glDrawElementsBaseVertex(
-            GL_TRIANGLES, static_cast<GLsizei>(bm.numIndices), GL_UNSIGNED_INT,
-            (void *)(sizeof(unsigned int) * bm.baseIndex),
-            static_cast<GLint>(bm.baseVertex));
+          GL_TRIANGLES, static_cast<GLsizei>(bm.numIndices), GL_UNSIGNED_INT,
+          (void*)(sizeof(unsigned int) * bm.baseIndex),
+          static_cast<GLint>(bm.baseVertex));
         LogGLErrors("glDrawElementsBaseVertex");
-      } else {
+      }
+      else {
         // No index buffer: draw arrays starting at BaseVertex for NumIndices
         // vertices.
         glDrawArrays(GL_TRIANGLES, static_cast<GLint>(bm.baseVertex),
-                     static_cast<GLsizei>(bm.numIndices));
+          static_cast<GLsizei>(bm.numIndices));
       }
     }
-  } else {
+  }
+  else {
     // Fallback: draw entire mesh if no BasicMesh info available.
     if (!model->mesh.m_Indices.empty())
       glDrawElements(GL_TRIANGLES,
-                     static_cast<GLsizei>(model->mesh.m_Indices.size()),
-                     GL_UNSIGNED_INT, 0);
+        static_cast<GLsizei>(model->mesh.m_Indices.size()),
+        GL_UNSIGNED_INT, 0);
     else
       glDrawArrays(GL_TRIANGLES, 0,
-                   static_cast<GLsizei>(model->mesh.m_Positions.size()));
+        static_cast<GLsizei>(model->mesh.m_Positions.size()));
   }
 
   for (int i = 0; i < 16; ++i) // Assuming 16 texture units (adjust if needed)
@@ -834,6 +860,10 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
 
 void OpenGLRenderer::Draw(MeshRenderer *mr) {
   glBindFramebuffer(GL_FRAMEBUFFER, _captureFBO);
+  GLenum drawBuf = GL_COLOR_ATTACHMENT1; // clear bloom buffer
+  glDrawBuffers(1, &drawBuf);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   RenderMesh(mr);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -842,7 +872,7 @@ void OpenGLRenderer::Draw(MeshRenderer *mr) {
   PostProcessBloom();
 
   // Blend bloom with scene
-  BlendColorBuffers(_renderFrameCBO[SCENE_COLOR_BUFFER], *_pingpongCBO);
+  BlendColorBuffers(_renderFrameCBO[SCENE_COLOR_BUFFER], _pingpongCBO[1]);
 }
 
 } // namespace pine
