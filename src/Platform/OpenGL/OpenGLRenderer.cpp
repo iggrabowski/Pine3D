@@ -7,10 +7,12 @@
 #include "Platform/OpenGL/OpenGLRenderer.h"
 namespace pine {
 
-static const GLenum skyboxFaceTypes[6] = {
-    GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-    GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-    GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z};
+static const GLenum skyboxFaceTypes[6] = {GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+                                          GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+                                          GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+                                          GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                                          GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+                                          GL_TEXTURE_CUBE_MAP_NEGATIVE_Z};
 static mat4 captureViews[] = {
     lookAt(vec3(0.0f), vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
     lookAt(vec3(0.0f), vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
@@ -23,39 +25,39 @@ static mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
 
 void OpenGLRenderer::DrawIndexed(/*const IndexedModel& model*/) {}
 
-static void LogGLErrors(const std::string &context) {
+static void LogGLErrors(const std::string& context) {
   GLenum error;
   while ((error = glGetError()) != GL_NO_ERROR) {
     std::string errorString;
     switch (error) {
-    case GL_INVALID_ENUM:
-      errorString = "GL_INVALID_ENUM";
-      break;
-    case GL_INVALID_VALUE:
-      errorString = "GL_INVALID_VALUE";
-      break;
-    case GL_INVALID_OPERATION:
-      errorString = "GL_INVALID_OPERATION";
-      break;
-    case GL_STACK_OVERFLOW:
-      errorString = "GL_STACK_OVERFLOW";
-      break;
-    case GL_STACK_UNDERFLOW:
-      errorString = "GL_STACK_UNDERFLOW";
-      break;
-    case GL_OUT_OF_MEMORY:
-      errorString = "GL_OUT_OF_MEMORY";
-      break;
-    case GL_INVALID_FRAMEBUFFER_OPERATION:
-      errorString = "GL_INVALID_FRAMEBUFFER_OPERATION";
-      break;
-    default:
-      errorString = "UNKNOWN_ERROR";
-      break;
+      case GL_INVALID_ENUM:
+        errorString = "GL_INVALID_ENUM";
+        break;
+      case GL_INVALID_VALUE:
+        errorString = "GL_INVALID_VALUE";
+        break;
+      case GL_INVALID_OPERATION:
+        errorString = "GL_INVALID_OPERATION";
+        break;
+      case GL_STACK_OVERFLOW:
+        errorString = "GL_STACK_OVERFLOW";
+        break;
+      case GL_STACK_UNDERFLOW:
+        errorString = "GL_STACK_UNDERFLOW";
+        break;
+      case GL_OUT_OF_MEMORY:
+        errorString = "GL_OUT_OF_MEMORY";
+        break;
+      case GL_INVALID_FRAMEBUFFER_OPERATION:
+        errorString = "GL_INVALID_FRAMEBUFFER_OPERATION";
+        break;
+      default:
+        errorString = "UNKNOWN_ERROR";
+        break;
     }
 
-    std::cerr << "OpenGL Error in " << context << ": " << errorString << " ("
-              << error << ")" << std::endl;
+    std::cerr << "OpenGL Error in " << context << ": " << errorString << " (" << error
+              << ")" << std::endl;
   }
 }
 
@@ -90,11 +92,10 @@ void OpenGLRenderer::InitSkybox() {
       -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
       1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
 
-  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
   // position attribute (location = 0 in shader)
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
 
   // unbind VBO/VAO until use
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -107,28 +108,28 @@ void OpenGLRenderer::InitSkybox() {
   unsigned int faceWidth = _skybox->GetResolution();
   unsigned int faceHeight = _skybox->GetResolution();
   unsigned int maxDim = std::max(faceWidth, faceHeight);
-  unsigned int maxMipLevels = static_cast<unsigned int>(std::floor(
-                                  std::log2(static_cast<float>(maxDim)))) +
-                              1;
+  unsigned int maxMipLevels =
+      static_cast<unsigned int>(std::floor(std::log2(static_cast<float>(maxDim)))) + 1;
 
   // allocate full mip chain
   glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
   glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_BASE_LEVEL, 0);
-  glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAX_LEVEL,
-                      static_cast<GLint>(maxMipLevels - 1));
-  glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MIN_FILTER,
-                      GL_LINEAR_MIPMAP_LINEAR);
+  glTextureParameteri(
+      _skyboxTextureObj, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(maxMipLevels - 1));
+  glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   glTextureParameteri(_skyboxTextureObj, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  glTextureStorage2D(_skyboxTextureObj, static_cast<GLsizei>(maxMipLevels),
-                     GL_RGB16F, static_cast<GLint>(faceWidth),
+  glTextureStorage2D(_skyboxTextureObj,
+                     static_cast<GLsizei>(maxMipLevels),
+                     GL_RGB16F,
+                     static_cast<GLint>(faceWidth),
                      //
                      static_cast<GLint>(faceHeight));
 
   for (int i = 0; i < 6; ++i) {
-    const void *pSrc = _skybox->GetCubemapTextures()[i].GetPixels();
+    const void* pSrc = _skybox->GetCubemapTextures()[i].GetPixels();
     glTextureSubImage3D(_skyboxTextureObj,
                         0, // mipmap level
                         0, // xOffset
@@ -154,25 +155,24 @@ void OpenGLRenderer::PrefilterEnvironmentMap() {
   glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilteredMapObj);
 
   _prefilteredMapMaxMipLevels =
-      static_cast<unsigned int>(
-          std::floor(std::log2(static_cast<float>(prefilterSize)))) +
-      1;
+      static_cast<unsigned int>(std::floor(std::log2(static_cast<float>(prefilterSize))))
+      + 1;
   glTexStorage2D(GL_TEXTURE_CUBE_MAP,
-                 static_cast<GLsizei>(_prefilteredMapMaxMipLevels), GL_RGB16F,
-                 prefilterSize, prefilterSize);
+                 static_cast<GLsizei>(_prefilteredMapMaxMipLevels),
+                 GL_RGB16F,
+                 prefilterSize,
+                 prefilterSize);
 
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTextureObj);
 
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
   GLuint captureFBO = 0;
   GLuint captureRBO = 0;
@@ -182,13 +182,12 @@ void OpenGLRenderer::PrefilterEnvironmentMap() {
   glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
   glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, prefilterSize,
-                        prefilterSize);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                            GL_RENDERBUFFER, captureRBO);
+  glRenderbufferStorage(
+      GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, prefilterSize, prefilterSize);
+  glFramebufferRenderbuffer(
+      GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-  Shader *prefilterShader =
-      Shader::LoadShaders("../res/shaders/skybox_prefilter");
+  Shader* prefilterShader = Shader::LoadShaders("../res/shaders/skybox_prefilter");
   prefilterShader->Bind();
   prefilterShader->SetUniformTextureSampler2D("u_environmentMap", 0);
   prefilterShader->SetUniform("u_projection", captureProjection);
@@ -201,21 +200,22 @@ void OpenGLRenderer::PrefilterEnvironmentMap() {
     GLsizei mipWidth = static_cast<GLsizei>(std::max(1u, prefilterSize >> mip));
 
     glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth,
-                          mipWidth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipWidth);
 
     glViewport(0, 0, mipWidth, mipWidth);
 
-    float roughness = static_cast<float>(mip) /
-                      static_cast<float>(_prefilteredMapMaxMipLevels - 1);
+    float roughness =
+        static_cast<float>(mip) / static_cast<float>(_prefilteredMapMaxMipLevels - 1);
     prefilterShader->SetUniform("u_roughness", roughness);
 
     glBindVertexArray(_skyboxCubeVAO);
     for (unsigned int i = 0; i < 6; ++i) {
       prefilterShader->SetUniform("u_view", captureViews[i]);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                             skyboxFaceTypes[i], _prefilteredMapObj,
-                             (GLint)mip);
+      glFramebufferTexture2D(GL_FRAMEBUFFER,
+                             GL_COLOR_ATTACHMENT0,
+                             skyboxFaceTypes[i],
+                             _prefilteredMapObj,
+                             (GLint) mip);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
@@ -225,8 +225,7 @@ void OpenGLRenderer::PrefilterEnvironmentMap() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-  glViewport(prevViewport[0], prevViewport[1], prevViewport[2],
-             prevViewport[3]);
+  glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 
   glDeleteFramebuffers(1, &captureFBO);
   glDeleteRenderbuffers(1, &captureRBO);
@@ -238,19 +237,14 @@ void OpenGLRenderer::GenerateIrradianceMap() {
   // Create irradiance cubemap
   glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &_irradianceMapTextureObj);
   int irradianceSize = 32; // low-res convolution target
-  glTextureStorage2D(_irradianceMapTextureObj, 1, GL_RGB16F, irradianceSize,
-                     irradianceSize);
+  glTextureStorage2D(
+      _irradianceMapTextureObj, 1, GL_RGB16F, irradianceSize, irradianceSize);
 
-  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_WRAP_S,
-                      GL_CLAMP_TO_EDGE);
-  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_WRAP_T,
-                      GL_CLAMP_TO_EDGE);
-  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_WRAP_R,
-                      GL_CLAMP_TO_EDGE);
-  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_MIN_FILTER,
-                      GL_LINEAR);
-  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_MAG_FILTER,
-                      GL_LINEAR);
+  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteri(_irradianceMapTextureObj, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   // Create framebuffer + renderbuffer
   GLuint captureFBO = 0;
@@ -260,13 +254,12 @@ void OpenGLRenderer::GenerateIrradianceMap() {
 
   glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
   glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, irradianceSize,
-                        irradianceSize);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                            GL_RENDERBUFFER, captureRBO);
+  glRenderbufferStorage(
+      GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, irradianceSize, irradianceSize);
+  glFramebufferRenderbuffer(
+      GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-  Shader *convShader =
-      Shader::LoadShaders("../res/shaders/skybox_irradiance_conv");
+  Shader* convShader = Shader::LoadShaders("../res/shaders/skybox_irradiance_conv");
   convShader->Bind();
   convShader->SetUniformTextureSampler2D("environmentMap", 0);
   convShader->SetUniform("u_projection", captureProjection);
@@ -280,8 +273,11 @@ void OpenGLRenderer::GenerateIrradianceMap() {
   glBindVertexArray(_skyboxCubeVAO);
   for (unsigned int i = 0; i < 6; ++i) {
     convShader->SetUniform("u_view", captureViews[i]);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           skyboxFaceTypes[i], _irradianceMapTextureObj, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER,
+                           GL_COLOR_ATTACHMENT0,
+                           skyboxFaceTypes[i],
+                           _irradianceMapTextureObj,
+                           0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLES, 0, 36);
   }
@@ -297,15 +293,15 @@ void OpenGLRenderer::GenerateIrradianceMap() {
   delete convShader;
 }
 
-void OpenGLRenderer::BufferModelMesh(MeshRenderer *mr) {
-  MeshData &mesh = mr->GetModel()->mesh;
+void OpenGLRenderer::BufferModelMesh(MeshRenderer* mr) {
+  MeshData& mesh = mr->GetModel()->mesh;
 
   glGenVertexArrays(1, &mesh.m_vertexArrayObject);
   glBindVertexArray(mesh.m_vertexArrayObject);
 
   glGenBuffers(NUM_BUFFERS, mesh.m_vertexArrayBuffers);
 
-  for (MeshBufferDataInfo &info : meshBufferDataTypes) {
+  for (MeshBufferDataInfo& info : meshBufferDataTypes) {
     LoadVertexAttributeArray(info, *mr);
   }
 
@@ -333,13 +329,13 @@ void OpenGLRenderer::DrawBRDFLUT() {
   glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
   glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
   glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         _brdfLUTTextureObj, 0);
+  glFramebufferTexture2D(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _brdfLUTTextureObj, 0);
 
   GLint prevViewport[4];
   glGetIntegerv(GL_VIEWPORT, prevViewport);
   glViewport(0, 0, 512, 512);
-  Shader *brdfShader = Shader::LoadShaders("../res/shaders/brdf_lut_gen");
+  Shader* brdfShader = Shader::LoadShaders("../res/shaders/brdf_lut_gen");
   brdfShader->Bind();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   RenderQuad();
@@ -348,35 +344,31 @@ void OpenGLRenderer::DrawBRDFLUT() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glDeleteFramebuffers(1, &captureFBO);
   glDeleteRenderbuffers(1, &captureRBO);
-  glViewport(prevViewport[0], prevViewport[1], prevViewport[2],
-             prevViewport[3]);
+  glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 }
 
 void OpenGLRenderer::RenderQuad() {
   static GLuint quadVAO = 0;
   static GLuint quadVBO = 0;
   if (quadVAO == 0) {
-    float quadVertices[] = {// positions   // texCoords
-                            -1.0f, -1.0f, 0.0f,  0.0f, 1.0f, -1.0f,
-                            1.0f,  0.0f,  -1.0f, 1.0f, 0.0f, 1.0f,
+    float quadVertices[] = {
+        // positions   // texCoords
+        -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f,
 
-                            -1.0f, 1.0f,  0.0f,  1.0f, 1.0f, -1.0f,
-                            1.0f,  0.0f,  1.0f,  1.0f, 1.0f, 1.0f};
+        -1.0f, 1.0f,  0.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f,  1.0f, 1.0f, 1.0f};
 
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &quadVBO);
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices,
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
     // position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                          (void *)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) 0);
     // texcoord attribute
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                          (void *)(2 * sizeof(float)));
+    glVertexAttribPointer(
+        1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) (2 * sizeof(float)));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
@@ -386,8 +378,8 @@ void OpenGLRenderer::RenderQuad() {
   glBindVertexArray(0);
 }
 
-void OpenGLRenderer::LoadVertexAttributeArray(MeshBufferDataInfo &info,
-                                              MeshRenderer &mr) {
+void OpenGLRenderer::LoadVertexAttributeArray(MeshBufferDataInfo& info,
+                                              MeshRenderer& mr) {
   int location = -1;
   if (info.position != INDEX_VB) {
     location = mr.GetAttributeLocation(info.attributeName);
@@ -395,62 +387,67 @@ void OpenGLRenderer::LoadVertexAttributeArray(MeshBufferDataInfo &info,
       return; // index does not use program attribute location
   }
 
-  MeshData &mesh = mr.GetModel()->mesh;
+  MeshData& mesh = mr.GetModel()->mesh;
 
   glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[info.position]);
   GLsizei attributeSize;
   switch (info.position) {
-  case POSITION_VB:
-    if (mesh.m_Positions.empty())
+    case POSITION_VB:
+      if (mesh.m_Positions.empty())
+        return;
+      glBufferData(GL_ARRAY_BUFFER,
+                   sizeof(mesh.m_Positions[0]) * mesh.m_Positions.size(),
+                   &mesh.m_Positions[0],
+                   GL_STATIC_DRAW);
+      attributeSize = 3;
+      break;
+    case TEXCOORD_VB:
+      if (mesh.m_TexCoords.empty())
+        return;
+      glBufferData(GL_ARRAY_BUFFER,
+                   sizeof(mesh.m_TexCoords[0]) * mesh.m_TexCoords.size(),
+                   &mesh.m_TexCoords[0],
+                   GL_STATIC_DRAW);
+      attributeSize = 2;
+      break;
+    case NORMAL_VB:
+      if (mesh.m_Normals.empty())
+        return;
+      glBufferData(GL_ARRAY_BUFFER,
+                   sizeof(mesh.m_Normals[0]) * mesh.m_Normals.size(),
+                   &mesh.m_Normals[0],
+                   GL_STATIC_DRAW);
+      attributeSize = 3;
+      break;
+    case TANGENT_VB:
+      if (mesh.m_Tangents.empty())
+        return;
+      glBufferData(GL_ARRAY_BUFFER,
+                   sizeof(mesh.m_Tangents[0]) * mesh.m_Tangents.size(),
+                   &mesh.m_Tangents[0],
+                   GL_STATIC_DRAW);
+      attributeSize = 3;
+      break;
+    case BITANGENT_VB:
+      if (mesh.m_Bitangents.empty())
+        return;
+      glBufferData(GL_ARRAY_BUFFER,
+                   sizeof(mesh.m_Bitangents[0]) * mesh.m_Bitangents.size(),
+                   &mesh.m_Bitangents[0],
+                   GL_STATIC_DRAW);
+      attributeSize = 3;
+      break;
+    case INDEX_VB:
+      if (mesh.m_Indices.empty())
+        return;
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_vertexArrayBuffers[info.position]);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                   sizeof(mesh.m_Indices[0]) * mesh.m_Indices.size(),
+                   &mesh.m_Indices[0],
+                   GL_STATIC_DRAW);
       return;
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(mesh.m_Positions[0]) * mesh.m_Positions.size(),
-                 &mesh.m_Positions[0], GL_STATIC_DRAW);
-    attributeSize = 3;
-    break;
-  case TEXCOORD_VB:
-    if (mesh.m_TexCoords.empty())
+    default:
       return;
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(mesh.m_TexCoords[0]) * mesh.m_TexCoords.size(),
-                 &mesh.m_TexCoords[0], GL_STATIC_DRAW);
-    attributeSize = 2;
-    break;
-  case NORMAL_VB:
-    if (mesh.m_Normals.empty())
-      return;
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(mesh.m_Normals[0]) * mesh.m_Normals.size(),
-                 &mesh.m_Normals[0], GL_STATIC_DRAW);
-    attributeSize = 3;
-    break;
-  case TANGENT_VB:
-    if (mesh.m_Tangents.empty())
-      return;
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(mesh.m_Tangents[0]) * mesh.m_Tangents.size(),
-                 &mesh.m_Tangents[0], GL_STATIC_DRAW);
-    attributeSize = 3;
-    break;
-  case BITANGENT_VB:
-    if (mesh.m_Bitangents.empty())
-      return;
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(mesh.m_Bitangents[0]) * mesh.m_Bitangents.size(),
-                 &mesh.m_Bitangents[0], GL_STATIC_DRAW);
-    attributeSize = 3;
-    break;
-  case INDEX_VB:
-    if (mesh.m_Indices.empty())
-      return;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
-                 mesh.m_vertexArrayBuffers[info.position]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(mesh.m_Indices[0]) * mesh.m_Indices.size(),
-                 &mesh.m_Indices[0], GL_STATIC_DRAW);
-    return;
-  default:
-    return;
   }
   glEnableVertexAttribArray(location);
   glVertexAttribPointer(location, attributeSize, GL_FLOAT, GL_FALSE, 0, 0);
@@ -509,12 +506,12 @@ void OpenGLRenderer::DrawSkybox() {
   // Bind skybox shader (replace with your actual shader instance)
   // The shader must sample a samplerCube uniform and use view/proj where view
   // has no translation.
-  Shader *skyboxShader = _skybox->GetShader();
+  Shader* skyboxShader = _skybox->GetShader();
   if (skyboxShader) {
     skyboxShader->Bind();
 
-    mat4 view = Application::renderer->GetRenderCamera()
-                    .GetViewMatrix(); // view matrix (camera)
+    mat4 view =
+        Application::renderer->GetRenderCamera().GetViewMatrix(); // view matrix (camera)
     mat4 proj = Application::renderer->GetRenderCamera()
                     .GetProjectionMatrix();    // projection matrix
     mat4 viewNoTranslation = mat4(mat3(view)); // strip translation
@@ -554,12 +551,11 @@ void OpenGLRenderer::PostProcessBloom() {
   glActiveTexture(GL_TEXTURE0);
   for (unsigned int i = 0; i < amount; i++) {
     glBindFramebuffer(GL_FRAMEBUFFER, _pingpongFBO[horizontal]);
-    _blurShader->SetUniform("u_horizontal",
-                            static_cast<unsigned int>(horizontal));
+    _blurShader->SetUniform("u_horizontal", static_cast<unsigned int>(horizontal));
     _blurShader->SetUniformCubeSampler("u_image", 0);
-    glBindTexture(GL_TEXTURE_2D, first_iteration
-                                     ? _renderFrameCBO[BLOOM_COLOR_BUFFER]
-                                     : _pingpongCBO[!horizontal]);
+    glBindTexture(GL_TEXTURE_2D,
+                  first_iteration ? _renderFrameCBO[BLOOM_COLOR_BUFFER]
+                                  : _pingpongCBO[!horizontal]);
     RenderQuad();
     horizontal = !horizontal;
     if (first_iteration)
@@ -572,8 +568,8 @@ void OpenGLRenderer::PostProcessBloom() {
 void OpenGLRenderer::InitShaders() {
   _blurShader = std::make_unique<Shader>(*Shader::LoadShaders(
       "../res/shaders/screen_space", "../res/shaders/gaussian_blur"));
-  _blendShader = std::make_unique<Shader>(*Shader::LoadShaders(
-      "../res/shaders/screen_space", "../res/shaders/blend"));
+  _blendShader = std::make_unique<Shader>(
+      *Shader::LoadShaders("../res/shaders/screen_space", "../res/shaders/blend"));
 }
 
 void OpenGLRenderer::GenerateFrameBuffers() {
@@ -584,22 +580,29 @@ void OpenGLRenderer::GenerateFrameBuffers() {
   ivec2 windowSize = Application::window->GetSize();
   for (unsigned int i = 0; i < 2; i++) {
     glBindTexture(GL_TEXTURE_2D, _renderFrameCBO[i]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowSize.x, windowSize.y, 0,
-                 GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGBA16F,
+                 windowSize.x,
+                 windowSize.y,
+                 0,
+                 GL_RGBA,
+                 GL_FLOAT,
+                 NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // attach texture to framebuffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
-                           GL_TEXTURE_2D, _renderFrameCBO[i], 0);
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _renderFrameCBO[i], 0);
   }
   glGenRenderbuffers(1, &_captureRBO);
   glBindRenderbuffer(GL_RENDERBUFFER, _captureRBO);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, windowSize.x,
-                        windowSize.y);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                            GL_RENDERBUFFER, _captureRBO);
+  glRenderbufferStorage(
+      GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, windowSize.x, windowSize.y);
+  glFramebufferRenderbuffer(
+      GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _captureRBO);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     std::cerr << "Framebuffer not complete!" << std::endl;
@@ -610,8 +613,7 @@ void OpenGLRenderer::GenerateFrameBuffers() {
 
 void OpenGLRenderer::ResizeTexture(GLuint textureID, int width, int height) {
   glBindTexture(GL_TEXTURE_2D, textureID);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA,
-               GL_FLOAT, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -623,18 +625,24 @@ void OpenGLRenderer::InitPingPongBuffers() {
   for (unsigned int i = 0; i < 2; i++) {
     glBindFramebuffer(GL_FRAMEBUFFER, _pingpongFBO[i]);
     glBindTexture(GL_TEXTURE_2D, _pingpongCBO[i]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, windowSize.x, windowSize.y, 0,
-                 GL_RGB, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGB16F,
+                 windowSize.x,
+                 windowSize.y,
+                 0,
+                 GL_RGB,
+                 GL_FLOAT,
+                 nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                           _pingpongCBO[i], 0);
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pingpongCBO[i], 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-      std::cerr << "Ping-pong framebuffer " << i << " is not complete!"
-                << std::endl;
+      std::cerr << "Ping-pong framebuffer " << i << " is not complete!" << std::endl;
     }
   }
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -662,8 +670,7 @@ void OpenGLRenderer::UpdateRenderDimensions() {
   ResizeTexture(_pingpongCBO[1], newSize.x, newSize.y);
 
   glBindRenderbuffer(GL_RENDERBUFFER, _captureRBO);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, newSize.x,
-                        newSize.y);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, newSize.x, newSize.y);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
@@ -683,12 +690,12 @@ void OpenGLRenderer::BlendColorBuffers(GLuint target, GLuint source) {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
+void OpenGLRenderer::RenderMesh(MeshRenderer* mr) {
   unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
   glDrawBuffers(2, attachments);
 
   // TODO: Draw can be abstracted
-  Model3D *model = mr->GetModel();
+  Model3D* model = mr->GetModel();
   if (!model->mesh._buffered) {
     // TODO: this is wrong, needs seperate mesh/shader
     // BufferMesh(model.mesh, *mat.m_Shader);
@@ -697,21 +704,19 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
   UpdateRenderFlags(mr); // TODO: OPT does not need to be here every draw call
 
   // bind VAO once for the mesh data
-  glBindVertexArray(
-      model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
+  glBindVertexArray(model->mesh.m_vertexArrayObject); // DIFFERENT FROM _VA BUFFERS
 
   // TODO OPT: redundant operations
   mat4 umodel = mr->GetTransform().GetModel();
-  mat4 mvp =
-      Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
+  mat4 mvp = Application::renderer->GetRenderCamera().GetViewProjection() * umodel;
   vec3 camPos = Application::renderer->GetRenderCamera().GetPos();
 
   // TODO : check if window open cause of crashes
   // If model defines BasicMesh ranges, draw each range separately.
   if (!model->b_meshes.empty()) {
-    for (const BasicMesh &bm : model->b_meshes) {
+    for (const BasicMesh& bm : model->b_meshes) {
       // bind shader/texture (existing code assumes 'mat' is set up)
-      Shader *shader = model->materials[bm.materialIndex]->m_shader;
+      Shader* shader = model->materials[bm.materialIndex]->m_shader;
       shader->Bind();
       // material->m_Shader->SetUniform("Model", model);
       //  TODO: think if shader attributes should be selected from shader data
@@ -721,24 +726,20 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
       shader->SetUniform("u_cameraPos", camPos);
       // shader->SetUniform("u_lightDir", lightDir);
       // shader->SetUniform("u_lightColor", lightColor);
-      shader->SetUniform("u_roughness",
-                         model->materials[bm.materialIndex]->m_roughness);
-      shader->SetUniform("u_metalness",
-                         model->materials[bm.materialIndex]->m_metallic);
+      shader->SetUniform("u_roughness", model->materials[bm.materialIndex]->m_roughness);
+      shader->SetUniform("u_metalness", model->materials[bm.materialIndex]->m_metallic);
       shader->SetUniform("u_renderFlags", mr->m_render_flags[bm.materialIndex]);
-      shader->SetUniform("u_prefilteredMapMaxLOD",
-                         _prefilteredMapMaxMipLevels - 1);
+      shader->SetUniform("u_prefilteredMapMaxLOD", _prefilteredMapMaxMipLevels - 1);
 
       // lights
       unsigned int lightCount = 0;
       std::vector<vec3> lightDirs;
       std::vector<vec3> lightColors;
-      if (!Application::lightPresets.empty() &&
-          std::cmp_less(Application::activeLightPresetIndex,
-                        Application::lightPresets.size())) {
+      if (!Application::lightPresets.empty()
+          && std::cmp_less(Application::activeLightPresetIndex,
+                           Application::lightPresets.size())) {
         lightCount = static_cast<unsigned int>(
-            Application::lightPresets[Application::activeLightPresetIndex]
-                .size());
+            Application::lightPresets[Application::activeLightPresetIndex].size());
 
         for (unsigned int i = 0; i < lightCount; ++i) {
           lightDirs.push_back(
@@ -769,53 +770,54 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
       // Bind albedo (base) to texture unit 0
       // TODO: hardcoded texture unit indexes, also make functions for redundant
       // uniform setting
-      auto *albedoTex =
-          model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
-      if (albedoTex && mr->m_render_flags[bm.materialIndex] &
-                           static_cast<uint32_t>(RenderFlags::BASE_TEXTURE)) {
+      auto* albedoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_BASE];
+      if (albedoTex
+          && mr->m_render_flags[bm.materialIndex]
+                 & static_cast<uint32_t>(RenderFlags::BASE_TEXTURE)) {
         albedoTex->Bind(3);
         shader->SetUniformTextureSampler2D("u_albedoMap", 3);
       }
 
       // Bind normal map to texture unit 1
-      auto *normalTex =
-          model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
-      if (normalTex && mr->m_render_flags[bm.materialIndex] &
-                           static_cast<uint32_t>(RenderFlags::NORMAL_MAPS)) {
+      auto* normalTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_NORMAL];
+      if (normalTex
+          && mr->m_render_flags[bm.materialIndex]
+                 & static_cast<uint32_t>(RenderFlags::NORMAL_MAPS)) {
         normalTex->Bind(4);
         shader->SetUniformTextureSampler2D("u_normalMap", 4);
       }
 
-      auto *roughnessTex =
+      auto* roughnessTex =
           model->materials[bm.materialIndex]->m_textures[TEX_TYPE_ROUGHNESS];
-      if (roughnessTex &&
-          mr->m_render_flags[bm.materialIndex] &
-              static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS)) {
+      if (roughnessTex
+          && mr->m_render_flags[bm.materialIndex]
+                 & static_cast<uint32_t>(RenderFlags::ROUGHNESS_MAPS)) {
         roughnessTex->Bind(5);
         shader->SetUniformTextureSampler2D("u_roughnessMap", 5);
       }
 
-      auto *metalnessTex =
+      auto* metalnessTex =
           model->materials[bm.materialIndex]->m_textures[TEX_TYPE_METALLIC];
-      if (metalnessTex &&
-          mr->m_render_flags[bm.materialIndex] &
-              static_cast<uint32_t>(RenderFlags::METALNESS_MAPS)) {
+      if (metalnessTex
+          && mr->m_render_flags[bm.materialIndex]
+                 & static_cast<uint32_t>(RenderFlags::METALNESS_MAPS)) {
         metalnessTex->Bind(6);
         shader->SetUniformTextureSampler2D("u_metalnessMap", 6);
       }
 
-      auto *aoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_AO];
-      if (aoTex && mr->m_render_flags[bm.materialIndex] &
-                       static_cast<uint32_t>(RenderFlags::AO_MAPS)) {
+      auto* aoTex = model->materials[bm.materialIndex]->m_textures[TEX_TYPE_AO];
+      if (aoTex
+          && mr->m_render_flags[bm.materialIndex]
+                 & static_cast<uint32_t>(RenderFlags::AO_MAPS)) {
         aoTex->Bind(7);
         shader->SetUniformTextureSampler2D("u_aoMap", 7);
       }
 
-      auto *emissiveTex =
+      auto* emissiveTex =
           model->materials[bm.materialIndex]->m_textures[TEX_TYPE_EMISSIVE];
-      if (emissiveTex &&
-          mr->m_render_flags[bm.materialIndex] &
-              static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS)) {
+      if (emissiveTex
+          && mr->m_render_flags[bm.materialIndex]
+                 & static_cast<uint32_t>(RenderFlags::EMISSIVE_MAPS)) {
         emissiveTex->Bind(8);
         shader->SetUniformTextureSampler2D("u_emissiveMap", 8);
       }
@@ -825,15 +827,17 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
       // If the mesh has an index buffer, use glDrawElementsBaseVertex with the
       // BaseIndex offset.
       if (!model->mesh.m_Indices.empty()) {
-        glDrawElementsBaseVertex(
-            GL_TRIANGLES, static_cast<GLsizei>(bm.numIndices), GL_UNSIGNED_INT,
-            (void *)(sizeof(unsigned int) * bm.baseIndex),
-            static_cast<GLint>(bm.baseVertex));
+        glDrawElementsBaseVertex(GL_TRIANGLES,
+                                 static_cast<GLsizei>(bm.numIndices),
+                                 GL_UNSIGNED_INT,
+                                 (void*) (sizeof(unsigned int) * bm.baseIndex),
+                                 static_cast<GLint>(bm.baseVertex));
         LogGLErrors("glDrawElementsBaseVertex");
       } else {
         // No index buffer: draw arrays starting at BaseVertex for NumIndices
         // vertices.
-        glDrawArrays(GL_TRIANGLES, static_cast<GLint>(bm.baseVertex),
+        glDrawArrays(GL_TRIANGLES,
+                     static_cast<GLint>(bm.baseVertex),
                      static_cast<GLsizei>(bm.numIndices));
       }
     }
@@ -842,10 +846,10 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
     if (!model->mesh.m_Indices.empty())
       glDrawElements(GL_TRIANGLES,
                      static_cast<GLsizei>(model->mesh.m_Indices.size()),
-                     GL_UNSIGNED_INT, 0);
+                     GL_UNSIGNED_INT,
+                     0);
     else
-      glDrawArrays(GL_TRIANGLES, 0,
-                   static_cast<GLsizei>(model->mesh.m_Positions.size()));
+      glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model->mesh.m_Positions.size()));
   }
 
   for (int i = 0; i < 16; ++i) // Assuming 16 texture units (adjust if needed)
@@ -858,7 +862,7 @@ void OpenGLRenderer::RenderMesh(MeshRenderer *mr) {
   glDrawBuffers(1, attachments);
 }
 
-void OpenGLRenderer::Draw(MeshRenderer *mr) {
+void OpenGLRenderer::Draw(MeshRenderer* mr) {
   glBindFramebuffer(GL_FRAMEBUFFER, _captureFBO);
   GLenum drawBuf = GL_COLOR_ATTACHMENT1; // clear bloom buffer
   glDrawBuffers(1, &drawBuf);
