@@ -1,6 +1,7 @@
 #pragma once
 #include "Job.h"
 #include "WorkerThread.h"
+#include <thread>
 #include <vector>
 
 class JobSystem {
@@ -22,6 +23,15 @@ public:
     auto job = std::make_shared<Job>(name, func);
     Queue.AddJob(job);
     ActiveJobs.push_back(job);
+  }
+
+  void WaitForAll() {
+    for (auto& job : ActiveJobs) {
+      while (!job->Completed()) {
+        std::this_thread::yield();
+      }
+    }
+    ActiveJobs.clear();
   }
 
   void ShowProgress() {

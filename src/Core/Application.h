@@ -29,7 +29,7 @@ public:
   static inline std::unique_ptr<Renderer> renderer = nullptr;
   static inline std::unique_ptr<InputHandler> inputHandler = nullptr;
   static inline std::vector<std::unique_ptr<SceneObject>> sceneObjects;
-  static inline std::unique_ptr<JobSystem> job_system;
+  static inline std::unique_ptr<JobSystem> jobSystem;
   // static inline std::vector<Material> materials;
   // static inline std::vector<Image> images;
   // static inline std::vector<Texture> textures;

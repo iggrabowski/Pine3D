@@ -5,7 +5,7 @@
 
 class JobQueue {
 public:
-  void AddJob(std::shared_ptr<Job> job) {
+  void AddJob(const std::shared_ptr<Job>& job) {
     std::lock_guard<std::mutex> lock(QueueMutex);
     Jobs.push(job);
   }
